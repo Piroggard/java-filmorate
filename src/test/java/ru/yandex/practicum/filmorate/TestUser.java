@@ -63,4 +63,15 @@ public class TestUser {
                 25));
         assertThrows(ValidationException.class, () -> userController.postUser(user), "wrong date of birth");
     }
+
+    @Test
+    void createAnObjecPut() {
+        User user = new User("abc@yandex.ru", "MaxFed", "Max", LocalDate.of(2000, 12,
+                25));
+        userController.postUser(user);
+        User user1 = new User(1, "abc@yandex.ru", "MaxFed", "Max", LocalDate.of(2000, 12,
+                25));
+        userController.putUser(user1);
+        assertEquals(1, userController.getUsers().size(), "Object created successfully");
+    }
 }

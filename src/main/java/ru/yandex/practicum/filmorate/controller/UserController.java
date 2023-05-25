@@ -10,6 +10,7 @@ import ru.yandex.practicum.filmorate.validation.ValidationUser;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 
 @RestController
@@ -17,9 +18,7 @@ public class UserController {
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
     ValidationUser validationUser = new ValidationUser();
     private int id = 1;
-
-    List<User> users = new ArrayList<>();
-
+    List<User> users = new CopyOnWriteArrayList<>();
     @GetMapping("/users")
     public List<User> getUsers() {
         log.info("Receiving a request" + users);
