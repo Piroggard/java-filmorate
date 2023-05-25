@@ -1,8 +1,6 @@
 package ru.yandex.practicum.filmorate.validation;
 
-import org.springframework.cglib.core.Local;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
-import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
@@ -14,14 +12,16 @@ public class ValidationUser {
         char[] login = user.getLogin().toCharArray();
         boolean validMail = false;
         boolean validLogin = false;
-        for (int i = 0; i < mail.length; i++) {
-            if (mail[i] == '@') {
+        for (char c : mail) {
+            if (c == '@') {
                 validMail = true;
+                break;
             }
         }
-        for (int i = 0; i < login.length; i++) {
-            if (login[i] == ' ') {
+        for (char c : login) {
+            if (c == ' ') {
                 validLogin = true;
+                break;
             }
         }
         if (!validMail | user.getEmail().length() == 0) {
@@ -48,6 +48,7 @@ public class ValidationUser {
         for (User user1 : users) {
             if (user1.getId() == user.getId()) {
                 filmId = true;
+                break;
             }
         }
         if (!filmId) {
