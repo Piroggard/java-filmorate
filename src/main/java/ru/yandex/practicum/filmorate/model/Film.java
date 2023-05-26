@@ -4,8 +4,6 @@ import lombok.*;
 
 import java.time.LocalDate;
 
-@AllArgsConstructor
-@NoArgsConstructor
 @Data
 public class Film {
     @EqualsAndHashCode.Exclude
@@ -18,11 +16,4 @@ public class Film {
     private LocalDate releaseDate;
     @NonNull
     private int duration;
-
-    public Film(@NonNull String name, @NonNull String description, @NonNull LocalDate releaseDate, @NonNull int duration) {
-        this.name = name;
-        this.description = description;
-        this.releaseDate = releaseDate;
-        this.duration = duration;
-    }
 }
