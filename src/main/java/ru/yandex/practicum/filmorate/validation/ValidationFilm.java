@@ -1,9 +1,12 @@
 package ru.yandex.practicum.filmorate.validation;
 
+import ru.yandex.practicum.filmorate.controller.FilmController;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
+import java.io.File;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ValidationFilm {
@@ -29,7 +32,6 @@ public class ValidationFilm {
         for (Film film1 : films) {
             if (film1.getId() == film.getId()) {
                 filmId = true;
-                break;
             }
         }
         if (!filmId) {
