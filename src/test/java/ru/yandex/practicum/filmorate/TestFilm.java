@@ -78,4 +78,17 @@ public class TestFilm {
     }
 
 
+    @Test
+    void updateObject() {
+        Film film = new Film("Naim", "description",
+                LocalDate.of(1995, 12, 25)
+                , 1);
+        filmController.postFilm(film);
+        System.out.println(film.getId());
+        Film film1 = new Film("Naim", "description",
+                LocalDate.of(1995, 12, 25)
+                , 4);
+        filmController.putFilm(film1);
+        assertEquals(1, filmController.getFilms().size(), "Information update");
+    }
 }
