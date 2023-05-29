@@ -5,8 +5,6 @@ import lombok.*;
 import java.time.LocalDate;
 
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
 public class User {
     @EqualsAndHashCode.Exclude
     private int id;
@@ -18,13 +16,4 @@ public class User {
     private String name;
     @NonNull
     private LocalDate birthday;
-
-    public User(@NonNull String email, @NonNull String login, @NonNull String name, @NonNull LocalDate birthday) {
-        this.email = email;
-        this.login = login;
-        this.name = name;
-        this.birthday = birthday;
-    }
-
-
 }

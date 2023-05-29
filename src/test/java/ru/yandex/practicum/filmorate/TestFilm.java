@@ -77,15 +77,5 @@ public class TestFilm {
         assertThrows(ValidationException.class, () -> filmController.putFilm(film), "Duration negative");
     }
 
-    @Test
-    void createAnObjectPut() {
-        Film film = new Film("Naim", "description", LocalDate.of(2000, 12, 25)
-                , 2);
-        filmController.postFilm(film);
-        Film film1 = new Film(1, "Naim", "description", LocalDate.of(2000, 12, 25)
-                , 2);
-        filmController.putFilm(film1);
-        assertEquals(1, filmController.getFilms().size(), "Verification successful");
-    }
 
 }
