@@ -63,4 +63,5 @@ public class TestUser {
                 25));
         assertThrows(ValidationException.class, () -> userController.postUser(user), "wrong date of birth");
     }
+
 }
