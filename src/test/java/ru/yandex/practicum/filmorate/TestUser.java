@@ -15,6 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class TestUser {
     public UserController userController = new UserController();
     User templateUser;
+
     @BeforeEach
     public void setData() {
         templateUser = new User("abc@yandex.ru", "MaxFed", "Max", LocalDate.of(2000, 12, 25));
