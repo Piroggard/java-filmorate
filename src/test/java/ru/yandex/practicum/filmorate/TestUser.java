@@ -4,7 +4,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.controller.UserController;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
-import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
@@ -60,7 +59,7 @@ public class TestUser {
 
     @Test
     void createAnObjectdataOfBirthCheck() {
-        templateUser.setBirthday( LocalDate.of(2024, 12, 25));
+        templateUser.setBirthday(LocalDate.of(2024, 12, 25));
         assertThrows(ValidationException.class, () -> userController.postUser(templateUser), "wrong date of birth");
     }
 
