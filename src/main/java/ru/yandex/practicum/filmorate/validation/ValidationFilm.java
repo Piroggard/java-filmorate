@@ -7,6 +7,7 @@ import java.util.List;
 
 public class ValidationFilm {
     private final LocalDate earlyReleaseDate = LocalDate.of(1895, 12, 28);
+
     public void validation(Film film) throws ValidationException {
         if (film.getName().length() == 0) {
             throw new ValidationException("Movie title must be filled");
