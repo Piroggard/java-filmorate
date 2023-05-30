@@ -10,15 +10,16 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.validation.ValidationFilm;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 @RestController
 public class FilmController {
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
-    ValidationFilm validationFilm = new ValidationFilm();
+    private final ValidationFilm validationFilm = new ValidationFilm();
     private int id = 1;
-    List<Film> films = new CopyOnWriteArrayList<>();
+    List<Film> films = new ArrayList<>();
 
     @GetMapping("/films")
     public List<Film> getFilms() {

@@ -1,8 +1,10 @@
 package ru.yandex.practicum.filmorate;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.controller.UserController;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
@@ -12,57 +14,60 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class TestUser {
     public UserController userController = new UserController();
+    User templateUser;
+    @BeforeEach
+    public void setData() {
+        templateUser = new User("abc@yandex.ru", "MaxFed", "Max", LocalDate.of(2000, 12, 25));
+    }
 
     @Test
     void createAnObject() {
-        User user = new User("abc@yandex.ru", "MaxFed", "Max", LocalDate.of(2000, 12, 25));
-        userController.postUser(user);
+        userController.postUser(templateUser);
         assertEquals(1, userController.getUsers().size(), "Object created successfully");
     }
 
     @Test
     void createAnObjectEmailFieldNotFilled() {
-        User user = new User("", "MaxFed", "Max", LocalDate.of(2000, 12, 25));
-        assertThrows(ValidationException.class, () -> userController.postUser(user), "Address not filled");
+        templateUser.setEmail("");
+        assertThrows(ValidationException.class, () -> userController.postUser(templateUser), "Address not filled");
     }
 
     @Test
     void createAnObjectEmailNoRequiredSign() {
-        User user = new User("abcyandex.ru", "MaxFed", "Max", LocalDate.of(2000, 12, 25));
-        assertThrows(ValidationException.class, () -> userController.postUser(user), "No sign @ in address");
+        templateUser.setEmail("abcyandex.ru");
+        assertThrows(ValidationException.class, () -> userController.postUser(templateUser), "No sign @ in address");
     }
 
     @Test
     void createAnObjectEmptyFieldLogin() {
-        User user = new User("abcyandex@.ru", "", "Max", LocalDate.of(2000, 12, 25));
-        assertThrows(ValidationException.class, () -> userController.postUser(user), "Login not completed");
+        templateUser.setLogin("");
+        assertThrows(ValidationException.class, () -> userController.postUser(templateUser), "Login not completed");
     }
 
     @Test
     void createAnObjectSpacebarsInLogin() {
-        User user = new User("abcyandex@.ru", "Max Fed", "Max", LocalDate.of(2000, 12, 25));
-        assertThrows(ValidationException.class, () -> userController.postUser(user), "Space in logging");
+        templateUser.setLogin("Max Fed");
+        assertThrows(ValidationException.class, () -> userController.postUser(templateUser), "Space in logging");
     }
 
     @Test
     void createAnObjectinNameWeUseTheLogin() {
-        User user = new User("abcyandex@.ru", "MaxFed", "", LocalDate.of(2000, 12, 25));
-        userController.postUser(user);
-        assertEquals(user.getName(), user.getLogin(), "write the login in the name");
+        templateUser.setName("");
+        userController.postUser(templateUser);
+        assertEquals(templateUser.getName(), templateUser.getLogin(), "write the login in the name");
     }
 
     @Test
     void createAnObjectdataOfBirthCheck() {
-        User user = new User("abcyandex@.ru", "MaxFed", "Max", LocalDate.of(2024, 12, 25));
-        assertThrows(ValidationException.class, () -> userController.postUser(user), "wrong date of birth");
+        templateUser.setBirthday( LocalDate.of(2024, 12, 25));
+        assertThrows(ValidationException.class, () -> userController.postUser(templateUser), "wrong date of birth");
     }
 
     @Test
     void createAnObjecPut() {
-        User user = new User("abc@yandex.ru", "MaxFed", "Max", LocalDate.of(2000, 12, 25));
-        userController.postUser(user);
-        User user1 = new User(1, "abc@yandex.ru", "MaxFed", "Max", LocalDate.of(2000, 12, 25));
-        userController.putUser(user1);
+        userController.postUser(templateUser);
+        templateUser.setId(1);
+        userController.putUser(templateUser);
         assertEquals(1, userController.getUsers().size(), "Object created successfully");
     }
 }
