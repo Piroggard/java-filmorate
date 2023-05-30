@@ -12,17 +12,17 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class TestFilm {
-
     public FilmController filmController = new FilmController();
     Film templateFilm;
     String description = "a";
+
     @BeforeEach
-    public void setData() {templateFilm = new Film("Naim", "description", LocalDate.of(2000, 12, 25), 2);
+    public void setData() {
+        templateFilm = new Film("Naim", "description", LocalDate.of(2000, 12, 25), 2);
     }
 
     @Test
     void createAnObject() {
-
         filmController.postFilm(templateFilm);
         assertEquals(1, filmController.getFilms().size(), "Verification successful");
     }
@@ -31,7 +31,6 @@ public class TestFilm {
     void createAnObjectWrongReleaseDate() {
         templateFilm.setReleaseDate(LocalDate.of(1800, 12, 25));
         assertThrows(ValidationException.class, () -> filmController.putFilm(templateFilm), "Wrong release date");
-
     }
 
     @Test
@@ -53,7 +52,6 @@ public class TestFilm {
         assertEquals(1, filmController.getFilms().size(), "Description 200 characters");
     }
 
-
     @Test
     void createAnObjectdurationNullm() {
         templateFilm.setDuration(0);
@@ -68,5 +66,4 @@ public class TestFilm {
         filmController.putFilm(templateFilm);
         assertEquals(1, filmController.getFilms().size(), "Verification successful");
     }
-
 }
