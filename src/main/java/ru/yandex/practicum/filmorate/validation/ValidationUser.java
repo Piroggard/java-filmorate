@@ -1,11 +1,11 @@
 package ru.yandex.practicum.filmorate.validation;
 
+import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
-import java.util.List;
-
+@Component
 public class ValidationUser {
     public void validation(User user) throws ValidationException {
         char[] mail = user.getEmail().toCharArray();
@@ -43,17 +43,11 @@ public class ValidationUser {
         }
     }
 
-    public void validationId(User user, List<User> users) {
-        boolean filmId = false;
-        for (User user1 : users) {
-            if (user1.getId() == user.getId()) {
-                filmId = true;
-                break;
-            }
+    public void validationAddFriend (int id , int idFriend){
+        if (id == idFriend){
+            throw new ValidationException("Unable to add or remove myself from friends list");
         }
-        if (!filmId) {
-            throw new ValidationException("Id unknown");
-        }
+
     }
 }
 
