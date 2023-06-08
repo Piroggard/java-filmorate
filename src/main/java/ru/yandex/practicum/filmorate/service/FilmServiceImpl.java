@@ -50,6 +50,13 @@ public class FilmServiceImpl implements FilmService{
     }
 
     @Override
+    public List<Film> getFilm(Integer id) {
+        List<Film> films = new ArrayList<>();
+        films.add(filmStorage.films.get(id));
+        return films;
+    }
+
+    @Override
     public Film[] getListBestMovies(Integer count) {
         if (count == null){
            return getListBestTenMovies();
@@ -58,7 +65,6 @@ public class FilmServiceImpl implements FilmService{
             log.info("count " + count);
             List<Film> films = new ArrayList<>();
             for (Integer idFilm : filmStorage.films.keySet()){
-                System.out.println(idFilm);
                 films.add(filmStorage.films.get(idFilm));
             }
             Collections.sort(films);
@@ -79,7 +85,6 @@ public class FilmServiceImpl implements FilmService{
         Film [] topFilms = new Film[10];
         for (int i = 0; i < topFilms.length ; i++) {
             topFilms[i] = films.get(i);
-            System.out.println("---   " + i);
         }
         return topFilms;
     }

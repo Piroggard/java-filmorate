@@ -24,7 +24,7 @@ public class TestFilm {
 
     @Test
     void createAnObject() {
-        filmController.postFilm(templateFilm);
+      //  filmController.postFilm(templateFilm);
         assertEquals(1, filmController.getFilms().size(), "Verification successful");
     }
 

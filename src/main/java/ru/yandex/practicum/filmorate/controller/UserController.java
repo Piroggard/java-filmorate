@@ -4,12 +4,15 @@ import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
@@ -35,6 +38,11 @@ public class UserController {
     public List<User> getUsers() {
        return userService.getUsers();
     }
+
+    /*@GetMapping("/users")
+    public List<User> getUsers(@PathVariable int id) {
+        return userService.getUsers();
+    }*/
 
     @PostMapping("/users")
     public User postUser(@RequestBody User user) {
@@ -70,4 +78,24 @@ public class UserController {
     public List<User> getUserFriend(@PathVariable int id , @PathVariable int otherId) {
         return userService.getListMutualFriend(id , otherId);
     }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, String> errorValidation(final ValidationException e) {
+        return Map.of("Error" , e.getMessage());
+    }
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Map<String, String> noRequiredObject(final NullPointerException e) {
+        return Map.of("Error" , "No required object");
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public Map<String, String> internalServerError(final IndexOutOfBoundsException e) {
+        return Map.of("Error" , "Internal Server Error");
+    }
+
+
+
 }

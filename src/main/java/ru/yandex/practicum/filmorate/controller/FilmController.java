@@ -3,6 +3,8 @@ package ru.yandex.practicum.filmorate.controller;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -29,6 +31,15 @@ public class FilmController {
         log.info("Receiving a request");
         return filmService.getFilms();
     }
+    /*@GetMapping("/films")
+    @ResponseBody
+    public List <Film> getFilms(@PathVariable (required = false) Integer id) {
+        if (id == null){
+            return filmService.getFilm(id);
+        } else {
+            return filmService.getFilms();
+        }
+    }*/
 
     @PostMapping("/films")
     public Film postFilm(@RequestBody Film film) {
@@ -40,7 +51,6 @@ public class FilmController {
     @PutMapping("/films")
     public Film putFilm(@RequestBody Film film) {
         validationFilm.validation(film);
-
         return filmService.putFilm(film);
     }
     @PutMapping("/films/{id}/like/{userId}")
@@ -60,14 +70,25 @@ public class FilmController {
             return filmService.getListBestMovies(count);
 
     }
-
-    /*@GetMapping("/films/popular")
-    public Film[] getListBestTenMovies(){
-        return filmService.getListBestTenMovies();
-    }*/
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, String> errorValidation(final ValidationException e) {
+        return Map.of("Error" , e.getMessage());
+    }
 
     @ExceptionHandler
-    public Map<String, String> handleNegativeCount(final ValidationException e) {
-        return Map.of("error", "Передан отрицательный параметр count.");
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Map<String, String> noRequiredObject(final NullPointerException e) {
+        return Map.of("Error" , "No required object");
     }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public Map<String, String> internalServerError(final IndexOutOfBoundsException e) {
+        return Map.of("Error" , "Internal Server Error");
+    }
+
+
+
+
 }
