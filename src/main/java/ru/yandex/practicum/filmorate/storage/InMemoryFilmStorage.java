@@ -21,7 +21,7 @@ public class InMemoryFilmStorage implements FilmStorage{
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
     ValidationFilm validationFilm = new ValidationFilm();
     private int id = 1;
-    Map<Integer, Film> films = new HashMap<>();
+    public Map<Integer, Film> films = new HashMap<>();
 
     @Override
     public List<Film> getFilms() {

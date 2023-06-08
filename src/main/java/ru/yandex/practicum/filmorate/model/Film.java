@@ -3,11 +3,13 @@ package ru.yandex.practicum.filmorate.model;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class Film {
+public class Film implements Comparable<Film>{
     @EqualsAndHashCode.Exclude
     private int id;
     @NonNull
@@ -19,6 +21,33 @@ public class Film {
     @NonNull
     private int duration;
 
+    public void setUsersLikeMovie(Set<Integer> usersLikeMovie) {
+        this.setLikes(usersLikeMovie.size());
+        this.usersLikeMovie = usersLikeMovie;
+    }
+
+    private Set<Integer> usersLikeMovie = new HashSet<>();
+    private int likes = 0;
+
+    public void addLike(int id) {
+        usersLikeMovie.add(id);
+        setLikes(getLikes() + 1);
+    }
+    public void deleteLike(int id) {
+        usersLikeMovie.remove(id);
+        setLikes(getLikes() - 1);
+    }
+
+    @Override
+    public int compareTo(Film o) {
+        if (this.likes == o.getLikes()){
+            return 0;
+        } else if (this.likes < o.getLikes()) {
+            return 1;
+        } else {
+            return -1;
+        }
+    }
     public Film(@NonNull String name, @NonNull String description, @NonNull LocalDate releaseDate, @NonNull int duration) {
         this.name = name;
         this.description = description;

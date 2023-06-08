@@ -3,16 +3,13 @@ package ru.yandex.practicum.filmorate.controller;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.validation.ValidationFilm;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -45,5 +42,32 @@ public class FilmController {
         validationFilm.validation(film);
 
         return filmService.putFilm(film);
+    }
+    @PutMapping("/films/{id}/like/{userId}")
+    public void addLikeFilm(@PathVariable int id, @PathVariable int userId){
+        filmService.addLikeFilm(id , userId);
+    }
+
+    @DeleteMapping("/films/{id}/like/{userId}")
+    public void deleteLikeFilm(@PathVariable int id, @PathVariable int userId){
+        filmService.deleteLikeFilm(id , userId);
+    }
+    @GetMapping("/films/popular")
+    @ResponseBody
+    public Film[] getListBestMovies(@RequestParam (required = false) Integer count){
+        System.out.println(count);
+
+            return filmService.getListBestMovies(count);
+
+    }
+
+    /*@GetMapping("/films/popular")
+    public Film[] getListBestTenMovies(){
+        return filmService.getListBestTenMovies();
+    }*/
+
+    @ExceptionHandler
+    public Map<String, String> handleNegativeCount(final ValidationException e) {
+        return Map.of("error", "Передан отрицательный параметр count.");
     }
 }
