@@ -20,7 +20,7 @@ public class ValidationFilm {
         }
     }
 
-    public void validationIdFilm (int id ) {
+    public void validationIdFilm (int id) {
         if (id < 1 ) {
             throw new NullPointerException("ID cannot be negative");
         }

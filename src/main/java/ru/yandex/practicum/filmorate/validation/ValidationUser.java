@@ -43,7 +43,7 @@ public class ValidationUser {
         }
     }
 
-    public void validationAddFriend (int id , int idFriend){
+    public void validationAddFriend (int id, int idFriend){
         if (id == idFriend){
             throw new ValidationException("Unable to add or remove myself from friends list");
         } else if (id < 1 || idFriend  < 1) {

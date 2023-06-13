@@ -55,15 +55,15 @@ public class UserController {
     }
 
     @PutMapping ("/users/{id}/friends/{friendId}")
-    public void addFriend (@PathVariable int id , @PathVariable int friendId) {
-        validationUser.validationAddFriend(id , friendId);
-        userService.addFriends(id , friendId);
+    public void addFriend(@PathVariable int id, @PathVariable int friendId) {
+        validationUser.validationAddFriend(id, friendId);
+        userService.addFriends(id,friendId);
     }
 
     @DeleteMapping("/users/{id}/friends/{friendId}")
-    public void deleteFriend (@PathVariable int id , @PathVariable int friendId) {
-        validationUser.validationAddFriend(id , friendId);
-        userService.deleteFriends(id , friendId);
+    public void deleteFriend(@PathVariable int id, @PathVariable int friendId) {
+        validationUser.validationAddFriend(id, friendId);
+        userService.deleteFriends(id, friendId);
     }
 
     @GetMapping("/users/{id}/friends")
@@ -73,9 +73,9 @@ public class UserController {
     }
 
     @GetMapping("/users/{id}/friends/common/{otherId}")
-    public List<User> getUserFriend(@PathVariable int id , @PathVariable int otherId) {
-        validationUser.validationAddFriend(id , otherId);
-        return userService.getListMutualFriend(id , otherId);
+    public List<User> getUserFriend(@PathVariable int id, @PathVariable int otherId) {
+        validationUser.validationAddFriend(id, otherId);
+        return userService.getListMutualFriend(id, otherId);
     }
 
     @ExceptionHandler
