@@ -14,8 +14,6 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 public class User {
-
-
     @EqualsAndHashCode.Exclude
     private int id;
     @NonNull
@@ -25,7 +23,6 @@ public class User {
     private String name;
     @NonNull
     private LocalDate birthday;
-
 
     private Set<Integer> listFriends = new HashSet<>();
 
@@ -39,6 +36,7 @@ public class User {
     public void addListFriend(int id) {
         listFriends.add(id);
     }
+
     public void deleteFriends(int id) {
         listFriends.remove(id);
     }

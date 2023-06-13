@@ -16,7 +16,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class TestUser {
     InMemoryUserStorage userStorage = new InMemoryUserStorage();
     UserService userService = new UserServiceImpl(userStorage);
-
     UserController userController = new UserController(userService  );
     User templateUser;
 

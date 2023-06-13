@@ -5,14 +5,14 @@ import ru.yandex.practicum.filmorate.model.Film;
 import java.util.List;
 
 public interface FilmService {
-    public List<Film> getFilms();
-    public Film postFilm(Film film);
-    public Film putFilm(Film film);
-    public void addLikeFilm (int id , int userId);
-    public void deleteLikeFilm (int id , int userId);
-    public Film getFilm(Integer id);
+     List<Film> getFilms();
+     Film postFilm(Film film);
+     Film putFilm(Film film);
+     void addLikeFilm (int id , int userId);
+     void deleteLikeFilm (int id , int userId);
+     Film getFilm(Integer id);
 
-    public List<Film> getListBestMovies (Integer count);
-    public List<Film> getListBestTenMovies();
+     List<Film> getListBestMovies (Integer count);
+     List<Film> getListBestTenMovies();
 
 }

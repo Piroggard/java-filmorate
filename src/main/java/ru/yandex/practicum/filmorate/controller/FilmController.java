@@ -20,7 +20,6 @@ public class FilmController {
     private final ValidationFilm validationFilm = new ValidationFilm();
     private final FilmService filmService;
 
-
     @GetMapping("/films")
     public List<Film> getFilms() {
         log.info("Receiving a request");
@@ -34,7 +33,6 @@ public class FilmController {
         validationFilm.searchValidation(filmService.getFilm(id));
         return filmService.getFilm(id);
     }
-
 
     @PostMapping("/films")
     public Film postFilm(@RequestBody Film film) {
@@ -85,6 +83,4 @@ public class FilmController {
     public Map<String, String> internalServerError(final IndexOutOfBoundsException e) {
         return Map.of("Error", "Internal Server Error");
     }
-
-
 }

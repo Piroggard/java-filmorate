@@ -16,10 +16,12 @@ import java.util.List;
 public class UserServiceImpl implements UserService{
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
     private InMemoryUserStorage inMemoryUserStorage;
+
     @Override
     public List<User> getUsers() {
         return inMemoryUserStorage.getUsers();
     }
+
     @Override
     public User getUser(int id) {
         return inMemoryUserStorage.users.get(id);
@@ -40,7 +42,6 @@ public class UserServiceImpl implements UserService{
         log.info("userId " + userId + " friendId " + friendId);
         User user = inMemoryUserStorage.users.get(userId);
         User friendsUser = inMemoryUserStorage.users.get(friendId);
-
         user.addListFriend(friendId);
         friendsUser.addListFriend(userId);
         inMemoryUserStorage.putUser(user);

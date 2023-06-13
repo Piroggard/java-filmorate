@@ -6,8 +6,6 @@ import ru.yandex.practicum.filmorate.model.Film;
 import java.time.LocalDate;
 
 public class ValidationFilm {
-
-
     public void validation(Film film) throws ValidationException {
         if (film.getName().length() == 0) {
             throw new ValidationException("Movie title must be filled");
@@ -33,8 +31,4 @@ public class ValidationFilm {
             throw new NullPointerException("Object not found by specified id");
         }
     }
-
-
-
-
 }

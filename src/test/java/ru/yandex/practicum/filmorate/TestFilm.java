@@ -16,8 +16,6 @@ public class TestFilm {
     InMemoryFilmStorage filmStorage = new InMemoryFilmStorage();
     FilmService filmService = new FilmServiceImpl(filmStorage);
     public FilmController filmController = new FilmController(filmService);
-
-
     Film templateFilm;
     String description = "a";
 

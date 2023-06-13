@@ -28,6 +28,7 @@ public class UserController {
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
     private final UserService userService;
     private final ValidationUser validationUser = new ValidationUser();
+
     @GetMapping("/users")
     public List<User> getUsers() {
        return userService.getUsers();
@@ -45,7 +46,6 @@ public class UserController {
         validationUser.searchValidation(user);
         return userService.postUser(user);
     }
-
 
     @PutMapping("/users")
     public User putUser(@RequestBody User user) {
@@ -83,6 +83,7 @@ public class UserController {
     public Map<String, String> errorValidation(final ValidationException e) {
         return Map.of("Error" , e.getMessage());
     }
+
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public Map<String, String> noRequiredObject(final NullPointerException e) {

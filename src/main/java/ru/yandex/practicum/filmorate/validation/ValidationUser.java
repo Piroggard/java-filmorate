@@ -49,7 +49,6 @@ public class ValidationUser {
         } else if (id < 1 || idFriend  < 1) {
             throw new NullPointerException("ID cannot be negative");
         }
-
     }
 
     public void searchValidation (User user){
