@@ -9,7 +9,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class Film implements Comparable<Film>{
+public class Film implements Comparable<Film> {
     @EqualsAndHashCode.Exclude
     private int id;
     @NonNull
@@ -31,6 +31,7 @@ public class Film implements Comparable<Film>{
         usersLikeMovie.add(id);
         setLikes(getLikes() + 1);
     }
+
     public void deleteLike(int id) {
         usersLikeMovie.remove(id);
         setLikes(getLikes() - 1);
