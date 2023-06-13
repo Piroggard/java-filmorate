@@ -14,7 +14,7 @@ import java.util.Map;
 
 
 @Component
-public class InMemoryFilmStorage implements FilmStorage{
+public class InMemoryFilmStorage implements FilmStorage {
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
     ValidationFilm validationFilm = new ValidationFilm();
     private int id = 1;
