@@ -43,7 +43,7 @@ public class ValidationUser {
         }
     }
 
-    public void validationAddFriend (int id, int idFriend){
+    public void validationAddFriend(int id, int idFriend){
         if (id == idFriend){
             throw new ValidationException("Unable to add or remove myself from friends list");
         } else if (id < 1 || idFriend  < 1) {
@@ -51,13 +51,13 @@ public class ValidationUser {
         }
     }
 
-    public void searchValidation (User user){
+    public void searchValidation(User user){
         if (user == null){
             throw new NullPointerException("Object not found by specified id");
         }
     }
 
-    public void checkId (int id){
+    public void checkId(int id){
         if (id < 1){
             throw new NullPointerException("ID cannot be negative");
         }
