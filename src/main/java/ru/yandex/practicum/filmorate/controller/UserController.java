@@ -81,18 +81,18 @@ public class UserController {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, String> errorValidation(final ValidationException e) {
-        return Map.of("Error" , e.getMessage());
+        return Map.of("Error", e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public Map<String, String> noRequiredObject(final NullPointerException e) {
-        return Map.of("Error" , e.getMessage());
+        return Map.of("Error", e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public Map<String, String> internalServerError(final IndexOutOfBoundsException e) {
-        return Map.of("Error" , "Internal Server Error");
+        return Map.of("Error", "Internal Server Error");
     }
 }
