@@ -13,10 +13,11 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
-public class FilmServiceImpl implements FilmService{
+public class FilmServiceImpl implements FilmService {
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
     private final InMemoryFilmStorage filmStorage;
 
@@ -50,42 +51,22 @@ public class FilmServiceImpl implements FilmService{
     }
 
     @Override
-    public List<Film> getFilm(Integer id) {
-        List<Film> films = new ArrayList<>();
-        films.add(filmStorage.films.get(id));
-        return films;
+    public Film getFilm(Integer id) {
+
+        return filmStorage.films.get(id);
     }
 
     @Override
-    public Film[] getListBestMovies(Integer count) {
-        if (count == null){
-           return getListBestTenMovies();
+    public List<Film> getListBestMovies(Integer count) {
+        if (count == null) {
+            return getListBestTenMovies();
         }
-
-            log.info("count " + count);
-            List<Film> films = new ArrayList<>();
-            for (Integer idFilm : filmStorage.films.keySet()){
-                films.add(filmStorage.films.get(idFilm));
-            }
-            Collections.sort(films);
-            Film [] topFilms = new Film[count];
-            for (int i = 0; i < count; i++) {
-                topFilms[i] = films.get(i);
-            }
-            return topFilms;
-
+        log.info("count " + count);
+        return filmStorage.films.values().stream().sorted().limit(count).collect(Collectors.toList());
     }
+
     @Override
-    public Film[] getListBestTenMovies(){
-        List<Film> films = new ArrayList<>();
-        for (Integer idFilm : filmStorage.films.keySet()){
-            films.add(filmStorage.films.get(idFilm));
-        }
-        Collections.sort(films);
-        Film [] topFilms = new Film[10];
-        for (int i = 0; i < topFilms.length ; i++) {
-            topFilms[i] = films.get(i);
-        }
-        return topFilms;
+    public List<Film> getListBestTenMovies() {
+        return  filmStorage.films.values().stream().sorted().limit(10).collect(Collectors.toList());
     }
 }

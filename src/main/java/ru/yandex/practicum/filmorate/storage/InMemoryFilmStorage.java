@@ -46,7 +46,7 @@ public class InMemoryFilmStorage implements FilmStorage{
         if (films.containsKey(film.getId())) {
             films.put(film.getId(), film);
         } else {
-            throw new ValidationException("Id unknown");
+            throw new NullPointerException("Id unknown");
         }
         return film;
     }

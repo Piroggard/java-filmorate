@@ -45,7 +45,7 @@ public class InMemoryUserStorage implements UserStorage {
             log.info("Updated user" + user);
             log.info("Users" + users);
         } else {
-            throw new ValidationException("Id unknown");
+            throw new NullPointerException("Id unknown");
         }
         return user;
     }

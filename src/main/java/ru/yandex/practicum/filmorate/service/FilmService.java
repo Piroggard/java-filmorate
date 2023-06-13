@@ -10,9 +10,9 @@ public interface FilmService {
     public Film putFilm(Film film);
     public void addLikeFilm (int id , int userId);
     public void deleteLikeFilm (int id , int userId);
-    public List<Film> getFilm(Integer id);
+    public Film getFilm(Integer id);
 
-    public Film[] getListBestMovies (Integer count);
-    public Film[] getListBestTenMovies();
+    public List<Film> getListBestMovies (Integer count);
+    public List<Film> getListBestTenMovies();
 
 }

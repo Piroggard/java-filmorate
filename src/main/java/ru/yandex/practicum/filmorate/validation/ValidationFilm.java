@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.validation;
 
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
 
@@ -21,6 +22,20 @@ public class ValidationFilm {
             throw new ValidationException("The film cannot be earlier than December 28, 1895");
         }
     }
+
+    public void validationIdFilm (int id ) {
+        if (id < 1 ) {
+            throw new NullPointerException("ID cannot be negative");
+        }
+    }
+
+    public void searchValidation (Film film){
+        if (film == null){
+            throw new NullPointerException("Object not found by specified id");
+        }
+    }
+
+
 
 
 }

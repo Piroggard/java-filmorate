@@ -25,21 +25,20 @@ public class FilmController {
     private final FilmService filmService;
 
 
-
     @GetMapping("/films")
     public List<Film> getFilms() {
         log.info("Receiving a request");
         return filmService.getFilms();
     }
-    /*@GetMapping("/films")
+
+    @GetMapping("/films/{id}")
     @ResponseBody
-    public List <Film> getFilms(@PathVariable (required = false) Integer id) {
-        if (id == null){
-            return filmService.getFilm(id);
-        } else {
-            return filmService.getFilms();
-        }
-    }*/
+    public Film getFilms(@PathVariable Integer id) {
+        validationFilm.validationIdFilm(id);
+        validationFilm.searchValidation(filmService.getFilm(id));
+        return filmService.getFilm(id);
+    }
+
 
     @PostMapping("/films")
     public Film postFilm(@RequestBody Film film) {
@@ -53,42 +52,43 @@ public class FilmController {
         validationFilm.validation(film);
         return filmService.putFilm(film);
     }
+
     @PutMapping("/films/{id}/like/{userId}")
-    public void addLikeFilm(@PathVariable int id, @PathVariable int userId){
-        filmService.addLikeFilm(id , userId);
+    public void addLikeFilm(@PathVariable int id, @PathVariable int userId) {
+        filmService.addLikeFilm(id, userId);
     }
 
     @DeleteMapping("/films/{id}/like/{userId}")
-    public void deleteLikeFilm(@PathVariable int id, @PathVariable int userId){
-        filmService.deleteLikeFilm(id , userId);
+    public void deleteLikeFilm(@PathVariable int id, @PathVariable int userId) {
+        validationFilm.validationIdFilm(id);
+        validationFilm.validationIdFilm(userId);
+        filmService.deleteLikeFilm(id, userId);
     }
+
     @GetMapping("/films/popular")
     @ResponseBody
-    public Film[] getListBestMovies(@RequestParam (required = false) Integer count){
-        System.out.println(count);
-
-            return filmService.getListBestMovies(count);
+    public List<Film> getListBestMovies(@RequestParam(required = false) Integer count) {
+        return filmService.getListBestMovies(count);
 
     }
+
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, String> errorValidation(final ValidationException e) {
-        return Map.of("Error" , e.getMessage());
+        return Map.of("Error", e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public Map<String, String> noRequiredObject(final NullPointerException e) {
-        return Map.of("Error" , "No required object");
+        return Map.of("Error", e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public Map<String, String> internalServerError(final IndexOutOfBoundsException e) {
-        return Map.of("Error" , "Internal Server Error");
+        return Map.of("Error", "Internal Server Error");
     }
-
-
 
 
 }

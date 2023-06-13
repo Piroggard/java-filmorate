@@ -39,14 +39,16 @@ public class UserController {
        return userService.getUsers();
     }
 
-    /*@GetMapping("/users")
-    public List<User> getUsers(@PathVariable int id) {
-        return userService.getUsers();
-    }*/
+    @GetMapping("/users/{id}")
+    public User getUser(@PathVariable int id) {
+        validationUser.searchValidation(userService.getUser(id));
+        return userService.getUser(id);
+    }
 
     @PostMapping("/users")
     public User postUser(@RequestBody User user) {
         validationUser.validation(user);
+        validationUser.searchValidation(user);
         return userService.postUser(user);
     }
 
@@ -54,6 +56,7 @@ public class UserController {
     @PutMapping("/users")
     public User putUser(@RequestBody User user) {
         validationUser.validation(user);
+        validationUser.searchValidation(user);
         return userService.putUser(user);
     }
 
@@ -71,11 +74,13 @@ public class UserController {
 
     @GetMapping("/users/{id}/friends")
     public List<User> getUserFriend(@PathVariable int id) {
+        validationUser.checkId(id);
         return userService.getUserFriend(id);
     }
 
     @GetMapping("/users/{id}/friends/common/{otherId}")
     public List<User> getUserFriend(@PathVariable int id , @PathVariable int otherId) {
+        validationUser.validationAddFriend(id , otherId);
         return userService.getListMutualFriend(id , otherId);
     }
 
@@ -87,7 +92,7 @@ public class UserController {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public Map<String, String> noRequiredObject(final NullPointerException e) {
-        return Map.of("Error" , "No required object");
+        return Map.of("Error" , e.getMessage());
     }
 
     @ExceptionHandler
@@ -95,7 +100,4 @@ public class UserController {
     public Map<String, String> internalServerError(final IndexOutOfBoundsException e) {
         return Map.of("Error" , "Internal Server Error");
     }
-
-
-
 }

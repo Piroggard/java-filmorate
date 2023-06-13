@@ -9,6 +9,8 @@ import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -21,6 +23,10 @@ public class UserServiceImpl implements UserService{
     @Override
     public List<User> getUsers() {
         return inMemoryUserStorage.getUsers();
+    }
+    @Override
+    public User getUser(int id) {
+        return inMemoryUserStorage.users.get(id);
     }
 
     @Override
@@ -38,6 +44,7 @@ public class UserServiceImpl implements UserService{
         log.info("userId " + userId + " friendId " + friendId);
         User user = inMemoryUserStorage.users.get(userId);
         User friendsUser = inMemoryUserStorage.users.get(friendId);
+
         user.addListFriend(friendId);
         friendsUser.addListFriend(userId);
         inMemoryUserStorage.putUser(user);
@@ -71,7 +78,6 @@ public class UserServiceImpl implements UserService{
         User user1 = inMemoryUserStorage.users.get(otherId);
         List<Integer> friends = new ArrayList<>(user.getListFriends());
         List<Integer> friends1 = new ArrayList<>(user1.getListFriends());
-        System.out.println(friends1);
         List<User> mutualListFriends = new ArrayList<>();
         for (int i = 0; i < friends1.size() ; i++) {
             for (int j = 0; j < friends.size(); j++) {

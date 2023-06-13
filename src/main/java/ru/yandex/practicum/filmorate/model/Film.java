@@ -18,7 +18,6 @@ public class Film implements Comparable<Film>{
     private String description;
     @NonNull
     private LocalDate releaseDate;
-    @NonNull
     private int duration;
 
     public void setUsersLikeMovie(Set<Integer> usersLikeMovie) {
@@ -40,15 +39,9 @@ public class Film implements Comparable<Film>{
 
     @Override
     public int compareTo(Film o) {
-        if (this.likes == o.getLikes()){
-            return 0;
-        } else if (this.likes < o.getLikes()) {
-            return 1;
-        } else {
-            return -1;
-        }
+        return Integer.compare(o.getLikes(), this.likes);
     }
-    public Film(@NonNull String name, @NonNull String description, @NonNull LocalDate releaseDate, @NonNull int duration) {
+    public Film(@NonNull String name, @NonNull String description, @NonNull LocalDate releaseDate, int duration) {
         this.name = name;
         this.description = description;
         this.releaseDate = releaseDate;
