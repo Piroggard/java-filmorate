@@ -13,7 +13,7 @@ import java.util.List;
 
 @Component
 @AllArgsConstructor
-public class UserServiceImpl implements UserService{
+public class UserServiceImpl implements UserService {
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
     private InMemoryUserStorage inMemoryUserStorage;
 
@@ -63,7 +63,7 @@ public class UserServiceImpl implements UserService{
     public List<User> getUserFriend(int userId) {
         User user = inMemoryUserStorage.users.get(userId);
         List<User> friend = new ArrayList<>();
-        for (Integer id : user.getListFriends()){
+        for (Integer id : user.getListFriends()) {
             friend.add(inMemoryUserStorage.users.get(id));
         }
         return friend;
@@ -76,9 +76,9 @@ public class UserServiceImpl implements UserService{
         List<Integer> friends = new ArrayList<>(user.getListFriends());
         List<Integer> friends1 = new ArrayList<>(user1.getListFriends());
         List<User> mutualListFriends = new ArrayList<>();
-        for (int i = 0; i < friends1.size() ; i++) {
+        for (int i = 0; i < friends1.size(); i++) {
             for (int j = 0; j < friends.size(); j++) {
-                if (friends1.get(i) == friends.get(j)){
+                if (friends1.get(i) == friends.get(j)) {
                     mutualListFriends.add(inMemoryUserStorage.users.get(friends1.get(i)));
                     break;
                 }
