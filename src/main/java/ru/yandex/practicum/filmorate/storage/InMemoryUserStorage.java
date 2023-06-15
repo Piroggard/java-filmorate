@@ -41,7 +41,6 @@ public class InMemoryUserStorage implements UserStorage {
         validationUser.validation(user);
         if (users.containsKey(user.getId())) {
             users.put(user.getId(), user);
-            log.info("Updated user" + user);
             log.info("Users" + users);
         } else {
             throw new NullPointerException("Id unknown");

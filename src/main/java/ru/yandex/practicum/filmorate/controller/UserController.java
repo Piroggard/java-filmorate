@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
+import ru.yandex.practicum.filmorate.validation.ValidationExceptionResponse;
 import ru.yandex.practicum.filmorate.validation.ValidationUser;
 
 import java.util.List;
@@ -31,17 +32,20 @@ public class UserController {
 
     @GetMapping("/users")
     public List<User> getUsers() {
+        log.info("Getting Users");
        return userService.getUsers();
     }
 
     @GetMapping("/users/{id}")
     public User getUser(@PathVariable int id) {
+        log.info("Getting User " + id);
         validationUser.searchValidation(userService.getUser(id));
         return userService.getUser(id);
     }
 
     @PostMapping("/users")
     public User postUser(@RequestBody User user) {
+        log.info("Getting User " + user);
         validationUser.validation(user);
         validationUser.searchValidation(user);
         return userService.postUser(user);
@@ -78,21 +82,4 @@ public class UserController {
         return userService.getListMutualFriend(id, otherId);
     }
 
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Map<String, String> errorValidation(final ValidationException e) {
-        return Map.of("Error", e.getMessage());
-    }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public Map<String, String> noRequiredObject(final NullPointerException e) {
-        return Map.of("Error", e.getMessage());
-    }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public Map<String, String> internalServerError(final IndexOutOfBoundsException e) {
-        return Map.of("Error", "Internal Server Error");
-    }
 }

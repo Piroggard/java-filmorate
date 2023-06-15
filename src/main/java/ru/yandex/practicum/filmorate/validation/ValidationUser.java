@@ -1,10 +1,15 @@
 package ru.yandex.practicum.filmorate.validation;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import ru.yandex.practicum.filmorate.exception.DataNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
+import java.util.Map;
 
 @Component
 public class ValidationUser {
@@ -48,19 +53,19 @@ public class ValidationUser {
         if (id == idFriend) {
             throw new ValidationException("Unable to add or remove myself from friends list");
         } else if (id < 1 || idFriend  < 1) {
-            throw new NullPointerException("ID cannot be negative");
+            throw new DataNotFoundException("ID cannot be negative");
         }
     }
 
     public void searchValidation(User user) {
         if (user == null) {
-            throw new NullPointerException("Object not found by specified id");
+            throw new DataNotFoundException("Object not found by specified id");
         }
     }
 
     public void checkId(int id) {
         if (id < 1) {
-            throw new NullPointerException("ID cannot be negative");
+            throw new DataNotFoundException("ID cannot be negative");
         }
     }
 }
