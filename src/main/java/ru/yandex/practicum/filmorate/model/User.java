@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -22,6 +24,8 @@ public class User {
     @NonNull
     private LocalDate birthday;
 
+    private Set<Integer> listFriends = new HashSet<>();
+
     public User(@NonNull String email, @NonNull String login, String name, @NonNull LocalDate birthday) {
         this.email = email;
         this.login = login;
@@ -29,5 +33,11 @@ public class User {
         this.birthday = birthday;
     }
 
+    public void addListFriend(int id) {
+        listFriends.add(id);
+    }
 
+    public void deleteFriends(int id) {
+        listFriends.remove(id);
+    }
 }
