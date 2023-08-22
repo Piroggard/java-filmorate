@@ -21,38 +21,7 @@ import java.util.Set;
 public class UserDbStorage implements UserStorage{
     private final JdbcTemplate jdbcTemplate;
     @Override
-    /*public List<User> getUsers() {
-        String sql = "select u.id ,u.email ,u.login ,u.name,u.birthday ,lf.id_friend from users u join list_friends lf on u.id = lf.id_user where lf.user_frends=1;";
-      return jdbcTemplate.query(sql, new RowMapper<User>() {
-          List<User> users = new ArrayList<>();
-
-          @Override
-          public User mapRow(ResultSet rs, int rowNum) throws SQLException {
-              //
-
-              User user = new User();
-              while (rs.next()) {
-
-                  user.setId(rs.getInt("id"));
-                  user.setEmail(rs.getString("email"));
-                  user.setLogin(rs.getString("login"));
-                  user.setName(rs.getString("name"));
-                  user.setBirthday(rs.getDate("birthday").toLocalDate());
-
-
-                  do {
-                      int friendId = rs.getInt("id_friend");
-                      user.addListFriend(friendId);
-                  } while (rs.next());
-
-                  users.add(user);
-              }
-
-              return user;
-          }
-
-      });
-    }*/public List<User> getUsers() {
+    public List<User> getUsers() {
         String sql = "SELECT u.id, u.email, u.login, u.name, u.birthday, lf.id_friend FROM users u JOIN list_friends lf ON u.id = lf.id_user WHERE lf.user_frends = 1";
         List<User> users = jdbcTemplate.query(sql, new RowMapper<User>() {
             @Override
@@ -66,8 +35,8 @@ public class UserDbStorage implements UserStorage{
 
                 int friendId = rs.getInt("id_friend");
                 if (!rs.wasNull()) {
-                    /*Set<Integer> listFriends = user.getListFriends();
-                    listFriends.add(friendId);*/
+                    Set<Integer> listFriends = user.getListFriends();
+                    listFriends.add(friendId);
                     user.addListFriend(friendId);
                 }
 
