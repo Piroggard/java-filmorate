@@ -18,6 +18,8 @@ public class Film implements Comparable<Film> {
     private String description;
     @NonNull
     private LocalDate releaseDate;
+    private Set<String> genre;
+    private String rating;
     private int duration;
     private Set<Integer> usersLikeMovie = new HashSet<>();
     private int likes = 0;

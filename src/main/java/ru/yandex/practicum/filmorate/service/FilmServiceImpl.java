@@ -47,7 +47,6 @@ public class FilmServiceImpl implements FilmService {
 
     @Override
     public Film getFilm(Integer id) {
-
         return filmStorage.films.get(id);
     }
 

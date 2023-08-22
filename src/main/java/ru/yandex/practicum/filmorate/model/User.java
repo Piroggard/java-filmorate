@@ -21,10 +21,21 @@ public class User {
     @NonNull
     private String login;
     private String name;
-    @NonNull
     private LocalDate birthday;
 
+
     private Set<Integer> listFriends = new HashSet<>();
+
+    public User(int id, @NonNull String email, @NonNull String login, String name, @NonNull LocalDate birthday) {
+        this.id = id;
+        this.email = email;
+        this.login = login;
+        this.name = name;
+        this.birthday = birthday;
+    }
+
+    @NonNull
+
 
     public User(@NonNull String email, @NonNull String login, String name, @NonNull LocalDate birthday) {
         this.email = email;

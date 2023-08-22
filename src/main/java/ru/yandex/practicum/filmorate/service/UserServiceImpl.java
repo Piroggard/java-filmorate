@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.controller.UserController;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
+import ru.yandex.practicum.filmorate.storage.UserDbStorage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,15 +17,16 @@ import java.util.List;
 public class UserServiceImpl implements UserService {
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
     private InMemoryUserStorage inMemoryUserStorage;
+    private UserDbStorage userDbStorage;
 
     @Override
     public List<User> getUsers() {
-        return inMemoryUserStorage.getUsers();
+        return userDbStorage.getUsers();
     }
 
     @Override
     public User getUser(int id) {
-        return inMemoryUserStorage.users.get(id);
+        return userDbStorage.getUser(id);
     }
 
     @Override
