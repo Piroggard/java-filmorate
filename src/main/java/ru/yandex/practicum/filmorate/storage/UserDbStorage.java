@@ -22,30 +22,21 @@ public class UserDbStorage implements UserStorage{
     private final JdbcTemplate jdbcTemplate;
     @Override
     public List<User> getUsers() {
-        String sql = "SELECT u.id, u.email, u.login, u.name, u.birthday, lf.id_friend FROM users u JOIN list_friends lf ON u.id = lf.id_user WHERE lf.user_frends = 1";
-        List<User> users = jdbcTemplate.query(sql, new RowMapper<User>() {
+        List<User> users = jdbcTemplate.query("select id from users u ;", new RowMapper<User>() {
             @Override
             public User mapRow(ResultSet rs, int rowNum) throws SQLException {
                 User user = new User();
-                user.setId(rs.getInt("id"));
-                user.setEmail(rs.getString("email"));
-                user.setLogin(rs.getString("login"));
-                user.setName(rs.getString("name"));
-                user.setBirthday(rs.getDate("birthday").toLocalDate());
-
-                int friendId = rs.getInt("id_friend");
-                if (!rs.wasNull()) {
-                    Set<Integer> listFriends = user.getListFriends();
-                    listFriends.add(friendId);
-                    user.addListFriend(friendId);
-                }
-
+                user.setId( rs.getInt("id"));
                 return user;
             }
         });
-
-        return users;
+        ArrayList<User> resultUsers = new ArrayList<>();
+        for (User user : users) {
+            resultUsers.add(getUser(user.getId()));
+        }
+        return resultUsers;
     }
+
 
     public User getUser(Integer id) {
         return jdbcTemplate.queryForObject("select u.id ,\n" +
@@ -64,7 +55,7 @@ public class UserDbStorage implements UserStorage{
                 user.setEmail(rs.getString("email"));
                 user.setLogin(rs.getString("login"));
                 user.setName(rs.getString("name"));
-                user.setBirthday(formatter(rs.getString("birthday")));
+                user.setBirthday(rs.getDate("birthday").toLocalDate());
                 do{
                     listFriends.add(rs.getInt("id_friend"));
                 } while (rs.next());
@@ -76,10 +67,7 @@ public class UserDbStorage implements UserStorage{
 
 
 
-    public static LocalDate formatter (String s){
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        return  LocalDate.parse(s, formatter);
-    }
+
 
     @Override
     public User postUser(User user) {
