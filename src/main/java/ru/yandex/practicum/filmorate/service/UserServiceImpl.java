@@ -53,27 +53,29 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteFriends(int userId, int friendId) {
         log.info("userId " + userId + " friendId " + friendId);
-        User user = inMemoryUserStorage.users.get(userId);
+        /*User user = inMemoryUserStorage.users.get(userId);
         User friendsUser = inMemoryUserStorage.users.get(friendId);
         user.deleteFriends(friendId);
         friendsUser.deleteFriends(userId);
         inMemoryUserStorage.putUser(user);
-        inMemoryUserStorage.putUser(friendsUser);
+        inMemoryUserStorage.putUser(friendsUser);*/
+        userDbStorage.deleteFriend(userId, friendId);
     }
 
     @Override
     public List<User> getUserFriend(int userId) {
-        User user = inMemoryUserStorage.users.get(userId);
+        /*User user = inMemoryUserStorage.users.get(userId);
         List<User> friend = new ArrayList<>();
         for (Integer id : user.getListFriends()) {
             friend.add(inMemoryUserStorage.users.get(id));
-        }
-        return friend;
+        }*/
+        return userDbStorage.getFriendsUser(userId);
+
     }
 
     @Override
     public List<User> getListMutualFriend(int userId, int otherId) {
-        User user = inMemoryUserStorage.users.get(userId);
+        /*User user = inMemoryUserStorage.users.get(userId);
         User user1 = inMemoryUserStorage.users.get(otherId);
         List<Integer> friends = new ArrayList<>(user.getListFriends());
         List<Integer> friends1 = new ArrayList<>(user1.getListFriends());
@@ -85,7 +87,7 @@ public class UserServiceImpl implements UserService {
                     break;
                 }
             }
-        }
-        return mutualListFriends;
+        }*/
+        return userDbStorage.getListMutualFriend(userId, otherId);
     }
 }

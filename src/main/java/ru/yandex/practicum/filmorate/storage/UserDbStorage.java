@@ -65,6 +65,55 @@ public class UserDbStorage implements UserStorage{
         }, id);
     }
 
+    public List<User> getFriendsUser (Integer idUser){
+        List<User> userListFriend = jdbcTemplate.query("select id_friend as id \n" +
+                "from list_friends lf where lf.id_user =? and lf.user_frends =1;", new RowMapper<User>() {
+            @Override
+            public User mapRow(ResultSet rs, int rowNum) throws SQLException {
+                User user = new User();
+                user.setId( rs.getInt("id"));
+                return user;
+            }
+        },  idUser);
+
+        List<User> listFriend = new ArrayList<>();
+        for (User user : userListFriend) {
+            listFriend.add(getUser(user.getId()));
+        }
+        return listFriend;
+
+    }
+
+
+    public List<User> getListMutualFriend (Integer userId, Integer otherId){
+        List<User> userListFriend = jdbcTemplate.query("SELECT id_friend AS id\n" +
+                "FROM list_friends\n" +
+                "WHERE id_user = ? AND user_frends = 1 AND id_friend IN (\n" +
+                "    SELECT id_friend\n" +
+                "    FROM list_friends\n" +
+                "    WHERE id_user = ? AND user_frends = 1\n" +
+                ");", new RowMapper<User>() {
+            @Override
+            public User mapRow(ResultSet rs, int rowNum) throws SQLException {
+                User user = new User();
+                user.setId( rs.getInt("id"));
+                return user;
+            }
+        },  userId , otherId);
+
+        List<User> listFriend = new ArrayList<>();
+        for (User user : userListFriend) {
+            listFriend.add(getUser(user.getId()));
+        }
+        return listFriend;
+
+    }
+
+    public void deleteFriend (int userId, int friendId){
+        jdbcTemplate.update("delete from list_friends where id_user =? and id_friend = ?;",userId, friendId );
+
+    }
+
 
 
 
