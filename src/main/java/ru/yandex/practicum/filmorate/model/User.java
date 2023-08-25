@@ -35,8 +35,6 @@ public class User {
     }
 
     @NonNull
-
-
     public User(@NonNull String email, @NonNull String login, String name, @NonNull LocalDate birthday) {
         this.email = email;
         this.login = login;

@@ -31,7 +31,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User postUser(User user) {
-        return inMemoryUserStorage.postUser(user);
+        return userDbStorage.postUser(user);
     }
 
     @Override
@@ -42,12 +42,13 @@ public class UserServiceImpl implements UserService {
     @Override
     public void addFriends(int userId, int friendId) {
         log.info("userId " + userId + " friendId " + friendId);
-        User user = inMemoryUserStorage.users.get(userId);
+        /*User user = inMemoryUserStorage.users.get(userId);
         User friendsUser = inMemoryUserStorage.users.get(friendId);
         user.addListFriend(friendId);
         friendsUser.addListFriend(userId);
         inMemoryUserStorage.putUser(user);
-        inMemoryUserStorage.putUser(friendsUser);
+        inMemoryUserStorage.putUser(friendsUser);*/
+        userDbStorage.addFriend(userId, friendId);
     }
 
     @Override

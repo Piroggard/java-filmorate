@@ -114,13 +114,22 @@ public class UserDbStorage implements UserStorage{
 
     }
 
+    public void addFriend (int userId, int friendId){
+        jdbcTemplate.update(" INSERT INTO list_friends (id_user, id_friend, user_frends) VALUES (?, ?, 1);",userId, friendId );
+    }
+
+
+
 
 
 
 
     @Override
     public User postUser(User user) {
-        return null;
+        jdbcTemplate.update("INSERT INTO users (email, login, name, birthday)\n" +
+                "VALUES\n" +
+                "    (?, ?, ?, ?); ", user.getEmail(), user.getLogin(), user.getName(), user.getBirthday());
+        return user;
     }
 
     @Override
