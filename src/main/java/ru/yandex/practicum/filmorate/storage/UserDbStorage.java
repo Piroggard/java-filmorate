@@ -118,12 +118,6 @@ public class UserDbStorage implements UserStorage{
         jdbcTemplate.update(" INSERT INTO list_friends (id_user, id_friend, user_frends) VALUES (?, ?, 1);",userId, friendId );
     }
 
-
-
-
-
-
-
     @Override
     public User postUser(User user) {
         jdbcTemplate.update("INSERT INTO users (email, login, name, birthday)\n" +
@@ -132,8 +126,20 @@ public class UserDbStorage implements UserStorage{
         return user;
     }
 
+
+    public void deleteUser (int id ){
+        jdbcTemplate.update("delete from list_friends where id_user =?;", id);
+        jdbcTemplate.update("delete from users where id =?;", id);
+    }
+
     @Override
     public User putUser(User user) {
-        return null;
+        User userPut = getUser(user.getId());
+        //int id = user.getId();
+        //deleteUser(id);
+        jdbcTemplate.update("update users \n" +
+                "set  email = ?, login = ?, name = ?, birthday = ?\n" +
+                "where id =?;",  user.getEmail(), user.getLogin(), user.getName(), user.getBirthday(), user.getId());
+        return user;
     }
 }

@@ -36,7 +36,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User putUser(User user) {
-        return inMemoryUserStorage.putUser(user);
+        return userDbStorage.putUser(user);
     }
 
     @Override
