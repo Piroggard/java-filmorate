@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.controller.UserController;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.storage.FilmDbStorage;
 import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -15,15 +16,19 @@ import java.util.stream.Collectors;
 public class FilmServiceImpl implements FilmService {
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
     private final InMemoryFilmStorage filmStorage;
+    private final FilmDbStorage filmDbStorage;
 
     @Override
     public List<Film> getFilms() {
-        return filmStorage.getFilms();
+       /* return filmStorage.getFilms();*/
+        return filmDbStorage.getFilms();
     }
 
     @Override
     public Film postFilm(Film film) {
-        return filmStorage.postFilm(film);
+
+        //return filmStorage.postFilm(film);
+        return filmDbStorage.postFilm(film);
     }
 
     @Override
@@ -47,7 +52,8 @@ public class FilmServiceImpl implements FilmService {
 
     @Override
     public Film getFilm(Integer id) {
-        return filmStorage.films.get(id);
+       /* return filmStorage.films.get(id);*/
+        return filmDbStorage.getFilm(id);
     }
 
     @Override

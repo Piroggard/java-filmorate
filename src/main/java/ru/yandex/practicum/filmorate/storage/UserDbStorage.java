@@ -39,13 +39,10 @@ public class UserDbStorage implements UserStorage{
 
 
     public User getUser(Integer id) {
-        return jdbcTemplate.queryForObject("select u.id ,\n" +
-                        "u.email ,\n" +
-                        "u.login ,\n" +
-                        "u.name,\n" +
-                        "u.birthday ,\n" +
-                        "lf.id_friend \n" +
-                        "from users u join list_friends lf on u.id = lf.id_user where lf.id_user=? and lf.user_frends =1",
+        return jdbcTemplate.queryForObject("SELECT u.id, u.email, u.login, u.name, u.birthday, lf.id_friend\n" +
+                        "FROM users u \n" +
+                        "LEFT JOIN list_friends lf ON u.id = lf.id_user\n" +
+                        "WHERE id= ? AND (lf.user_frends = 1 OR lf.user_frends IS NULL);",
                 new RowMapper<User>() {
             @Override
             public User mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -56,7 +53,10 @@ public class UserDbStorage implements UserStorage{
                 user.setLogin(rs.getString("login"));
                 user.setName(rs.getString("name"));
                 user.setBirthday(rs.getDate("birthday").toLocalDate());
+                Integer idFriend =rs.getInt("id_friend");
+
                 do{
+
                     listFriends.add(rs.getInt("id_friend"));
                 } while (rs.next());
                 user.setListFriends(listFriends);

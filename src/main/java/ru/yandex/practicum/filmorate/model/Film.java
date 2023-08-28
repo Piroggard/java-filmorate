@@ -18,16 +18,16 @@ public class Film implements Comparable<Film> {
     private String description;
     @NonNull
     private LocalDate releaseDate;
-    private Set<String> genre;
-    private String rating;
+    private Set<Integer> genre;
+    private Integer rating;
     private int duration;
     private Set<Integer> usersLikeMovie = new HashSet<>();
     private int likes = 0;
 
-    public void setUsersLikeMovie(Set<Integer> usersLikeMovie) {
+    /*public void setUsersLikeMovie(Set<Integer> usersLikeMovie) {
         this.setLikes(usersLikeMovie.size());
         this.usersLikeMovie = usersLikeMovie;
-    }
+    }*/
 
     public void addLike(int id) {
         usersLikeMovie.add(id);
