@@ -77,17 +77,9 @@ public class FilmDbStorage implements FilmStorage{
 
     @Override
     public Film postFilm(Film film) {
-       /* jdbcTemplate.update("INSERT INTO films (name, description, releasedate, duration, rating)\n" +
-                "VALUES" + " (?, ?, ?, ?, ?);" , film.getName(), film.getDescription(), film.getReleaseDate(),
-                film.getDuration(), film.getRating());*/
-
         Date date = Date.from(film.getReleaseDate().atStartOfDay(ZoneId.systemDefault()).toInstant());
-
         java.sql.Date sqlDate = new java.sql.Date(date.getTime());
-
-
         KeyHolder keyHolder = new GeneratedKeyHolder();
-
         jdbcTemplate.update(con -> {
             PreparedStatement ps = con.prepareStatement("INSERT INTO films (name, description, releasedate, duration, rating) " +
                     "VALUES (?, ?, ?, ?, ?)", new String[]{"films_id"});
@@ -106,6 +98,33 @@ public class FilmDbStorage implements FilmStorage{
 
     @Override
     public Film putFilm(Film film) {
-        return null;
+        Date date = Date.from(film.getReleaseDate().atStartOfDay(ZoneId.systemDefault()).toInstant());
+        java.sql.Date sqlDate = new java.sql.Date(date.getTime());
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(con -> {
+            PreparedStatement ps = con.prepareStatement("update films set name = ?, description =?, releasedate = ?, duration  = ?, rating =?\n" +
+                    "where films_id = ?;");
+            ps.setString(1, film.getName());
+            ps.setString(2, film.getDescription());
+            ps.setDate(3, sqlDate);
+            ps.setInt(4, film.getDuration());
+            ps.setDouble(5, film.getRating());
+            ps.setLong(6, film.getId()); // Assuming getId() returns the films_id
+
+            return ps;
+        }, keyHolder);
+
+
+        return getFilm(film.getId());
+    }
+
+
+    public void addLikeFilm(int id, int userId) {
+       jdbcTemplate.update("INSERT INTO users_like (id_user, id_films)\n" +
+               "VALUES(?,?);", userId ,id );
+    }
+
+    public void deleteLikeFilm(int id, int userId) {
+        jdbcTemplate.update("delete from users_like where id_user =? and id_films = ?;", userId ,id );
     }
 }

@@ -33,21 +33,24 @@ public class FilmServiceImpl implements FilmService {
 
     @Override
     public Film putFilm(Film film) {
-        return filmStorage.putFilm(film);
+        //return filmStorage.putFilm(film);
+        return filmDbStorage.putFilm(film);
     }
 
     @Override
     public void addLikeFilm(int id, int userId) {
-        Film film = filmStorage.films.get(id);
+        /*Film film = filmStorage.films.get(id);
         film.addLike(userId);
-        filmStorage.putFilm(film);
+        filmStorage.putFilm(film);*/
+        filmDbStorage.addLikeFilm(id, userId);
     }
 
     @Override
     public void deleteLikeFilm(int id, int userId) {
-        Film film = filmStorage.films.get(id);
+       /* Film film = filmStorage.films.get(id);
         film.deleteLike(userId);
-        filmStorage.putFilm(film);
+        filmStorage.putFilm(film);*/
+        filmDbStorage.deleteLikeFilm(id, userId);
     }
 
     @Override
@@ -58,15 +61,18 @@ public class FilmServiceImpl implements FilmService {
 
     @Override
     public List<Film> getListBestMovies(Integer count) {
+
         if (count == null) {
+            System.out.println(1);
             return getListBestTenMovies();
         }
         log.info("count " + count);
-        return filmStorage.films.values().stream().sorted().limit(count).collect(Collectors.toList());
+        //return filmStorage.films.values().stream().sorted().limit(count).collect(Collectors.toList());
+        return filmDbStorage.getFilms().stream().sorted().limit(count).collect(Collectors.toList());
     }
 
     @Override
     public List<Film> getListBestTenMovies() {
-        return  filmStorage.films.values().stream().sorted().limit(10).collect(Collectors.toList());
+        return  filmDbStorage.getFilms().stream().sorted().limit(10).collect(Collectors.toList());
     }
 }
