@@ -92,13 +92,17 @@ public class FilmDbStorage implements FilmStorage{
             return ps;
         }, keyHolder);
 
-        Integer integer = keyHolder.getKey().intValue();
-        return getFilm(integer);
+        Integer keyFilm = keyHolder.getKey().intValue();
+        for (Integer integer : film.getGenre()) {
+            jdbcTemplate.update("INSERT INTO film_ganre (film_id, ganre_id) VALUES(?,?);", keyFilm,
+                    integer);
+        }
+        return getFilm(keyFilm);
     }
 
     @Override
     public Film putFilm(Film film) {
-        Date date = Date.from(film.getReleaseDate().atStartOfDay(ZoneId.systemDefault()).toInstant());
+       /* Date date = Date.from(film.getReleaseDate().atStartOfDay(ZoneId.systemDefault()).toInstant());
         java.sql.Date sqlDate = new java.sql.Date(date.getTime());
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(con -> {
@@ -113,6 +117,17 @@ public class FilmDbStorage implements FilmStorage{
 
             return ps;
         }, keyHolder);
+
+*/
+        jdbcTemplate.update("update films set name = ?, description =?, releasedate = ?, duration  = ?, rating =?" +
+                " where films_id = ?;", film.getName(), film.getDescription(), film.getReleaseDate(), film.getDuration(),
+                film.getRating(), film.getId());
+
+
+        for (Integer integer : film.getGenre()) {
+            jdbcTemplate.update("INSERT INTO film_ganre (film_id, ganre_id) VALUES(?,?);", film.getId(),
+                    integer);
+        }
 
 
         return getFilm(film.getId());

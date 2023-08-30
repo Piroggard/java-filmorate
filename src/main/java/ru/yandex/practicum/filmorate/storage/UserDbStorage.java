@@ -1,16 +1,22 @@
 package ru.yandex.practicum.filmorate.storage;
 
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.User;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -54,9 +60,7 @@ public class UserDbStorage implements UserStorage{
                 user.setName(rs.getString("name"));
                 user.setBirthday(rs.getDate("birthday").toLocalDate());
                 Integer idFriend =rs.getInt("id_friend");
-
                 do{
-
                     listFriends.add(rs.getInt("id_friend"));
                 } while (rs.next());
                 user.setListFriends(listFriends);
@@ -111,7 +115,6 @@ public class UserDbStorage implements UserStorage{
 
     public void deleteFriend (int userId, int friendId){
         jdbcTemplate.update("delete from list_friends where id_user =? and id_friend = ?;",userId, friendId );
-
     }
 
     public void addFriend (int userId, int friendId){
@@ -120,11 +123,29 @@ public class UserDbStorage implements UserStorage{
 
     @Override
     public User postUser(User user) {
-        jdbcTemplate.update("INSERT INTO users (email, login, name, birthday)\n" +
+        /*jdbcTemplate.update("INSERT INTO users (email, login, name, birthday)\n" +
                 "VALUES\n" +
                 "    (?, ?, ?, ?); ", user.getEmail(), user.getLogin(), user.getName(), user.getBirthday());
-        return user;
+        return user;*/
+
+        Date date = Date.from(user.getBirthday().atStartOfDay(ZoneId.systemDefault()).toInstant());
+        java.sql.Date sqlDate = new java.sql.Date(date.getTime());
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(con -> {
+            PreparedStatement ps = con.prepareStatement("INSERT INTO users (email, login, name, birthday)\n" +
+                    "VALUES\n" +
+                    "    (?, ?, ?, ?); " , new String[]{"id"});
+            ps.setString(1,user.getEmail());
+            ps.setString(2,user.getLogin());
+            ps.setString(3,user.getName());
+            ps.setDate(4, sqlDate);
+            return ps;
+        }, keyHolder);
+        Integer keyUser = keyHolder.getKey().intValue();
+
+        return getUser(keyUser);
     }
+
 
 
     public void deleteUser (int id ){
