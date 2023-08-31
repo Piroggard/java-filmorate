@@ -4,16 +4,14 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
-
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
-public class Genres {
-    Integer id;
-    String name;
-
-    public Genres(Integer id) {
+public class MPA {
+    public MPA(Integer id) {
         this.id = id;
     }
+
+    Integer id;
+    String name;
 }

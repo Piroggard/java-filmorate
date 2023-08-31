@@ -8,6 +8,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genres;
+import ru.yandex.practicum.filmorate.model.MPA;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -46,34 +47,51 @@ public class FilmDbStorage implements FilmStorage{
     }
 
     public Film getFilm(Integer idFilm){
-        return jdbcTemplate.queryForObject(" select films_id as id, f.name, description as description, releasedate as releaseDate, duration , r.reating_id as rating , ul.id_user as usersLikeMovie, fg.ganre_id as genre\n" +
-                " from films f \n" +
-                " LEFT JOIN reating r on r.reating_id = f.rating\n" +
-                " LEFT JOIN users_like ul on f.films_id = ul.id_films\n" +
-                " LEFT JOIN film_ganre fg  on fg.film_id = f.films_id \n" +
-                " where films_id =?;", new RowMapper<Film>() {
+        return jdbcTemplate.queryForObject("select films_id as id, f.name, description as description, releasedate as releaseDate, duration , r.reating_id as rating , ul.id_user  as usersLikeMovie, fg.ganre_id as genre, g.name_ganre as nameGanre, r.name as nameMPA\n" +
+                "from films f\n" +
+                "              LEFT JOIN reating r on r.reating_id = f.rating\n" +
+                "                LEFT JOIN users_like ul on f.films_id = ul.id_films\n" +
+                "                LEFT JOIN film_ganre fg  on fg.film_id = f.films_id \n" +
+                "                left join genre g on g.ganer_id = fg.ganre_id where films_id =?;", new RowMapper<Film>() {
             @Override
             public Film mapRow(ResultSet rs, int rowNum) throws SQLException {
+                MPA mpa = new MPA();
                 Set<Integer> usersLikeMovie = new HashSet<>();
                 Set<Genres> genres = new HashSet<>();
-                HashMap<String, Integer> mpa = new HashMap<>();
-                Integer mpaId = rs.getInt("rating");
+
+
                 Film film = new Film();
                 film.setId(rs.getInt("id"));
                 film.setName(rs.getString("name"));
                 film.setDescription(rs.getString("description"));
                 film.setReleaseDate(rs.getDate("releaseDate").toLocalDate());
                 film.setDuration(rs.getInt("duration"));
-                mpa.put("id" , mpaId);
+                mpa.setId(rs.getInt("rating"));
+                mpa.setName(rs.getString("nameMPA"));
                 film.setMpa(mpa);
                 do {
                     Genres genres1 = new Genres();
                     genres1.setId(rs.getInt("genre"));
+                    genres1.setName(rs.getString("nameGanre"));
                     usersLikeMovie.add(rs.getInt("usersLikeMovie"));
+                    genres.add(genres1);
                 } while (rs.next());
-                film.setGenre(genres);
-                film.setLikes(usersLikeMovie.size());
+                film.setGenres(genres);
                 film.setUsersLikeMovie(usersLikeMovie);
+                int like=0;
+
+                for (Integer integer : usersLikeMovie) {
+                    if (integer > 0 ){
+                        like++;
+                    }
+                }
+
+                film.setRate(like);
+
+
+
+
+
                 return film;
             }
         }, idFilm );
@@ -83,6 +101,7 @@ public class FilmDbStorage implements FilmStorage{
 
     @Override
     public Film postFilm(Film film) {
+        System.out.println(film);
         Date date = Date.from(film.getReleaseDate().atStartOfDay(ZoneId.systemDefault()).toInstant());
         java.sql.Date sqlDate = new java.sql.Date(date.getTime());
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -93,15 +112,19 @@ public class FilmDbStorage implements FilmStorage{
             ps.setString(2, film.getDescription());
             ps.setDate(3,  sqlDate);
             ps.setInt(4, film.getDuration());
-            ps.setInt(5, film.getMpa().get("id"));
+            ps.setInt(5, film.getMpa().getId());
             return ps;
         }, keyHolder);
-
         Integer keyFilm = keyHolder.getKey().intValue();
-       /* for (Integer integer : film.getGenre()) {
+
+        if (film.getGenres() == null){
+            return getFilm(keyFilm);
+        }
+
+        for (Genres genres : film.getGenres()) {
             jdbcTemplate.update("INSERT INTO film_ganre (film_id, ganre_id) VALUES(?,?);", keyFilm,
-                    integer);
-        }*/
+                    genres.getId());
+        }
         return getFilm(keyFilm);
     }
 
@@ -124,16 +147,18 @@ public class FilmDbStorage implements FilmStorage{
         }, keyHolder);
 
 */
+
+
         jdbcTemplate.update("update films set name = ?, description =?, releasedate = ?, duration  = ?, rating =?" +
                 " where films_id = ?;", film.getName(), film.getDescription(), film.getReleaseDate(), film.getDuration(),
-                film.getMpa().get("id"), film.getId());
+                film.getMpa().getId(), film.getId());
 
-        if (film.getGenre() == null){
+        if (film.getGenres() == null){
             return getFilm(film.getId());
         }
 
 
-        for (Genres genres : film.getGenre()) {
+        for (Genres genres : film.getGenres()) {
             jdbcTemplate.update("INSERT INTO film_ganre (film_id, ganre_id) VALUES(?,?);", film.getId(),
                     genres);
         }

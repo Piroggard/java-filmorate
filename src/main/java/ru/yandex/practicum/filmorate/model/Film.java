@@ -3,7 +3,6 @@ package ru.yandex.practicum.filmorate.model;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -19,34 +18,48 @@ public class Film implements Comparable<Film> {
     private String description;
     @NonNull
     private LocalDate releaseDate;
-    private Set<Genres> genre;
+    private Set<Genres> genres;
 
-
-    private HashMap<String, Integer> mpa;
+    private MPA mpa;
     private int duration;
     private Set<Integer> usersLikeMovie = new HashSet<>();
-    private int likes = 0;
 
-    /*public void setUsersLikeMovie(Set<Integer> usersLikeMovie) {
+
+
+
+
+    private int rate;
+
+
+    public Film(int id, @NonNull String name, @NonNull String description, @NonNull LocalDate releaseDate, Set<Genres> genre, int duration) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.releaseDate = releaseDate;
+        this.genres = genre;
+        this.duration = duration;
+
+    }
+/*public void setUsersLikeMovie(Set<Integer> usersLikeMovie) {
         this.setLikes(usersLikeMovie.size());
         this.usersLikeMovie = usersLikeMovie;
-    }*/
+    }
 
-    public void addLike(int id) {
+  /*  public void addLike(int id) {
         usersLikeMovie.add(id);
-        setLikes(getLikes() + 1);
+        setRate(getRate() + 1);
     }
 
     public void deleteLike(int id) {
         usersLikeMovie.remove(id);
-        setLikes(getLikes() - 1);
-    }
+        setRate(getRate() - 1);
+    }*/
 
 
 
     @Override
     public int compareTo(Film o) {
-        return Integer.compare(o.getLikes(), this.likes);
+        return Integer.compare(o.getRate(), this.rate);
     }
 
     public Film(@NonNull String name, @NonNull String description, @NonNull LocalDate releaseDate, int duration) {

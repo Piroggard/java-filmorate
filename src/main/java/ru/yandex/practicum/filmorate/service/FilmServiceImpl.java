@@ -63,7 +63,6 @@ public class FilmServiceImpl implements FilmService {
     public List<Film> getListBestMovies(Integer count) {
 
         if (count == null) {
-            System.out.println(1);
             return getListBestTenMovies();
         }
         log.info("count " + count);
