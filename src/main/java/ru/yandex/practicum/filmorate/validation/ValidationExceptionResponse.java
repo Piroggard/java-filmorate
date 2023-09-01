@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.validation;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -29,6 +30,12 @@ public class ValidationExceptionResponse {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public Map<String, String> internalServerError(final IndexOutOfBoundsException e) {
         return Map.of("Error", "Internal Server Error");
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Map<String, String> dataNotFound(final EmptyResultDataAccessException e) {
+        return Map.of("Error", "Data not found");
     }
 
 
