@@ -10,6 +10,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genres;
 import ru.yandex.practicum.filmorate.model.MPA;
 
+import java.lang.management.GarbageCollectorMXBean;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -47,7 +48,7 @@ public class FilmDbStorage implements FilmStorage{
     }
 
     public Film getFilm(Integer idFilm){
-        return jdbcTemplate.queryForObject("select films_id as id, f.name, description as description, releasedate as releaseDate, duration , r.reating_id as rating , ul.id_user  as usersLikeMovie, fg.ganre_id as genre, g.name_ganre as nameGanre, r.name as nameMPA\n" +
+        return jdbcTemplate.queryForObject("select films_id as id, f.name, f.description as description, releasedate as releaseDate, duration , r.reating_id as rating , ul.id_user  as usersLikeMovie, fg.ganre_id as genre, g.name_ganre as nameGanre, r.name as nameMPA, r.description as descriptionMPA " +
                 "from films f\n" +
                 "              LEFT JOIN reating r on r.reating_id = f.rating\n" +
                 "                LEFT JOIN users_like ul on f.films_id = ul.id_films\n" +
@@ -68,6 +69,7 @@ public class FilmDbStorage implements FilmStorage{
                 film.setDuration(rs.getInt("duration"));
                 mpa.setId(rs.getInt("rating"));
                 mpa.setName(rs.getString("nameMPA"));
+                mpa.setDescriptionMPA(rs.getString("descriptionMPA"));
                 film.setMpa(mpa);
                 do {
                     Genres genres1 = new Genres();
@@ -130,6 +132,7 @@ public class FilmDbStorage implements FilmStorage{
 
     @Override
     public Film putFilm(Film film) {
+        System.out.println(film);
        /* Date date = Date.from(film.getReleaseDate().atStartOfDay(ZoneId.systemDefault()).toInstant());
         java.sql.Date sqlDate = new java.sql.Date(date.getTime());
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -160,7 +163,7 @@ public class FilmDbStorage implements FilmStorage{
 
         for (Genres genres : film.getGenres()) {
             jdbcTemplate.update("INSERT INTO film_ganre (film_id, ganre_id) VALUES(?,?);", film.getId(),
-                    genres);
+                    genres.getId());
         }
 
 
@@ -176,4 +179,74 @@ public class FilmDbStorage implements FilmStorage{
     public void deleteLikeFilm(int id, int userId) {
         jdbcTemplate.update("delete from users_like where id_user =? and id_films = ?;", userId ,id );
     }
+
+
+    public MPA getMPA(Integer id) {
+       return jdbcTemplate.queryForObject("select reating_id as id , name, description as descriptionMPA from reating r  where reating_id =?;", new RowMapper<MPA>() {
+            @Override
+            public MPA mapRow(ResultSet rs, int rowNum) throws SQLException {
+                MPA mpa = new MPA();
+                mpa.setId(rs.getInt("id"));
+                mpa.setName(rs.getString("name"));
+                mpa.setDescriptionMPA(rs.getString("descriptionMPA"));
+
+                return mpa;
+            }
+        },  id);
+    }
+
+
+    public List<MPA> getMPA() {
+        List<MPA> mpaList = jdbcTemplate.query("select reating_id as id from reating r;", new RowMapper<MPA>() {
+            @Override
+            public MPA mapRow(ResultSet rs, int rowNum) throws SQLException {
+                MPA mpa = new MPA();
+                mpa.setId(rs.getInt("id"));
+                return mpa;
+            }
+        });
+
+        List<MPA> list = new ArrayList<>();
+
+        for (MPA mpa : mpaList) {
+            list.add(getMPA(mpa.getId()));
+        }
+        return list;
+    }
+
+    public Genres getGanres(Integer id) {
+        return jdbcTemplate.queryForObject("select ganer_id  as id , name_ganre as name  from genre g  where ganer_id  =?;", new RowMapper<Genres>() {
+            @Override
+            public Genres mapRow(ResultSet rs, int rowNum) throws SQLException {
+                Genres genres = new Genres();
+                genres.setId(rs.getInt("id"));
+                genres.setName(rs.getString("name"));
+                return genres;
+            }
+        },  id);
+    }
+
+
+    public List<Genres> getGanres() {
+        List<Genres> mpaList = jdbcTemplate.query("select ganer_id  as id from genre g ;", new RowMapper<Genres>() {
+            @Override
+            public Genres mapRow(ResultSet rs, int rowNum) throws SQLException {
+                Genres genres = new Genres();
+                genres.setId(rs.getInt("id"));
+                return genres;
+            }
+        });
+
+        List<Genres> list = new ArrayList<>();
+
+        for (Genres genres : mpaList) {
+            list.add(getGanres(genres.getId()));
+        }
+        return list;
+    }
+
+
+
+
+
 }

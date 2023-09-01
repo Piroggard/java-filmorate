@@ -5,6 +5,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genres;
+import ru.yandex.practicum.filmorate.model.MPA;
 import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.validation.ValidationFilm;
 
@@ -63,6 +65,36 @@ public class FilmController {
         return filmService.getListBestMovies(count);
 
     }
+
+    @GetMapping("/mpa")
+    public List<MPA> getMPA() {
+        return filmService.getMPA();
+    }
+
+    @GetMapping("/mpa/{id}")
+    @ResponseBody
+    public MPA getMPA(@PathVariable Integer id) {
+        return filmService.getMPA(id);
+    }
+
+
+    @GetMapping("/genres")
+    public List<Genres> getGenres() {
+        return filmService.getGanres();
+    }
+
+    @GetMapping("/genres/{id}")
+    @ResponseBody
+    public Genres getGenres(@PathVariable Integer id) {
+        return filmService.getGanres(id);
+    }
+
+
+
+
+
+
+
 
 
 }

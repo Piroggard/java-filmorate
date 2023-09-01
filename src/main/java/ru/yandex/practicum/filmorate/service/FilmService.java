@@ -1,6 +1,9 @@
 package ru.yandex.practicum.filmorate.service;
 
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genres;
+import ru.yandex.practicum.filmorate.model.MPA;
+
 import java.util.List;
 
 public interface FilmService {
@@ -20,4 +23,14 @@ public interface FilmService {
     List<Film> getListBestMovies(Integer count);
 
     List<Film> getListBestTenMovies();
+
+    MPA getMPA (Integer id);
+
+    List<MPA> getMPA ();
+
+    Genres getGanres (Integer id);
+
+    List<Genres> getGanres ();
+
+
 }

@@ -27,17 +27,17 @@ public class Film implements Comparable<Film> {
 
 
 
-
     private int rate;
 
 
-    public Film(int id, @NonNull String name, @NonNull String description, @NonNull LocalDate releaseDate, Set<Genres> genre, int duration) {
+    public Film(int id, @NonNull String name, @NonNull String description, @NonNull LocalDate releaseDate, Set<Genres> genre, int duration , MPA mpa) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.releaseDate = releaseDate;
         this.genres = genre;
         this.duration = duration;
+        this.mpa = mpa;
 
     }
 /*public void setUsersLikeMovie(Set<Integer> usersLikeMovie) {
@@ -61,7 +61,9 @@ public class Film implements Comparable<Film> {
     public int compareTo(Film o) {
         return Integer.compare(o.getRate(), this.rate);
     }
-
+    public int compareByDi(Film o) {
+        return Integer.compare(o.getId(), this.id); // Сортировка по полю di от большего к меньшему
+    }
     public Film(@NonNull String name, @NonNull String description, @NonNull LocalDate releaseDate, int duration) {
         this.name = name;
         this.description = description;

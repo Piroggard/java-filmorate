@@ -4,10 +4,16 @@ import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 import ru.yandex.practicum.filmorate.controller.UserController;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genres;
+import ru.yandex.practicum.filmorate.model.MPA;
 import ru.yandex.practicum.filmorate.storage.FilmDbStorage;
 import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
+
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,8 +26,13 @@ public class FilmServiceImpl implements FilmService {
 
     @Override
     public List<Film> getFilms() {
+        /*List<Film> filmList = filmDbStorage.getFilms();
+        Collections.sort(filmList, Film::compareByDi);
+       return filmList;*/
+
        /* return filmStorage.getFilms();*/
-        return filmDbStorage.getFilms();
+         return filmDbStorage.getFilms();
+
     }
 
     @Override
@@ -55,6 +66,7 @@ public class FilmServiceImpl implements FilmService {
 
     @Override
     public Film getFilm(Integer id) {
+
        /* return filmStorage.films.get(id);*/
         return filmDbStorage.getFilm(id);
     }
@@ -74,4 +86,29 @@ public class FilmServiceImpl implements FilmService {
     public List<Film> getListBestTenMovies() {
         return  filmDbStorage.getFilms().stream().sorted().limit(10).collect(Collectors.toList());
     }
+
+    @Override
+    public MPA getMPA(Integer id) {
+        return filmDbStorage.getMPA(id);
+    }
+
+    @Override
+    public List<MPA> getMPA() {
+        List<MPA> list = filmDbStorage.getMPA();
+        Collections.sort(list);
+        return list;
+    }
+
+    @Override
+    public Genres getGanres(Integer id) {
+        return filmDbStorage.getGanres(id);
+    }
+
+    @Override
+    public List<Genres> getGanres() {
+
+        return filmDbStorage.getGanres();
+    }
+
+
 }
