@@ -62,7 +62,7 @@ public class Film implements Comparable<Film> {
         return Integer.compare(o.getRate(), this.rate);
     }
     public int compareByDi(Film o) {
-        return Integer.compare(o.getId(), this.id); // Сортировка по полю di от большего к меньшему
+        return Integer.compare(this.id , o.getId() ); // Сортировка по полю di от большего к меньшему
     }
     public Film(@NonNull String name, @NonNull String description, @NonNull LocalDate releaseDate, int duration) {
         this.name = name;

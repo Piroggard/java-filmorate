@@ -14,7 +14,7 @@ public class MPA implements Comparable<MPA>{
 
     Integer id;
     String name;
-    String descriptionMPA;
+    String description;
 
     @Override
     public int compareTo(MPA o) {

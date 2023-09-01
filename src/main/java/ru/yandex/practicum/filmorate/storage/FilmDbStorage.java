@@ -59,8 +59,6 @@ public class FilmDbStorage implements FilmStorage{
                 MPA mpa = new MPA();
                 Set<Integer> usersLikeMovie = new HashSet<>();
                 Set<Genres> genres = new HashSet<>();
-
-
                 Film film = new Film();
                 film.setId(rs.getInt("id"));
                 film.setName(rs.getString("name"));
@@ -69,15 +67,21 @@ public class FilmDbStorage implements FilmStorage{
                 film.setDuration(rs.getInt("duration"));
                 mpa.setId(rs.getInt("rating"));
                 mpa.setName(rs.getString("nameMPA"));
-                mpa.setDescriptionMPA(rs.getString("descriptionMPA"));
+                mpa.setDescription(rs.getString("descriptionMPA"));
                 film.setMpa(mpa);
+                Integer i = rs.getInt("genre");
                 do {
+                    usersLikeMovie.add(rs.getInt("usersLikeMovie"));
+
+                    if (i == 0) {
+                        break;
+                    }
                     Genres genres1 = new Genres();
                     genres1.setId(rs.getInt("genre"));
                     genres1.setName(rs.getString("nameGanre"));
-                    usersLikeMovie.add(rs.getInt("usersLikeMovie"));
                     genres.add(genres1);
                 } while (rs.next());
+
                 film.setGenres(genres);
                 film.setUsersLikeMovie(usersLikeMovie);
                 int like=0;
@@ -89,10 +93,6 @@ public class FilmDbStorage implements FilmStorage{
                 }
 
                 film.setRate(like);
-
-
-
-
 
                 return film;
             }
@@ -133,35 +133,32 @@ public class FilmDbStorage implements FilmStorage{
     @Override
     public Film putFilm(Film film) {
         System.out.println(film);
-       /* Date date = Date.from(film.getReleaseDate().atStartOfDay(ZoneId.systemDefault()).toInstant());
-        java.sql.Date sqlDate = new java.sql.Date(date.getTime());
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(con -> {
-            PreparedStatement ps = con.prepareStatement("update films set name = ?, description =?, releasedate = ?, duration  = ?, rating =?\n" +
-                    "where films_id = ?;");
-            ps.setString(1, film.getName());
-            ps.setString(2, film.getDescription());
-            ps.setDate(3, sqlDate);
-            ps.setInt(4, film.getDuration());
-            ps.setDouble(5, film.getRating());
-            ps.setLong(6, film.getId()); // Assuming getId() returns the films_id
-
-            return ps;
-        }, keyHolder);
-
-*/
-
 
         jdbcTemplate.update("update films set name = ?, description =?, releasedate = ?, duration  = ?, rating =?" +
-                " where films_id = ?;", film.getName(), film.getDescription(), film.getReleaseDate(), film.getDuration(),
+                        " where films_id = ?;", film.getName(), film.getDescription(), film.getReleaseDate(), film.getDuration(),
                 film.getMpa().getId(), film.getId());
+        System.out.println(film.getMpa().getId());
 
-        if (film.getGenres() == null){
-            return getFilm(film.getId());
+
+
+        if (film.getGenres() == null){ // если нет вообще обекта
+           jdbcTemplate.update(" DELETE FROM film_ganre fg where fg.film_id =?  ;", film.getId());
+           return getFilmNotGanre(film.getId());
         }
 
 
-        for (Genres genres : film.getGenres()) {
+        Set<Genres> genresSet = film.getGenres();
+        System.out.println(genresSet);
+
+
+        if (genresSet.size() == 0){
+            jdbcTemplate.update(" DELETE FROM film_ganre fg where fg.film_id =?  ;", film.getId());
+            return getFilmNotGanre(film.getId());
+        }
+
+
+        jdbcTemplate.update(" DELETE FROM film_ganre fg where fg.film_id =?  ;", film.getId());
+        for (Genres genres : genresSet) {
             jdbcTemplate.update("INSERT INTO film_ganre (film_id, ganre_id) VALUES(?,?);", film.getId(),
                     genres.getId());
         }
@@ -188,7 +185,7 @@ public class FilmDbStorage implements FilmStorage{
                 MPA mpa = new MPA();
                 mpa.setId(rs.getInt("id"));
                 mpa.setName(rs.getString("name"));
-                mpa.setDescriptionMPA(rs.getString("descriptionMPA"));
+                mpa.setDescription(rs.getString("descriptionMPA"));
 
                 return mpa;
             }
@@ -247,6 +244,47 @@ public class FilmDbStorage implements FilmStorage{
 
 
 
+    public Film getFilmNotGanre(Integer idFilm){
+        return jdbcTemplate.queryForObject("select films_id as id, f.name, f.description as description, releasedate as releaseDate, duration , r.reating_id as rating , ul.id_user  as usersLikeMovie,  r.name as nameMPA, r.description as descriptionMPA \n" +
+                "from films f\n" +
+                "              LEFT JOIN reating r on r.reating_id = f.rating\n" +
+                "                LEFT JOIN users_like ul on f.films_id = ul.id_films\n" +
+                "                LEFT JOIN film_ganre fg  on fg.film_id = f.films_id \n" +
+                "                left join genre g on g.ganer_id = fg.ganre_id  where films_id =?;", new RowMapper<Film>() {
+            @Override
+            public Film mapRow(ResultSet rs, int rowNum) throws SQLException {
+                MPA mpa = new MPA();
+                Set<Integer> usersLikeMovie = new HashSet<>();
+                Set<Genres> genres = new HashSet<>();
+                Film film = new Film();
+                film.setId(rs.getInt("id"));
+                film.setName(rs.getString("name"));
+                film.setDescription(rs.getString("description"));
+                film.setReleaseDate(rs.getDate("releaseDate").toLocalDate());
+                film.setDuration(rs.getInt("duration"));
+                mpa.setId(rs.getInt("rating"));
+                mpa.setName(rs.getString("nameMPA"));
+                mpa.setDescription(rs.getString("descriptionMPA"));
+                film.setMpa(mpa);
+                film.setGenres(genres);
+                do {
+                    usersLikeMovie.add(rs.getInt("usersLikeMovie"));
 
+                } while (rs.next());
+
+                film.setUsersLikeMovie(usersLikeMovie);
+                int like=0;
+
+                for (Integer integer : usersLikeMovie) {
+                    if (integer > 0 ){
+                        like++;
+                    }
+                }
+                film.setRate(like);
+
+                return film;
+            }
+        }, idFilm );
+    }
 
 }

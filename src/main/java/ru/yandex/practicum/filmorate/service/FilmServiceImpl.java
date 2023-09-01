@@ -26,12 +26,12 @@ public class FilmServiceImpl implements FilmService {
 
     @Override
     public List<Film> getFilms() {
-        /*List<Film> filmList = filmDbStorage.getFilms();
+        List<Film> filmList = filmDbStorage.getFilms();
         Collections.sort(filmList, Film::compareByDi);
-       return filmList;*/
+       return filmList;
 
-       /* return filmStorage.getFilms();*/
-         return filmDbStorage.getFilms();
+
+        // return filmDbStorage.getFilms();
 
     }
 
