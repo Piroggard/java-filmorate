@@ -43,7 +43,7 @@ public class FilmDbStorage {
         return filmArrayList;
     }
 
-    public Film getFilm(Integer idFilm){
+    public Film getFilm(Integer idFilm) {
         return jdbcTemplate.queryForObject("select films_id as id, f.name, f.description as description, releasedate as releaseDate, duration , r.reating_id as rating , ul.id_user  as usersLikeMovie, fg.genre_id as genre, " +
                 "g.name_genre as nameGenre, r.name as nameMPA, r.description as descriptionMPA " +
                 "from films f\n" +
@@ -206,8 +206,7 @@ public class FilmDbStorage {
     }
 
 
-
-    public Film getFilmNotGanre(Integer idFilm){
+    public Film getFilmNotGanre(Integer idFilm) {
         return jdbcTemplate.queryForObject("select films_id as id, f.name, f.description as description, releasedate " +
                 "as releaseDate, duration , r.reating_id as rating , ul.id_user  as usersLikeMovie,  r.name as nameMPA, r.description " +
                 "as descriptionMPA \n" +
