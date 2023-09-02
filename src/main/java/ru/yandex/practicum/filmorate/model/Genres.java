@@ -9,11 +9,16 @@ import java.util.ArrayList;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class Genres {
+public class Genres implements Comparable<Genres> {
     Integer id;
     String name;
 
     public Genres(Integer id) {
         this.id = id;
+    }
+
+    @Override
+    public int compareTo(Genres other) {
+        return this.id.compareTo(other.id);
     }
 }

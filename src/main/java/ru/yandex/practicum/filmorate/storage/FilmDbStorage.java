@@ -16,6 +16,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -48,12 +49,13 @@ public class FilmDbStorage implements FilmStorage{
     }
 
     public Film getFilm(Integer idFilm){
-        return jdbcTemplate.queryForObject("select films_id as id, f.name, f.description as description, releasedate as releaseDate, duration , r.reating_id as rating , ul.id_user  as usersLikeMovie, fg.ganre_id as genre, g.name_ganre as nameGanre, r.name as nameMPA, r.description as descriptionMPA " +
+        return jdbcTemplate.queryForObject("select films_id as id, f.name, f.description as description, releasedate as releaseDate, duration , r.reating_id as rating , ul.id_user  as usersLikeMovie, fg.genre_id as genre, " +
+                "g.name_genre as nameGenre, r.name as nameMPA, r.description as descriptionMPA " +
                 "from films f\n" +
                 "              LEFT JOIN reating r on r.reating_id = f.rating\n" +
                 "                LEFT JOIN users_like ul on f.films_id = ul.id_films\n" +
-                "                LEFT JOIN film_ganre fg  on fg.film_id = f.films_id \n" +
-                "                left join genre g on g.ganer_id = fg.ganre_id where films_id =?;", new RowMapper<Film>() {
+                "                LEFT JOIN FILM_GENRE fg  on fg.film_id = f.films_id \n" +
+                "                left join genre g on g.genre_id = fg.genre_id where films_id =?;", new RowMapper<Film>() {
             @Override
             public Film mapRow(ResultSet rs, int rowNum) throws SQLException {
                 MPA mpa = new MPA();
@@ -78,11 +80,16 @@ public class FilmDbStorage implements FilmStorage{
                     }
                     Genres genres1 = new Genres();
                     genres1.setId(rs.getInt("genre"));
-                    genres1.setName(rs.getString("nameGanre"));
+                    genres1.setName(rs.getString("nameGenre"));
                     genres.add(genres1);
                 } while (rs.next());
 
-                film.setGenres(genres);
+                List<Genres> genresList = new ArrayList<>(genres);
+                Collections.sort(genresList);
+                Set<Genres> genresSet = new HashSet<>(genresList);
+
+
+                film.setGenres(genresSet);
                 film.setUsersLikeMovie(usersLikeMovie);
                 int like=0;
 
@@ -124,7 +131,7 @@ public class FilmDbStorage implements FilmStorage{
         }
 
         for (Genres genres : film.getGenres()) {
-            jdbcTemplate.update("INSERT INTO film_ganre (film_id, ganre_id) VALUES(?,?);", keyFilm,
+            jdbcTemplate.update("INSERT INTO FILM_GENRE (film_id, genre_id) VALUES(?,?);", keyFilm,
                     genres.getId());
         }
         return getFilm(keyFilm);
@@ -142,7 +149,7 @@ public class FilmDbStorage implements FilmStorage{
 
 
         if (film.getGenres() == null){ // если нет вообще обекта
-           jdbcTemplate.update(" DELETE FROM film_ganre fg where fg.film_id =?  ;", film.getId());
+           jdbcTemplate.update(" DELETE FROM film_genre fg where fg.film_id =?  ;", film.getId());
            return getFilmNotGanre(film.getId());
         }
 
@@ -152,14 +159,14 @@ public class FilmDbStorage implements FilmStorage{
 
 
         if (genresSet.size() == 0){
-            jdbcTemplate.update(" DELETE FROM film_ganre fg where fg.film_id =?  ;", film.getId());
+            jdbcTemplate.update(" DELETE FROM film_genre fg where fg.film_id =?  ;", film.getId());
             return getFilmNotGanre(film.getId());
         }
 
 
-        jdbcTemplate.update(" DELETE FROM film_ganre fg where fg.film_id =?  ;", film.getId());
+        jdbcTemplate.update(" DELETE FROM film_genre fg where fg.film_id =?  ;", film.getId());
         for (Genres genres : genresSet) {
-            jdbcTemplate.update("INSERT INTO film_ganre (film_id, ganre_id) VALUES(?,?);", film.getId(),
+            jdbcTemplate.update("INSERT INTO film_genre (film_id, genre_id) VALUES(?,?);", film.getId(),
                     genres.getId());
         }
 
@@ -212,7 +219,7 @@ public class FilmDbStorage implements FilmStorage{
     }
 
     public Genres getGanres(Integer id) {
-        return jdbcTemplate.queryForObject("select ganer_id  as id , name_ganre as name  from genre g  where ganer_id  =?;", new RowMapper<Genres>() {
+        return jdbcTemplate.queryForObject("select genre_id  as id , name_genre as name  from genre g  where genre_id  =?;", new RowMapper<Genres>() {
             @Override
             public Genres mapRow(ResultSet rs, int rowNum) throws SQLException {
                 Genres genres = new Genres();
@@ -225,7 +232,7 @@ public class FilmDbStorage implements FilmStorage{
 
 
     public List<Genres> getGanres() {
-        List<Genres> mpaList = jdbcTemplate.query("select ganer_id  as id from genre g ;", new RowMapper<Genres>() {
+        List<Genres> mpaList = jdbcTemplate.query("select genre_id  as id from genre g ;", new RowMapper<Genres>() {
             @Override
             public Genres mapRow(ResultSet rs, int rowNum) throws SQLException {
                 Genres genres = new Genres();
@@ -249,8 +256,8 @@ public class FilmDbStorage implements FilmStorage{
                 "from films f\n" +
                 "              LEFT JOIN reating r on r.reating_id = f.rating\n" +
                 "                LEFT JOIN users_like ul on f.films_id = ul.id_films\n" +
-                "                LEFT JOIN film_ganre fg  on fg.film_id = f.films_id \n" +
-                "                left join genre g on g.ganer_id = fg.ganre_id  where films_id =?;", new RowMapper<Film>() {
+                "                LEFT JOIN FILM_GENRE fg  on fg.film_id = f.films_id \n" +
+                "                left join genre g on g.genre_id = fg.genre_id  where films_id =?;", new RowMapper<Film>() {
             @Override
             public Film mapRow(ResultSet rs, int rowNum) throws SQLException {
                 MPA mpa = new MPA();

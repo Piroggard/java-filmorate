@@ -45,10 +45,16 @@ public class UserDbStorage implements UserStorage{
 
 
     public User getUser(Integer id) {
+        /*return jdbcTemplate.queryForObject("SELECT u.id, u.email, u.login, u.name, u.birthday, lf.id_friend\n" +
+                        "FROM users u \n" +
+                        "LEFT JOIN list_friends lf ON u.id = lf.id_user\n" +
+                        "WHERE id= ? AND (lf.user_frends = 1 OR lf.user_frends IS NULL);",*/
+
+
         return jdbcTemplate.queryForObject("SELECT u.id, u.email, u.login, u.name, u.birthday, lf.id_friend\n" +
                         "FROM users u \n" +
                         "LEFT JOIN list_friends lf ON u.id = lf.id_user\n" +
-                        "WHERE id= ? AND (lf.user_frends = 1 OR lf.user_frends IS NULL);",
+                        "WHERE id= ?",
                 new RowMapper<User>() {
             @Override
             public User mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -152,7 +158,7 @@ public class UserDbStorage implements UserStorage{
 
         }
 
-        jdbcTemplate.update("INSERT INTO list_friends (id_user, id_friend, user_frends) VALUES (?, ?, 0);",userId, friendId );
+        jdbcTemplate.update("INSERT INTO list_friends (id_user, id_friend, USER_FRIENDS) VALUES (?, ?, 0);",userId, friendId );
 
 
         List<Integer> frendUser1 = getListFriend(userId);
