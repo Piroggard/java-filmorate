@@ -24,13 +24,11 @@ public interface FilmService {
 
     List<Film> getListBestTenMovies();
 
-    MPA getMPA (Integer id);
+    MPA getMPA(Integer id);
 
-    List<MPA> getMPA ();
+    List<MPA> getMPA();
 
-    Genres getGanres (Integer id);
+    Genres getGanres(Integer id);
 
-    List<Genres> getGanres ();
-
-
+    List<Genres> getGanres();
 }
