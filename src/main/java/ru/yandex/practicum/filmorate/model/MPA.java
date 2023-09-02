@@ -7,7 +7,8 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class MPA implements Comparable<MPA>{
+
+public class MPA implements Comparable<MPA> {
     public MPA(Integer id) {
         this.id = id;
     }
