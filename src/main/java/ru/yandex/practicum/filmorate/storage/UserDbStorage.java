@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.storage;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -12,14 +11,11 @@ import ru.yandex.practicum.filmorate.model.User;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDate;
 import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 @Component
@@ -87,7 +83,7 @@ public class UserDbStorage {
         return listFriend;
     }
 
-    public List<User> getListMutualFriend (Integer userId, Integer otherId){
+    public List<User> getListMutualFriend (Integer userId, Integer otherId) {
         List<User> userListFriend = jdbcTemplate.query("SELECT id_friend AS id\n" +
                 "FROM list_friends\n" +
                 "WHERE id_user = ?  AND id_friend IN (\n" +
@@ -111,11 +107,11 @@ public class UserDbStorage {
 
     }
 
-    public void deleteFriend (int userId, int friendId){
+    public void deleteFriend (int userId, int friendId) {
         jdbcTemplate.update("delete from list_friends where id_user =? and id_friend = ?;",userId, friendId );
     }
 
-    public List<Integer> getListFriend (int friendId){
+    public List<Integer> getListFriend (int friendId) {
         List<Integer> frendUser = jdbcTemplate.query("select id_friend  from list_friends lf where id_user = ?;", new RowMapper<Integer>() {
             @Override
             public Integer mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -126,7 +122,7 @@ public class UserDbStorage {
         return frendUser;
     }
 
-    public void addFriend (int userId, int friendId){
+    public void addFriend (int userId, int friendId) {
         List<Integer> frendUser = getListFriend(userId);
         List<Integer> frendfrend = getListFriend(friendId);
         int i1 = 0;
@@ -145,9 +141,7 @@ public class UserDbStorage {
             jdbcTemplate.update("update list_friends set user_frends = 1 where id_user = ? and id_friend = ?;",friendId, userId );
             return;
         }
-
         jdbcTemplate.update("INSERT INTO list_friends (id_user, id_friend, USER_FRIENDS) VALUES (?, ?, 0);",userId, friendId );
-
         List<Integer> frendUser1 = getListFriend(userId);
         List<Integer> frendfrend1 = getListFriend(friendId);
         int i11 = 0;
@@ -185,7 +179,6 @@ public class UserDbStorage {
         Integer keyUser = keyHolder.getKey().intValue();
         return getUser(keyUser);
     }
-
 
     public User putUser(User user) {
         User userPut = getUser(user.getId());
