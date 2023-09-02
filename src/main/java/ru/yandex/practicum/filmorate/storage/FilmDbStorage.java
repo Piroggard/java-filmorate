@@ -86,7 +86,7 @@ public class FilmDbStorage {
                 film.setUsersLikeMovie(usersLikeMovie);
                 int like = 0;
                 for (Integer integer : usersLikeMovie) {
-                    if (integer > 0 ){
+                    if (integer > 0) {
                         like++;
                     }
                 }
@@ -164,6 +164,7 @@ public class FilmDbStorage {
             }
         },  id);
     }
+
     public List<MPA> getMPA() {
         List<MPA> mpaList = jdbcTemplate.query("select reating_id as id from reating r;", new RowMapper<MPA>() {
             @Override
@@ -237,9 +238,9 @@ public class FilmDbStorage {
                     usersLikeMovie.add(rs.getInt("usersLikeMovie"));
                 } while (rs.next());
                 film.setUsersLikeMovie(usersLikeMovie);
-                int like=0;
+                int like = 0;
                 for (Integer integer : usersLikeMovie) {
-                    if (integer > 0 ){
+                    if (integer > 0) {
                         like++;
                     }
                 }
