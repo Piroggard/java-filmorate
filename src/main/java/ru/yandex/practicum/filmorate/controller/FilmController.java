@@ -88,13 +88,4 @@ public class FilmController {
     public Genres getGenres(@PathVariable Integer id) {
         return filmService.getGanres(id);
     }
-
-
-
-
-
-
-
-
-
 }

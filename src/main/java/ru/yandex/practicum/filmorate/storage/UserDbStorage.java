@@ -24,9 +24,9 @@ import java.util.Set;
 
 @Component
 @AllArgsConstructor
-public class UserDbStorage implements UserStorage{
+public class UserDbStorage {
     private final JdbcTemplate jdbcTemplate;
-    @Override
+
     public List<User> getUsers() {
         List<User> users = jdbcTemplate.query("select id from users u ;", new RowMapper<User>() {
             @Override
@@ -45,12 +45,6 @@ public class UserDbStorage implements UserStorage{
 
 
     public User getUser(Integer id) {
-        /*return jdbcTemplate.queryForObject("SELECT u.id, u.email, u.login, u.name, u.birthday, lf.id_friend\n" +
-                        "FROM users u \n" +
-                        "LEFT JOIN list_friends lf ON u.id = lf.id_user\n" +
-                        "WHERE id= ? AND (lf.user_frends = 1 OR lf.user_frends IS NULL);",*/
-
-
         return jdbcTemplate.queryForObject("SELECT u.id, u.email, u.login, u.name, u.birthday, lf.id_friend\n" +
                         "FROM users u \n" +
                         "LEFT JOIN list_friends lf ON u.id = lf.id_user\n" +
@@ -91,9 +85,7 @@ public class UserDbStorage implements UserStorage{
             listFriend.add(getUser(user.getId()));
         }
         return listFriend;
-
     }
-
 
     public List<User> getListMutualFriend (Integer userId, Integer otherId){
         List<User> userListFriend = jdbcTemplate.query("SELECT id_friend AS id\n" +
@@ -134,12 +126,10 @@ public class UserDbStorage implements UserStorage{
         return frendUser;
     }
 
-
     public void addFriend (int userId, int friendId){
         List<Integer> frendUser = getListFriend(userId);
         List<Integer> frendfrend = getListFriend(friendId);
         int i1 = 0;
-
         for (int i = 0; i < frendUser.size(); i++) {
             if (friendId == frendUser.get(i)){
                i1++;
@@ -151,61 +141,34 @@ public class UserDbStorage implements UserStorage{
             }
         }
         if (i1 == 2){
-
             jdbcTemplate.update("update list_friends set user_frends = 1 where id_user = ? and id_friend = ?;",userId, friendId );
             jdbcTemplate.update("update list_friends set user_frends = 1 where id_user = ? and id_friend = ?;",friendId, userId );
             return;
-
         }
 
         jdbcTemplate.update("INSERT INTO list_friends (id_user, id_friend, USER_FRIENDS) VALUES (?, ?, 0);",userId, friendId );
 
-
         List<Integer> frendUser1 = getListFriend(userId);
         List<Integer> frendfrend1 = getListFriend(friendId);
         int i11 = 0;
-
         for (int i = 0; i < frendUser1.size(); i++) {
             if (friendId == frendUser1.get(i)){
                 i11++;
             }
         }
-
         for (int i = 0; i < frendfrend1.size(); i++) {
             if (userId == frendfrend1.get(i)){
                 i11++;
             }
         }
-        if (i11 == 2 ){
-            jdbcTemplate.update("update list_friends set user_frends = 1 where id_user = ? and id_friend = ?;",userId, friendId );
-            jdbcTemplate.update("update list_friends set user_frends = 1 where id_user = ? and id_friend = ?;",friendId, userId );
+        if (i11 == 2 ) {
+            jdbcTemplate.update("update list_friends set user_frends = 1 where id_user = ? and id_friend = ?;", userId, friendId);
+            jdbcTemplate.update("update list_friends set user_frends = 1 where id_user = ? and id_friend = ?;", friendId, userId);
             return;
-
         }
-
-
-
-       /* for (int i = 0; i < frendUser.size(); i++) {
-            for (int j = 0; j < frendfrend.size(); j++) {
-                if (frendUser.get(i) == frendfrend.get(j)){
-                    jdbcTemplate.update("update list_friends set user_frends = 1 where id_user = ? and id_friend = ?;",userId, friendId );
-                    jdbcTemplate.update("update list_friends set user_frends = 1 where id_user = ? and id_friend = ?;",friendId, userId );
-                    return;
-                }
-            }
-        }*/
-
     }
 
-
-
-    @Override
     public User postUser(User user) {
-        /*jdbcTemplate.update("INSERT INTO users (email, login, name, birthday)\n" +
-                "VALUES\n" +
-                "    (?, ?, ?, ?); ", user.getEmail(), user.getLogin(), user.getName(), user.getBirthday());
-        return user;*/
-
         Date date = Date.from(user.getBirthday().atStartOfDay(ZoneId.systemDefault()).toInstant());
         java.sql.Date sqlDate = new java.sql.Date(date.getTime());
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -220,22 +183,12 @@ public class UserDbStorage implements UserStorage{
             return ps;
         }, keyHolder);
         Integer keyUser = keyHolder.getKey().intValue();
-
         return getUser(keyUser);
     }
 
 
-
-    public void deleteUser (int id ){
-        jdbcTemplate.update("delete from list_friends where id_user =?;", id);
-        jdbcTemplate.update("delete from users where id =?;", id);
-    }
-
-    @Override
     public User putUser(User user) {
         User userPut = getUser(user.getId());
-        //int id = user.getId();
-        //deleteUser(id);
         jdbcTemplate.update("update users \n" +
                 "set  email = ?, login = ?, name = ?, birthday = ?\n" +
                 "where id =?;",  user.getEmail(), user.getLogin(), user.getName(), user.getBirthday(), user.getId());

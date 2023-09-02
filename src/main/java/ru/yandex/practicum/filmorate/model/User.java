@@ -23,7 +23,6 @@ public class User {
     private String name;
     private LocalDate birthday;
 
-
     private Set<Integer> listFriends = new HashSet<>();
 
     public User(int id, @NonNull String email, @NonNull String login, String name, @NonNull LocalDate birthday) {
@@ -40,13 +39,5 @@ public class User {
         this.login = login;
         this.name = name;
         this.birthday = birthday;
-    }
-
-    public void addListFriend(int id) {
-        listFriends.add(id);
-    }
-
-    public void deleteFriends(int id) {
-        listFriends.remove(id);
     }
 }
