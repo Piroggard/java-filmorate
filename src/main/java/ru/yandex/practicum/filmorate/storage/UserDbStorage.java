@@ -111,7 +111,7 @@ public class UserDbStorage {
         jdbcTemplate.update("delete from list_friends where id_user =? and id_friend = ?;", userId, friendId);
     }
 
-    public List<Integer>getListFriend (int friendId) {
+    public List<Integer> getListFriend(int friendId) {
         List<Integer> frendUser = jdbcTemplate.query("select id_friend  from list_friends lf where id_user = ?;", new RowMapper<Integer>() {
             @Override
             public Integer mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -132,16 +132,16 @@ public class UserDbStorage {
             }
         }
         for (int i = 0; i < frendfrend.size(); i++) {
-            if (userId == frendfrend.get(i)){
+            if (userId == frendfrend.get(i)) {
                 i1++;
             }
         }
         if (i1 == 2) {
-            jdbcTemplate.update("update list_friends set user_frends = 1 where id_user = ? and id_friend = ?;", userId, friendId );
-            jdbcTemplate.update("update list_friends set user_frends = 1 where id_user = ? and id_friend = ?;", friendId, userId );
+            jdbcTemplate.update("update list_friends set user_frends = 1 where id_user = ? and id_friend = ?;", userId, friendId);
+            jdbcTemplate.update("update list_friends set user_frends = 1 where id_user = ? and id_friend = ?;", friendId, userId);
             return;
         }
-        jdbcTemplate.update("INSERT INTO list_friends (id_user, id_friend, USER_FRIENDS) VALUES (?, ?, 0);", userId, friendId );
+        jdbcTemplate.update("INSERT INTO list_friends (id_user, id_friend, USER_FRIENDS) VALUES (?, ?, 0);", userId, friendId);
         List<Integer> frendUser1 = getListFriend(userId);
         List<Integer> frendfrend1 = getListFriend(friendId);
         int i11 = 0;
