@@ -27,6 +27,7 @@ import java.util.Set;
 @AllArgsConstructor
 public class FilmDbStorage {
     public final JdbcTemplate jdbcTemplate;
+
     public List<Film> getFilms() {
         List<Film> listIdFilm = jdbcTemplate.query("select films_id as id from films f ;", new RowMapper<Film>() {
             @Override
@@ -83,8 +84,7 @@ public class FilmDbStorage {
                 Set<Genres> genresSet = new HashSet<>(genresList);
                 film.setGenres(genresSet);
                 film.setUsersLikeMovie(usersLikeMovie);
-                int like=0;
-
+                int like = 0;
                 for (Integer integer : usersLikeMovie) {
                     if (integer > 0 ){
                         like++;
@@ -93,7 +93,7 @@ public class FilmDbStorage {
                 film.setRate(like);
                 return film;
             }
-        }, idFilm );
+        }, idFilm);
     }
 
     public Film postFilm(Film film) {
@@ -111,7 +111,7 @@ public class FilmDbStorage {
             return ps;
         }, keyHolder);
         Integer keyFilm = keyHolder.getKey().intValue();
-        if (film.getGenres() == null){
+        if (film.getGenres() == null) {
             return getFilm(keyFilm);
         }
         for (Genres genres : film.getGenres()) {
@@ -125,12 +125,12 @@ public class FilmDbStorage {
         jdbcTemplate.update("update films set name = ?, description =?, releasedate = ?, duration  = ?, rating =?" +
                         " where films_id = ?;", film.getName(), film.getDescription(), film.getReleaseDate(), film.getDuration(),
                 film.getMpa().getId(), film.getId());
-        if (film.getGenres() == null){
+        if (film.getGenres() == null) {
            jdbcTemplate.update(" DELETE FROM film_genre fg where fg.film_id =?  ;", film.getId());
            return getFilmNotGanre(film.getId());
         }
         Set<Genres> genresSet = film.getGenres();
-        if (genresSet.size() == 0){
+        if (genresSet.size() == 0) {
             jdbcTemplate.update(" DELETE FROM film_genre fg where fg.film_id =?  ;", film.getId());
             return getFilmNotGanre(film.getId());
         }
@@ -141,13 +141,16 @@ public class FilmDbStorage {
         }
         return getFilm(film.getId());
     }
+
     public void addLikeFilm(int id, int userId) {
        jdbcTemplate.update("INSERT INTO users_like (id_user, id_films)\n" +
-               "VALUES(?,?);", userId ,id );
+               "VALUES(?,?);", userId, id);
     }
+
     public void deleteLikeFilm(int id, int userId) {
-        jdbcTemplate.update("delete from users_like where id_user =? and id_films = ?;", userId ,id );
+        jdbcTemplate.update("delete from users_like where id_user =? and id_films = ?;", userId, id);
     }
+
     public MPA getMPA(Integer id) {
        return jdbcTemplate.queryForObject("select reating_id as id , name, description as descriptionMPA from reating r  where reating_id =?;", new RowMapper<MPA>() {
             @Override
@@ -205,7 +208,6 @@ public class FilmDbStorage {
         return list;
     }
 
-
     public Film getFilmNotGanre(Integer idFilm) {
         return jdbcTemplate.queryForObject("select films_id as id, f.name, f.description as description, releasedate " +
                 "as releaseDate, duration , r.reating_id as rating , ul.id_user  as usersLikeMovie,  r.name as nameMPA, r.description " +
@@ -233,21 +235,17 @@ public class FilmDbStorage {
                 film.setGenres(genres);
                 do {
                     usersLikeMovie.add(rs.getInt("usersLikeMovie"));
-
                 } while (rs.next());
-
                 film.setUsersLikeMovie(usersLikeMovie);
                 int like=0;
-
                 for (Integer integer : usersLikeMovie) {
                     if (integer > 0 ){
                         like++;
                     }
                 }
                 film.setRate(like);
-
                 return film;
             }
-        }, idFilm );
+        }, idFilm);
     }
 }
