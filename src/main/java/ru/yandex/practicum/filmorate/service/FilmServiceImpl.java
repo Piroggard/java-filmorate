@@ -71,12 +71,15 @@ public class FilmServiceImpl implements FilmService {
             return getListBestTenMovies();
         }
         log.info("count " + count);
-        return filmDbStorage.getFilms().stream().sorted().limit(count).collect(Collectors.toList());
+        //return filmDbStorage.getFilms().stream().sorted().limit(count).collect(Collectors.toList());
+        return filmDbStorage.getFilmsPopularQuantity(count);
     }
 
     @Override
     public List<Film> getListBestTenMovies() {
-        return  filmDbStorage.getFilms().stream().sorted().limit(10).collect(Collectors.toList());
+        //return filmDbStorage.getFilms().stream().sorted().limit(10).collect(Collectors.toList());
+        return filmDbStorage.getFilmsPopular();
+
     }
 
     @Override

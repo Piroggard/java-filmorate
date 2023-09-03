@@ -105,7 +105,7 @@ public class FilmDbStorage {
                     "VALUES (?, ?, ?, ?, ?)", new String[]{"films_id"});
             ps.setString(1, film.getName());
             ps.setString(2, film.getDescription());
-            ps.setDate(3,  sqlDate);
+            ps.setDate(3, sqlDate);
             ps.setInt(4, film.getDuration());
             ps.setInt(5, film.getMpa().getId());
             return ps;
@@ -126,8 +126,8 @@ public class FilmDbStorage {
                         " where films_id = ?;", film.getName(), film.getDescription(), film.getReleaseDate(), film.getDuration(),
                 film.getMpa().getId(), film.getId());
         if (film.getGenres() == null) {
-           jdbcTemplate.update(" DELETE FROM film_genre fg where fg.film_id =?  ;", film.getId());
-           return getFilmNotGanre(film.getId());
+            jdbcTemplate.update(" DELETE FROM film_genre fg where fg.film_id =?  ;", film.getId());
+            return getFilmNotGanre(film.getId());
         }
         Set<Genres> genresSet = film.getGenres();
         if (genresSet.size() == 0) {
@@ -143,8 +143,8 @@ public class FilmDbStorage {
     }
 
     public void addLikeFilm(int id, int userId) {
-       jdbcTemplate.update("INSERT INTO users_like (id_user, id_films)\n" +
-               "VALUES(?,?);", userId, id);
+        jdbcTemplate.update("INSERT INTO users_like (id_user, id_films)\n" +
+                "VALUES(?,?);", userId, id);
     }
 
     public void deleteLikeFilm(int id, int userId) {
@@ -152,7 +152,7 @@ public class FilmDbStorage {
     }
 
     public Mpa getMPA(Integer id) {
-       return jdbcTemplate.queryForObject("select reating_id as id , name, description as descriptionMPA from reating r  where reating_id =?;", new RowMapper<Mpa>() {
+        return jdbcTemplate.queryForObject("select reating_id as id , name, description as descriptionMPA from reating r  where reating_id =?;", new RowMapper<Mpa>() {
             @Override
             public Mpa mapRow(ResultSet rs, int rowNum) throws SQLException {
                 Mpa mpa = new Mpa();
@@ -162,7 +162,7 @@ public class FilmDbStorage {
 
                 return mpa;
             }
-        },  id);
+        }, id);
     }
 
     public List<Mpa> getMPA() {
@@ -190,7 +190,7 @@ public class FilmDbStorage {
                 genres.setName(rs.getString("name"));
                 return genres;
             }
-        },  id);
+        }, id);
     }
 
     public List<Genres> getGanres() {
@@ -248,5 +248,47 @@ public class FilmDbStorage {
                 return film;
             }
         }, idFilm);
+
     }
+
+
+
+
+
+
+    public List<Film> getFilmsPopularQuantity(int quantityFilm) {
+        List<Film> listIdFilm = jdbcTemplate.query("SELECT DISTINCT id_films as id FROM users_like ul ORDER BY id_films  DESC LIMIT ?;", new RowMapper<Film>() {
+            @Override
+            public Film mapRow(ResultSet rs, int rowNum) throws SQLException {
+                Film film = new Film();
+                film.setId(rs.getInt("id"));
+                return film;
+            }
+        } , quantityFilm);
+        ArrayList<Film> filmArrayList = new ArrayList<>();
+        for (Film film : listIdFilm) {
+            System.out.println(film);
+            filmArrayList.add(getFilm(film.getId()));
+        }
+        return filmArrayList;
+    }
+
+
+    public List<Film> getFilmsPopular() {
+        List<Film> listIdFilm = jdbcTemplate.query("SELECT DISTINCT id_films as id FROM users_like ul ORDER BY id_films  DESC LIMIT 10;", new RowMapper<Film>() {
+            @Override
+            public Film mapRow(ResultSet rs, int rowNum) throws SQLException {
+                Film film = new Film();
+                film.setId(rs.getInt("id"));
+                return film;
+            }
+        });
+        ArrayList<Film> filmArrayList = new ArrayList<>();
+        for (Film film : listIdFilm) {
+            filmArrayList.add(getFilm(film.getId()));
+        }
+        return filmArrayList;
+    }
+
+
 }
