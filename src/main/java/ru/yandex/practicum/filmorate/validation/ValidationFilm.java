@@ -8,18 +8,18 @@ import java.time.LocalDate;
 
 
 public class ValidationFilm {
-    final int MAXIMUM_LENGTH_OF_FILM_DESCRIPTION = 200;
-    final LocalDate EARLY_RELEASE_DATE = LocalDate.of(1895, 12, 28);
+    final int maximumLength = 200;
+    final LocalDate earleDate = LocalDate.of(1895, 12, 28);
 
     public void validation(Film film) throws ValidationException {
         if (film.getName().length() == 0) {
             throw new ValidationException("Movie title must be filled");
-        } else if (film.getDescription().length() > MAXIMUM_LENGTH_OF_FILM_DESCRIPTION) {
+        } else if (film.getDescription().length() > maximumLength) {
             throw new ValidationException("The description of the movie is too long");
         } else if (film.getDuration() <= 0) {
             throw new ValidationException("The film cannot be less than 1 minute long.");
         }
-        if (film.getReleaseDate().isBefore(EARLY_RELEASE_DATE)) {
+        if (film.getReleaseDate().isBefore(earleDate)) {
             throw new ValidationException("The film cannot be earlier than December 28, 1895");
         }
     }
