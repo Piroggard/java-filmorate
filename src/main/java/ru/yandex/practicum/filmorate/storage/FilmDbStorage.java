@@ -119,7 +119,9 @@ public class FilmDbStorage {
                     genres.getId());
             try {
                 Thread.sleep(500);
-            } catch(InterruptedException ex) {}
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
         }
         return getFilm(keyFilm);
     }
@@ -143,7 +145,9 @@ public class FilmDbStorage {
                     genres.getId());
             try {
                 Thread.sleep(500);
-            } catch(InterruptedException ex) {}
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
         }
         return getFilm(film.getId());
     }
@@ -165,7 +169,6 @@ public class FilmDbStorage {
                 mpa.setId(rs.getInt("id"));
                 mpa.setName(rs.getString("name"));
                 mpa.setDescription(rs.getString("descriptionMPA"));
-
                 return mpa;
             }
         }, id);
