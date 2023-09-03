@@ -269,13 +269,11 @@ public class FilmDbStorage {
                 film.setId(rs.getInt("id"));
                 return film;
             }
-        } , quantityFilm);
+        }, quantityFilm);
         ArrayList<Film> filmArrayList = new ArrayList<>();
-
-        if (listIdFilm.size() == 0){
+        if (listIdFilm.size() == 0) {
             return getFilms();
         }
-
         for (Film film : listIdFilm) {
             System.out.println(film);
             filmArrayList.add(getFilm(film.getId()));
