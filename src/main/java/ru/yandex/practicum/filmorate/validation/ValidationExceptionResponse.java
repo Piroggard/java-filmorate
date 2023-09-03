@@ -11,8 +11,6 @@ import ru.yandex.practicum.filmorate.controller.MpaController;
 import ru.yandex.practicum.filmorate.controller.UserController;
 import ru.yandex.practicum.filmorate.exception.DataNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
-import ru.yandex.practicum.filmorate.model.Genres;
-import ru.yandex.practicum.filmorate.model.Mpa;
 
 import java.util.Map;
 
@@ -41,6 +39,4 @@ public class ValidationExceptionResponse {
     public Map<String, String> dataNotFound(final EmptyResultDataAccessException e) {
         return Map.of("Error", "Data not found");
     }
-
-
 }
