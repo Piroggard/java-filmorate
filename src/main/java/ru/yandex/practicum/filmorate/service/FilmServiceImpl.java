@@ -15,7 +15,6 @@ import ru.yandex.practicum.filmorate.validation.ValidationMpa;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
