@@ -6,7 +6,7 @@ import ru.yandex.practicum.filmorate.model.Genres;
 
 @Component
 public class ValidationGanres {
-    public void validationId(Genres genres){
+    public void validationId(Genres genres) {
         if (genres == null) {
             throw new DataNotFoundException("The specified Ganres was not found");
         }
