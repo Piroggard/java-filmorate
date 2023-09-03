@@ -117,6 +117,9 @@ public class FilmDbStorage {
         for (Genres genres : film.getGenres()) {
             jdbcTemplate.update("INSERT INTO FILM_GENRE (film_id, genre_id) VALUES(?,?);", keyFilm,
                     genres.getId());
+            try {
+                Thread.sleep(500);
+            } catch(InterruptedException ex) {}
         }
         return getFilm(keyFilm);
     }
@@ -138,6 +141,9 @@ public class FilmDbStorage {
         for (Genres genres : genresSet) {
             jdbcTemplate.update("INSERT INTO film_genre (film_id, genre_id) VALUES(?,?);", film.getId(),
                     genres.getId());
+            try {
+                Thread.sleep(500);
+            } catch(InterruptedException ex) {}
         }
         return getFilm(film.getId());
     }
@@ -252,10 +258,6 @@ public class FilmDbStorage {
     }
 
 
-
-
-
-
     public List<Film> getFilmsPopularQuantity(int quantityFilm) {
         List<Film> listIdFilm = jdbcTemplate.query("SELECT DISTINCT id_films as id FROM users_like ul ORDER BY id_films  DESC LIMIT ?;", new RowMapper<Film>() {
             @Override
@@ -278,7 +280,6 @@ public class FilmDbStorage {
         return filmArrayList;
     }
 
-
     public List<Film> getFilmsPopular() {
         List<Film> listIdFilm = jdbcTemplate.query("SELECT DISTINCT id_films as id FROM users_like ul ORDER BY id_films  DESC LIMIT 10;", new RowMapper<Film>() {
             @Override
@@ -288,17 +289,13 @@ public class FilmDbStorage {
                 return film;
             }
         });
-
         ArrayList<Film> filmArrayList = new ArrayList<>();
         if (listIdFilm.size() == 0){
             return getFilms();
         }
-
         for (Film film : listIdFilm) {
             filmArrayList.add(getFilm(film.getId()));
         }
         return filmArrayList;
     }
-
-
 }
