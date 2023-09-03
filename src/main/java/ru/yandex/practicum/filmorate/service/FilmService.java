@@ -2,7 +2,7 @@ package ru.yandex.practicum.filmorate.service;
 
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genres;
-import ru.yandex.practicum.filmorate.model.MPA;
+import ru.yandex.practicum.filmorate.model.Mpa;
 
 import java.util.List;
 
@@ -24,9 +24,9 @@ public interface FilmService {
 
     List<Film> getListBestTenMovies();
 
-    MPA getMPA(Integer id);
+    Mpa getMPA(Integer id);
 
-    List<MPA> getMPA();
+    List<Mpa> getMPA();
 
     Genres getGanres(Integer id);
 

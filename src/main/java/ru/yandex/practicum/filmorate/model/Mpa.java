@@ -8,17 +8,17 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 
-public class MPA implements Comparable<MPA> {
-    public MPA(Integer id) {
+public class Mpa implements Comparable<Mpa> {
+    public Mpa(Integer id) {
         this.id = id;
     }
 
-    Integer id;
-    String name;
-    String description;
+    private Integer id;
+    private String name;
+    private String description;
 
     @Override
-    public int compareTo(MPA o) {
+    public int compareTo(Mpa o) {
         return Integer.compare(this.id, o.getId());
     }
 }

@@ -6,13 +6,17 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.yandex.practicum.filmorate.controller.FilmController;
+import ru.yandex.practicum.filmorate.controller.GenresController;
+import ru.yandex.practicum.filmorate.controller.MpaController;
 import ru.yandex.practicum.filmorate.controller.UserController;
 import ru.yandex.practicum.filmorate.exception.DataNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.model.Genres;
+import ru.yandex.practicum.filmorate.model.Mpa;
 
 import java.util.Map;
 
-@RestControllerAdvice(assignableTypes = {FilmController.class, UserController.class})
+@RestControllerAdvice(assignableTypes = {FilmController.class, UserController.class, MpaController.class , GenresController.class})
 public class ValidationExceptionResponse {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -28,7 +32,7 @@ public class ValidationExceptionResponse {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public Map<String, String> internalServerError(final IndexOutOfBoundsException e) {
+    public Map<String, String> internalServerError(final RuntimeException e) {
         return Map.of("Error", "Internal Server Error");
     }
 

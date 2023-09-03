@@ -112,14 +112,13 @@ public class UserDbStorage {
     }
 
     public List<Integer> getListFriend(int friendId) {
-        List<Integer> frendUser = jdbcTemplate.query("select id_friend  from list_friends lf where id_user = ?;", new RowMapper<Integer>() {
+       return jdbcTemplate.query("select id_friend  from list_friends lf where id_user = ?;", new RowMapper<Integer>() {
             @Override
             public Integer mapRow(ResultSet rs, int rowNum) throws SQLException {
                 Integer id = (rs.getInt("id_friend"));
                 return id;
             }
         }, friendId);
-        return frendUser;
     }
 
     public void addFriend(int userId, int friendId) {
@@ -158,7 +157,6 @@ public class UserDbStorage {
         if (i11 == 2) {
             jdbcTemplate.update("update list_friends set user_frends = 1 where id_user = ? and id_friend = ?;", userId, friendId);
             jdbcTemplate.update("update list_friends set user_frends = 1 where id_user = ? and id_friend = ?;", friendId, userId);
-            return;
         }
     }
 

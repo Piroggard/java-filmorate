@@ -8,8 +8,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class Genres implements Comparable<Genres> {
-    Integer id;
-    String name;
+    private Integer id;
+    private String name;
 
     public Genres(Integer id) {
         this.id = id;

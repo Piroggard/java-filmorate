@@ -8,7 +8,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genres;
-import ru.yandex.practicum.filmorate.model.MPA;
+import ru.yandex.practicum.filmorate.model.Mpa;
 
 
 import java.sql.PreparedStatement;
@@ -54,7 +54,7 @@ public class FilmDbStorage {
                 "                left join genre g on g.genre_id = fg.genre_id where films_id =?;", new RowMapper<Film>() {
             @Override
             public Film mapRow(ResultSet rs, int rowNum) throws SQLException {
-                MPA mpa = new MPA();
+                Mpa mpa = new Mpa();
                 Set<Integer> usersLikeMovie = new HashSet<>();
                 Set<Genres> genres = new HashSet<>();
                 Film film = new Film();
@@ -151,11 +151,11 @@ public class FilmDbStorage {
         jdbcTemplate.update("delete from users_like where id_user =? and id_films = ?;", userId, id);
     }
 
-    public MPA getMPA(Integer id) {
-       return jdbcTemplate.queryForObject("select reating_id as id , name, description as descriptionMPA from reating r  where reating_id =?;", new RowMapper<MPA>() {
+    public Mpa getMPA(Integer id) {
+       return jdbcTemplate.queryForObject("select reating_id as id , name, description as descriptionMPA from reating r  where reating_id =?;", new RowMapper<Mpa>() {
             @Override
-            public MPA mapRow(ResultSet rs, int rowNum) throws SQLException {
-                MPA mpa = new MPA();
+            public Mpa mapRow(ResultSet rs, int rowNum) throws SQLException {
+                Mpa mpa = new Mpa();
                 mpa.setId(rs.getInt("id"));
                 mpa.setName(rs.getString("name"));
                 mpa.setDescription(rs.getString("descriptionMPA"));
@@ -165,17 +165,17 @@ public class FilmDbStorage {
         },  id);
     }
 
-    public List<MPA> getMPA() {
-        List<MPA> mpaList = jdbcTemplate.query("select reating_id as id from reating r;", new RowMapper<MPA>() {
+    public List<Mpa> getMPA() {
+        List<Mpa> mpaList = jdbcTemplate.query("select reating_id as id from reating r;", new RowMapper<Mpa>() {
             @Override
-            public MPA mapRow(ResultSet rs, int rowNum) throws SQLException {
-                MPA mpa = new MPA();
+            public Mpa mapRow(ResultSet rs, int rowNum) throws SQLException {
+                Mpa mpa = new Mpa();
                 mpa.setId(rs.getInt("id"));
                 return mpa;
             }
         });
-        List<MPA> list = new ArrayList<>();
-        for (MPA mpa : mpaList) {
+        List<Mpa> list = new ArrayList<>();
+        for (Mpa mpa : mpaList) {
             list.add(getMPA(mpa.getId()));
         }
         return list;
@@ -220,7 +220,7 @@ public class FilmDbStorage {
                 "                left join genre g on g.genre_id = fg.genre_id  where films_id =?;", new RowMapper<Film>() {
             @Override
             public Film mapRow(ResultSet rs, int rowNum) throws SQLException {
-                MPA mpa = new MPA();
+                Mpa mpa = new Mpa();
                 Set<Integer> usersLikeMovie = new HashSet<>();
                 Set<Genres> genres = new HashSet<>();
                 Film film = new Film();

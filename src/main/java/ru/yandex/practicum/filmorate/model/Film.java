@@ -19,13 +19,13 @@ public class Film implements Comparable<Film> {
     @NonNull
     private LocalDate releaseDate;
     private Set<Genres> genres;
-    private MPA mpa;
+    private Mpa mpa;
     private int duration;
     private Set<Integer> usersLikeMovie = new HashSet<>();
     private int rate;
 
 
-    public Film(int id, @NonNull String name, @NonNull String description, @NonNull LocalDate releaseDate, Set<Genres> genre, int duration, MPA mpa) {
+    public Film(int id, @NonNull String name, @NonNull String description, @NonNull LocalDate releaseDate, Set<Genres> genre, int duration, Mpa mpa) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -47,7 +47,7 @@ public class Film implements Comparable<Film> {
         return Integer.compare(o.getRate(), this.rate);
     }
 
-    public int compareByDi(Film o) {
+    public int compareById(Film o) {
         return Integer.compare(this.id, o.getId());
     }
 }

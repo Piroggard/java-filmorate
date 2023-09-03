@@ -15,6 +15,7 @@ public class ValidationUser {
         char[] login = user.getLogin().toCharArray();
         boolean validMail = false;
         boolean validLogin = false;
+        LocalDate localDateNow = LocalDate.now();
         for (char c : mail) {
             if (c == '@') {
                 validMail = true;
@@ -39,7 +40,6 @@ public class ValidationUser {
         } else if (user.getName().length() == 0) {
             user.setName(user.getLogin());
         }
-        LocalDate localDateNow = LocalDate.now();
 
         if (localDateNow.isBefore(user.getBirthday())) {
             throw new ValidationException("Date of birth cannot be greater than the current date");
