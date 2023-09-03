@@ -266,6 +266,11 @@ public class FilmDbStorage {
             }
         } , quantityFilm);
         ArrayList<Film> filmArrayList = new ArrayList<>();
+
+        if (listIdFilm.size() == 0){
+            return getFilms();
+        }
+
         for (Film film : listIdFilm) {
             System.out.println(film);
             filmArrayList.add(getFilm(film.getId()));
@@ -283,7 +288,12 @@ public class FilmDbStorage {
                 return film;
             }
         });
+
         ArrayList<Film> filmArrayList = new ArrayList<>();
+        if (listIdFilm.size() == 0){
+            return getFilms();
+        }
+
         for (Film film : listIdFilm) {
             filmArrayList.add(getFilm(film.getId()));
         }
