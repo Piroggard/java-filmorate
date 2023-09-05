@@ -28,7 +28,6 @@ public class FilmServiceImpl implements FilmService {
     @Override
     public List<Film> getFilms() {
         List<Film> filmList = filmDbStorage.getFilms();
-        Collections.sort(filmList, Film::compareById);
        return filmList;
     }
 
@@ -70,27 +69,24 @@ public class FilmServiceImpl implements FilmService {
             return getListBestTenMovies();
         }
         log.info("count " + count);
-        //return filmDbStorage.getFilms().stream().sorted().limit(count).collect(Collectors.toList());
         return filmDbStorage.getFilmsPopularQuantity(count);
     }
 
     @Override
     public List<Film> getListBestTenMovies() {
-        //return filmDbStorage.getFilms().stream().sorted().limit(10).collect(Collectors.toList());
         return filmDbStorage.getFilmsPopular();
 
     }
 
     @Override
     public Mpa getMPA(Integer id) {
-        validationMpa.validationId(filmDbStorage.getMPA(id));
-        return filmDbStorage.getMPA(id);
+        validationMpa.validationId(filmDbStorage.getMpa(id));
+        return filmDbStorage.getMpa(id);
     }
 
     @Override
     public List<Mpa> getMPA() {
-        List<Mpa> list = filmDbStorage.getMPA();
-        Collections.sort(list);
+        List<Mpa> list = filmDbStorage.getMpa();
         return list;
     }
 

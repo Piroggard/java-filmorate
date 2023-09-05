@@ -46,7 +46,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void addFriends(int userId, int friendId) {
         validationUser.validationAddFriend(userId, friendId);
-        log.info("userId " + userId + " friendId " + friendId);
+        log.info("userId {}, friendId{},", userId, friendId);
         userDbStorage.addFriend(userId, friendId);
     }
 

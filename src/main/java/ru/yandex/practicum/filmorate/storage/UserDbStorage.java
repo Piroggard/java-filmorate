@@ -45,9 +45,6 @@ public class UserDbStorage {
         });
     }
 
-
-
-
     public User getUser(Integer id) {
         return jdbcTemplate.queryForObject("SELECT u.id, u.email, u.login, u.name, u.birthday FROM users u  where id =?;",
                 new RowMapper<User>() {
@@ -80,8 +77,6 @@ public class UserDbStorage {
                 return user;
             }
         },  idUser);
-
-
     }
 
     public List<User> getListMutualFriend(Integer userId, Integer otherId) {
@@ -122,18 +117,18 @@ public class UserDbStorage {
     public void addFriend(int userId, int friendId) {
         List<Integer> frendUser = getListFriend(userId);
         List<Integer> frendfrend = getListFriend(friendId);
-        int i1 = 0;
+        int countUser = 0;
         for (int i = 0; i < frendUser.size(); i++) {
             if (friendId == frendUser.get(i)) {
-               i1++;
+               countUser++;
             }
         }
         for (int i = 0; i < frendfrend.size(); i++) {
             if (userId == frendfrend.get(i)) {
-                i1++;
+                countUser++;
             }
         }
-        if (i1 == 2) {
+        if (countUser == 2) {
             jdbcTemplate.update("update list_friends set user_frends = 1 where id_user = ? and id_friend = ?;", userId, friendId);
             jdbcTemplate.update("update list_friends set user_frends = 1 where id_user = ? and id_friend = ?;", friendId, userId);
             return;

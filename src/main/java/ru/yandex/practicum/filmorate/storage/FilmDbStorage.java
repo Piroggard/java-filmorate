@@ -40,13 +40,12 @@ public class FilmDbStorage {
                 film.setDescription(rs.getString("description"));
                 film.setReleaseDate(rs.getDate("releaseDate").toLocalDate());
                 film.setDuration(rs.getInt("duration"));
-                film.setMpa(getMPA(rs.getInt("rating")));
+                film.setMpa(getMpa(rs.getInt("rating")));
                 film.setGenres(getGanresId(rs.getInt("id")));
                 return film;
             }
         });
     }
-
 
     public Set<Genres> getGanresId (Integer id){
        List<Genres> genresList = jdbcTemplate.query("SELECT g.GENRE_ID, g.NAME_GENRE\n" +
@@ -60,20 +59,15 @@ public class FilmDbStorage {
                 Genres genres = new Genres();
                 genres.setId(rs.getInt("GENRE_ID"));
                 genres.setName(rs.getString("NAME_GENRE"));
-                System.out.println(genres);
                 return genres;
             }
         }, id);
-
        Set<Genres> genres = new HashSet<>();
-
         for (Genres genres1 : genresList) {
             genres.add(genres1);
         }
-        System.out.println(genres);
         return genres;
     }
-
 
     public Film getFilm(Integer idFilm) {
         return jdbcTemplate.queryForObject("select films_id as id, f.name, f.description as description, releasedate as releaseDate, duration , r.reating_id as rating , ul.id_user  as usersLikeMovie, fg.genre_id as genre, " +
@@ -101,7 +95,6 @@ public class FilmDbStorage {
                 Integer i = rs.getInt("genre");
                 do {
                     usersLikeMovie.add(rs.getInt("usersLikeMovie"));
-
                     if (i == 0) {
                         break;
                     }
@@ -209,7 +202,7 @@ public class FilmDbStorage {
         jdbcTemplate.update("delete from users_like where id_user =? and id_films = ?;", userId, id);
     }
 
-    public Mpa getMPA(Integer id) {
+    public Mpa getMpa(Integer id) {
         return jdbcTemplate.queryForObject("select reating_id as id , name, description as descriptionMPA from reating r  where reating_id =?;", new RowMapper<Mpa>() {
             @Override
             public Mpa mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -222,7 +215,7 @@ public class FilmDbStorage {
         }, id);
     }
 
-    public List<Mpa> getMPA() {
+    public List<Mpa> getMpa() {
         return jdbcTemplate.query("select reating_id as id, NAME , DESCRIPTION  from reating r;", new RowMapper<Mpa>() {
             @Override
             public Mpa mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -233,7 +226,6 @@ public class FilmDbStorage {
                 return mpa;
             }
         });
-
     }
 
     public Genres getGanres(Integer id) {
@@ -316,13 +308,13 @@ public class FilmDbStorage {
                 film.setDescription(rs.getString("description"));
                 film.setReleaseDate(rs.getDate("releaseDate").toLocalDate());
                 film.setDuration(rs.getInt("duration"));
-                film.setMpa(getMPA(rs.getInt("rating")));
+                film.setMpa(getMpa(rs.getInt("rating")));
                 film.setGenres(getGanresId(rs.getInt("id")));
                 film.setRate(rs.getInt("total_likes"));
                 return film;
             }
         }, quantityFilm);
-        if (listIdFilm.size() == 0 ){
+        if (listIdFilm.size() == 0) {
             return (List<Film>) getFilm(quantityFilm);
         }
         return listIdFilm;
@@ -343,7 +335,7 @@ public class FilmDbStorage {
                 film.setDescription(rs.getString("description"));
                 film.setReleaseDate(rs.getDate("releaseDate").toLocalDate());
                 film.setDuration(rs.getInt("duration"));
-                film.setMpa(getMPA(rs.getInt("rating")));
+                film.setMpa(getMpa(rs.getInt("rating")));
                 film.setGenres(getGanresId(rs.getInt("id")));
                 film.setRate(rs.getInt("total_likes"));
                 return film;
