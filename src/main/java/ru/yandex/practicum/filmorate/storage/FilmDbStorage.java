@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.storage;
 
 import lombok.AllArgsConstructor;
+import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -28,21 +29,51 @@ import java.util.Set;
 public class FilmDbStorage {
     public final JdbcTemplate jdbcTemplate;
 
+
     public List<Film> getFilms() {
-        List<Film> listIdFilm = jdbcTemplate.query("select films_id as id from films f ;", new RowMapper<Film>() {
+        return jdbcTemplate.query("SELECT FILMS_ID AS id, NAME as name , DESCRIPTION as description , RELEASEDATE as releaseDate , DURATION as duration, RATING as rating, GENRE_ID AS genre FROM FILMS f ;", new RowMapper<Film>() {
             @Override
             public Film mapRow(ResultSet rs, int rowNum) throws SQLException {
                 Film film = new Film();
                 film.setId(rs.getInt("id"));
+                film.setName(rs.getString("name"));
+                film.setDescription(rs.getString("description"));
+                film.setReleaseDate(rs.getDate("releaseDate").toLocalDate());
+                film.setDuration(rs.getInt("duration"));
+                film.setMpa(getMPA(rs.getInt("rating")));
+                film.setGenres(getGanresId(rs.getInt("id")));
                 return film;
             }
         });
-        ArrayList<Film> filmArrayList = new ArrayList<>();
-        for (Film film : listIdFilm) {
-            filmArrayList.add(getFilm(film.getId()));
-        }
-        return filmArrayList;
     }
+
+
+    public Set<Genres> getGanresId (Integer id){
+       List<Genres> genresList = jdbcTemplate.query("SELECT g.GENRE_ID, g.NAME_GENRE\n" +
+               "FROM GENRE g \n" +
+               "JOIN FILM_GENRE fg ON fg.GENRE_ID = g.GENRE_ID \n" +
+               "JOIN FILMS f ON f.FILMS_ID = fg.FILM_ID \n" +
+               "WHERE f.FILMS_ID =?" +
+               "ORDER BY g.GENRE_ID ASC;", new RowMapper<Genres>() {
+            @Override
+            public Genres mapRow(ResultSet rs, int rowNum) throws SQLException {
+                Genres genres = new Genres();
+                genres.setId(rs.getInt("GENRE_ID"));
+                genres.setName(rs.getString("NAME_GENRE"));
+                System.out.println(genres);
+                return genres;
+            }
+        }, id);
+
+       Set<Genres> genres = new HashSet<>();
+
+        for (Genres genres1 : genresList) {
+            genres.add(genres1);
+        }
+        System.out.println(genres);
+        return genres;
+    }
+
 
     public Film getFilm(Integer idFilm) {
         return jdbcTemplate.queryForObject("select films_id as id, f.name, f.description as description, releasedate as releaseDate, duration , r.reating_id as rating , ul.id_user  as usersLikeMovie, fg.genre_id as genre, " +
@@ -114,15 +145,24 @@ public class FilmDbStorage {
         if (film.getGenres() == null) {
             return getFilm(keyFilm);
         }
+        List<Genres> genresList = new ArrayList<>();
         for (Genres genres : film.getGenres()) {
-            jdbcTemplate.update("INSERT INTO FILM_GENRE (film_id, genre_id) VALUES(?,?);", keyFilm,
-                    genres.getId());
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
+            genresList.add(genres);
         }
+
+        String SQL = "INSERT INTO FILM_GENRE (film_id, genre_id) VALUES(?,?);";
+        jdbcTemplate.batchUpdate(SQL, new BatchPreparedStatementSetter() {
+            @Override
+            public void setValues(PreparedStatement ps, int i) throws SQLException {
+                ps.setInt(1, keyFilm);
+                ps.setInt(2, genresList.get(i).getId());
+            }
+            @Override
+            public int getBatchSize() {
+                return genresList.size();
+            }
+        });
+
         return getFilm(keyFilm);
     }
 
@@ -134,21 +174,29 @@ public class FilmDbStorage {
             jdbcTemplate.update(" DELETE FROM film_genre fg where fg.film_id =?  ;", film.getId());
             return getFilmNotGanre(film.getId());
         }
+
         Set<Genres> genresSet = film.getGenres();
         if (genresSet.size() == 0) {
             jdbcTemplate.update(" DELETE FROM film_genre fg where fg.film_id =?  ;", film.getId());
             return getFilmNotGanre(film.getId());
         }
         jdbcTemplate.update(" DELETE FROM film_genre fg where fg.film_id =?  ;", film.getId());
-        for (Genres genres : genresSet) {
-            jdbcTemplate.update("INSERT INTO film_genre (film_id, genre_id) VALUES(?,?);", film.getId(),
-                    genres.getId());
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
+
+        List<Genres> genresList = new ArrayList<>();
+        for (Genres genre : film.getGenres()) {
+            genresList.add(genre);
         }
+        jdbcTemplate.batchUpdate("INSERT INTO film_genre (film_id, genre_id) VALUES(?,?);", new BatchPreparedStatementSetter() {
+            @Override
+            public void setValues(PreparedStatement ps, int i) throws SQLException {
+                ps.setInt(1, film.getId());
+                ps.setInt(2, genresList.get(i).getId());
+            }
+            @Override
+            public int getBatchSize() {
+                return genresList.size();
+            }
+        });
         return getFilm(film.getId());
     }
 
@@ -175,19 +223,17 @@ public class FilmDbStorage {
     }
 
     public List<Mpa> getMPA() {
-        List<Mpa> mpaList = jdbcTemplate.query("select reating_id as id from reating r;", new RowMapper<Mpa>() {
+        return jdbcTemplate.query("select reating_id as id, NAME , DESCRIPTION  from reating r;", new RowMapper<Mpa>() {
             @Override
             public Mpa mapRow(ResultSet rs, int rowNum) throws SQLException {
                 Mpa mpa = new Mpa();
                 mpa.setId(rs.getInt("id"));
+                mpa.setName(rs.getString("name"));
+                mpa.setDescription(rs.getString("DESCRIPTION"));
                 return mpa;
             }
         });
-        List<Mpa> list = new ArrayList<>();
-        for (Mpa mpa : mpaList) {
-            list.add(getMPA(mpa.getId()));
-        }
-        return list;
+
     }
 
     public Genres getGanres(Integer id) {
@@ -203,19 +249,15 @@ public class FilmDbStorage {
     }
 
     public List<Genres> getGanres() {
-        List<Genres> mpaList = jdbcTemplate.query("select genre_id  as id from genre g ;", new RowMapper<Genres>() {
+        return jdbcTemplate.query("select genre_id  as id , NAME_GENRE AS name  from genre g ;", new RowMapper<Genres>() {
             @Override
             public Genres mapRow(ResultSet rs, int rowNum) throws SQLException {
                 Genres genres = new Genres();
                 genres.setId(rs.getInt("id"));
+                genres.setName(rs.getString("name"));
                 return genres;
             }
         });
-        List<Genres> list = new ArrayList<>();
-        for (Genres genres : mpaList) {
-            list.add(getGanres(genres.getId()));
-        }
-        return list;
     }
 
     public Film getFilmNotGanre(Integer idFilm) {
@@ -257,46 +299,59 @@ public class FilmDbStorage {
                 return film;
             }
         }, idFilm);
-
     }
 
-
     public List<Film> getFilmsPopularQuantity(int quantityFilm) {
-        List<Film> listIdFilm = jdbcTemplate.query("SELECT DISTINCT id_films as id FROM users_like ul ORDER BY id_films  DESC LIMIT ?;", new RowMapper<Film>() {
+        List<Film> listIdFilm = jdbcTemplate.query("SELECT f.FILMS_ID AS id, f.NAME, f.DESCRIPTION, f.RELEASEDATE, f.DURATION, f.RATING, f.GENRE_ID AS genre, COUNT(ul.ID_FILMS) AS total_likes\n" +
+                "FROM FILMS f\n" +
+                "LEFT JOIN USERS_LIKE ul ON ul.ID_FILMS = f.FILMS_ID\n" +
+                "GROUP BY f.FILMS_ID, f.NAME, f.DESCRIPTION, f.RELEASEDATE, f.DURATION, f.RATING, f.GENRE_ID\n" +
+                "ORDER BY total_likes DESC\n" +
+                "LIMIT ?;", new RowMapper<Film>() {
             @Override
             public Film mapRow(ResultSet rs, int rowNum) throws SQLException {
                 Film film = new Film();
                 film.setId(rs.getInt("id"));
+                film.setName(rs.getString("name"));
+                film.setDescription(rs.getString("description"));
+                film.setReleaseDate(rs.getDate("releaseDate").toLocalDate());
+                film.setDuration(rs.getInt("duration"));
+                film.setMpa(getMPA(rs.getInt("rating")));
+                film.setGenres(getGanresId(rs.getInt("id")));
+                film.setRate(rs.getInt("total_likes"));
                 return film;
             }
         }, quantityFilm);
-        ArrayList<Film> filmArrayList = new ArrayList<>();
-        if (listIdFilm.size() == 0) {
-            return getFilms();
+        if (listIdFilm.size() == 0 ){
+            return (List<Film>) getFilm(quantityFilm);
         }
-        for (Film film : listIdFilm) {
-            System.out.println(film);
-            filmArrayList.add(getFilm(film.getId()));
-        }
-        return filmArrayList;
+        return listIdFilm;
     }
 
     public List<Film> getFilmsPopular() {
-        List<Film> listIdFilm = jdbcTemplate.query("SELECT DISTINCT id_films as id FROM users_like ul ORDER BY id_films  DESC LIMIT 10;", new RowMapper<Film>() {
+        List<Film> listIdFilm = jdbcTemplate.query("SELECT f.FILMS_ID AS id, f.NAME, f.DESCRIPTION, f.RELEASEDATE, f.DURATION, f.RATING, f.GENRE_ID AS genre, COUNT(ul.ID_FILMS) AS total_likes\n" +
+                "FROM FILMS f\n" +
+                "LEFT JOIN USERS_LIKE ul ON ul.ID_FILMS = f.FILMS_ID\n" +
+                "GROUP BY f.FILMS_ID, f.NAME, f.DESCRIPTION, f.RELEASEDATE, f.DURATION, f.RATING, f.GENRE_ID\n" +
+                "ORDER BY total_likes DESC\n" +
+                "LIMIT 10;", new RowMapper<Film>() {
             @Override
             public Film mapRow(ResultSet rs, int rowNum) throws SQLException {
                 Film film = new Film();
                 film.setId(rs.getInt("id"));
+                film.setName(rs.getString("name"));
+                film.setDescription(rs.getString("description"));
+                film.setReleaseDate(rs.getDate("releaseDate").toLocalDate());
+                film.setDuration(rs.getInt("duration"));
+                film.setMpa(getMPA(rs.getInt("rating")));
+                film.setGenres(getGanresId(rs.getInt("id")));
+                film.setRate(rs.getInt("total_likes"));
                 return film;
             }
         });
-        ArrayList<Film> filmArrayList = new ArrayList<>();
-        if (listIdFilm.size() == 0) {
+        if (listIdFilm.size() == 0 ){
             return getFilms();
         }
-        for (Film film : listIdFilm) {
-            filmArrayList.add(getFilm(film.getId()));
-        }
-        return filmArrayList;
+        return listIdFilm;
     }
 }

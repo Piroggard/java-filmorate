@@ -23,64 +23,65 @@ import java.util.Set;
 public class UserDbStorage {
     private final JdbcTemplate jdbcTemplate;
 
+
     public List<User> getUsers() {
-        List<User> users = jdbcTemplate.query("select id from users u ;", new RowMapper<User>() {
+        return jdbcTemplate.query("SELECT u.id, u.email, u.login, u.name, u.birthday\n" +
+                "FROM users u ", new RowMapper<User>() {
             @Override
             public User mapRow(ResultSet rs, int rowNum) throws SQLException {
-                User user = new User();
-                user.setId(rs.getInt("id"));
-                return user;
-            }
-        });
-        ArrayList<User> resultUsers = new ArrayList<>();
-        for (User user : users) {
-            resultUsers.add(getUser(user.getId()));
-        }
-        return resultUsers;
-    }
-
-
-    public User getUser(Integer id) {
-        return jdbcTemplate.queryForObject("SELECT u.id, u.email, u.login, u.name, u.birthday, lf.id_friend\n" +
-                        "FROM users u \n" +
-                        "LEFT JOIN list_friends lf ON u.id = lf.id_user\n" +
-                        "WHERE id= ?",
-                new RowMapper<User>() {
-            @Override
-            public User mapRow(ResultSet rs, int rowNum) throws SQLException {
-                Set<Integer> listFriends = new HashSet<>();
                 User user = new User();
                 user.setId(rs.getInt("id"));
                 user.setEmail(rs.getString("email"));
                 user.setLogin(rs.getString("login"));
                 user.setName(rs.getString("name"));
                 user.setBirthday(rs.getDate("birthday").toLocalDate());
-                Integer idFriend = rs.getInt("id_friend");
-                do {
-                    listFriends.add(rs.getInt("id_friend"));
-                } while (rs.next());
-                user.setListFriends(listFriends);
+                Set<Integer> listFriend  = new HashSet<>();
+                for (User user1 : getFriendsUser(rs.getInt("id"))) {
+                    listFriend.add(user1.getId());
+                }
+                user.setListFriends(listFriend);
+                return user;
+            }
+        });
+    }
+
+
+
+
+    public User getUser(Integer id) {
+        return jdbcTemplate.queryForObject("SELECT u.id, u.email, u.login, u.name, u.birthday FROM users u  where id =?;",
+                new RowMapper<User>() {
+            @Override
+            public User mapRow(ResultSet rs, int rowNum) throws SQLException {
+                User user = new User();
+                user.setId(rs.getInt("id"));
+                user.setEmail(rs.getString("email"));
+                user.setLogin(rs.getString("login"));
+                user.setName(rs.getString("name"));
+                user.setBirthday(rs.getDate("birthday").toLocalDate());
                 return user;
             }
         }, id);
     }
 
     public List<User> getFriendsUser(Integer idUser) {
-        List<User> userListFriend = jdbcTemplate.query("select id_friend as id \n" +
-                "from list_friends lf where lf.id_user =?;", new RowMapper<User>() {
+        return jdbcTemplate.query("select u.ID , u.EMAIL ,u.LOGIN  ,u.NAME   ,u.BIRTHDAY \n" +
+                "from list_friends lf \n" +
+                "JOIN USERS u ON u.ID = LF.ID_FRIEND \n" +
+                "where lf.id_user =? ;", new RowMapper<User>() {
             @Override
             public User mapRow(ResultSet rs, int rowNum) throws SQLException {
                 User user = new User();
                 user.setId(rs.getInt("id"));
+                user.setEmail(rs.getString("email"));
+                user.setLogin(rs.getString("login"));
+                user.setName(rs.getString("name"));
+                user.setBirthday(rs.getDate("birthday").toLocalDate());
                 return user;
             }
         },  idUser);
 
-        List<User> listFriend = new ArrayList<>();
-        for (User user : userListFriend) {
-            listFriend.add(getUser(user.getId()));
-        }
-        return listFriend;
+
     }
 
     public List<User> getListMutualFriend(Integer userId, Integer otherId) {
