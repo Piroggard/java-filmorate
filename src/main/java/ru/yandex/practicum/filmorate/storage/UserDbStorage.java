@@ -22,7 +22,6 @@ import java.util.Set;
 public class UserDbStorage {
     private final JdbcTemplate jdbcTemplate;
 
-
     public List<User> getUsers() {
         return jdbcTemplate.query("SELECT u.id, u.email, u.login, u.name, u.birthday\n" +
                 "FROM users u ", new RowMapper<User>() {
