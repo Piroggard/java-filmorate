@@ -85,27 +85,24 @@ public class UserDbStorage {
     }
 
     public List<User> getListMutualFriend(Integer userId, Integer otherId) {
-        List<User> userListFriend = jdbcTemplate.query("SELECT id_friend AS id\n" +
+        return jdbcTemplate.query("select u.ID , u.NAME, u.EMAIL , u.LOGIN , u.BIRTHDAY \n" +
+                "from list_friends lf \n" +
+                "JOIN USERS u ON u.ID = LF.ID_FRIEND \n" +
+                "where lf.id_user =?  AND id_friend IN (\n" +
+                "SELECT id_friend\n" +
                 "FROM list_friends\n" +
-                "WHERE id_user = ?  AND id_friend IN (\n" +
-                "    SELECT id_friend\n" +
-                "    FROM list_friends\n" +
-                "    WHERE id_user = ? \n" +
-                ");", new RowMapper<User>() {
+                "WHERE id_user = ?)", new RowMapper<User>() {
             @Override
             public User mapRow(ResultSet rs, int rowNum) throws SQLException {
                 User user = new User();
                 user.setId(rs.getInt("id"));
+                user.setEmail(rs.getString("email"));
+                user.setLogin(rs.getString("login"));
+                user.setName(rs.getString("name"));
+                user.setBirthday(rs.getDate("birthday").toLocalDate());
                 return user;
             }
         }, userId, otherId);
-
-        List<User> listFriend = new ArrayList<>();
-        for (User user : userListFriend) {
-            listFriend.add(getUser(user.getId()));
-        }
-        return listFriend;
-
     }
 
     public void deleteFriend(int userId, int friendId) {
