@@ -47,7 +47,7 @@ public class FilmDbStorage {
         });
     }
 
-    public Set<Genres> getGanresId (Integer id){
+    public Set<Genres> getGanresId (Integer id) {
        List<Genres> genresList = jdbcTemplate.query("SELECT g.GENRE_ID, g.NAME_GENRE\n" +
                "FROM GENRE g \n" +
                "JOIN FILM_GENRE fg ON fg.GENRE_ID = g.GENRE_ID \n" +
@@ -143,8 +143,7 @@ public class FilmDbStorage {
             genresList.add(genres);
         }
 
-        String SQL = "INSERT INTO FILM_GENRE (film_id, genre_id) VALUES(?,?);";
-        jdbcTemplate.batchUpdate(SQL, new BatchPreparedStatementSetter() {
+        jdbcTemplate.batchUpdate("INSERT INTO FILM_GENRE (film_id, genre_id) VALUES(?,?);", new BatchPreparedStatementSetter() {
             @Override
             public void setValues(PreparedStatement ps, int i) throws SQLException {
                 ps.setInt(1, keyFilm);
@@ -179,6 +178,7 @@ public class FilmDbStorage {
         for (Genres genre : film.getGenres()) {
             genresList.add(genre);
         }
+
         jdbcTemplate.batchUpdate("INSERT INTO film_genre (film_id, genre_id) VALUES(?,?);", new BatchPreparedStatementSetter() {
             @Override
             public void setValues(PreparedStatement ps, int i) throws SQLException {
@@ -341,7 +341,7 @@ public class FilmDbStorage {
                 return film;
             }
         });
-        if (listIdFilm.size() == 0 ){
+        if (listIdFilm.size() == 0) {
             return getFilms();
         }
         return listIdFilm;
