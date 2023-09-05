@@ -13,7 +13,6 @@ import ru.yandex.practicum.filmorate.validation.ValidationFilm;
 import ru.yandex.practicum.filmorate.validation.ValidationGanres;
 import ru.yandex.practicum.filmorate.validation.ValidationMpa;
 
-import java.util.Collections;
 import java.util.List;
 
 @Service
