@@ -47,7 +47,7 @@ public class FilmDbStorage {
         });
     }
 
-    public Set<Genres> getGanresId (Integer id) {
+    public Set<Genres>getGanresId (Integer id) {
        List<Genres> genresList = jdbcTemplate.query("SELECT g.GENRE_ID, g.NAME_GENRE\n" +
                "FROM GENRE g \n" +
                "JOIN FILM_GENRE fg ON fg.GENRE_ID = g.GENRE_ID \n" +
@@ -149,6 +149,7 @@ public class FilmDbStorage {
                 ps.setInt(1, keyFilm);
                 ps.setInt(2, genresList.get(i).getId());
             }
+
             @Override
             public int getBatchSize() {
                 return genresList.size();
@@ -185,6 +186,7 @@ public class FilmDbStorage {
                 ps.setInt(1, film.getId());
                 ps.setInt(2, genresList.get(i).getId());
             }
+
             @Override
             public int getBatchSize() {
                 return genresList.size();
