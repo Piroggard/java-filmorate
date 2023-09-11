@@ -18,28 +18,20 @@ public class Film implements Comparable<Film> {
     private String description;
     @NonNull
     private LocalDate releaseDate;
+    private Set<Genres> genres;
+    private Mpa mpa;
     private int duration;
     private Set<Integer> usersLikeMovie = new HashSet<>();
-    private int likes = 0;
+    private int rate;
 
-    public void setUsersLikeMovie(Set<Integer> usersLikeMovie) {
-        this.setLikes(usersLikeMovie.size());
-        this.usersLikeMovie = usersLikeMovie;
-    }
-
-    public void addLike(int id) {
-        usersLikeMovie.add(id);
-        setLikes(getLikes() + 1);
-    }
-
-    public void deleteLike(int id) {
-        usersLikeMovie.remove(id);
-        setLikes(getLikes() - 1);
-    }
-
-    @Override
-    public int compareTo(Film o) {
-        return Integer.compare(o.getLikes(), this.likes);
+    public Film(int id, @NonNull String name, @NonNull String description, @NonNull LocalDate releaseDate, Set<Genres> genre, int duration, Mpa mpa) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.releaseDate = releaseDate;
+        this.genres = genre;
+        this.duration = duration;
+        this.mpa = mpa;
     }
 
     public Film(@NonNull String name, @NonNull String description, @NonNull LocalDate releaseDate, int duration) {
@@ -47,5 +39,14 @@ public class Film implements Comparable<Film> {
         this.description = description;
         this.releaseDate = releaseDate;
         this.duration = duration;
+    }
+
+    @Override
+    public int compareTo(Film o) {
+        return Integer.compare(o.getRate(), this.rate);
+    }
+
+    public int compareById(Film o) {
+        return Integer.compare(this.id, o.getId());
     }
 }
