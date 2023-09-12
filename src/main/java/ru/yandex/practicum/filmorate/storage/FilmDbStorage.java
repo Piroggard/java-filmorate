@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genres;
 import ru.yandex.practicum.filmorate.model.Mpa;
@@ -347,5 +348,22 @@ public class FilmDbStorage {
             return getFilms();
         }
         return listIdFilm;
+    }
+
+
+    public List<Director> getDirectors() {
+        return null;
+    }
+
+    public Director getDirectorsById(Integer id) {
+        return null;
+    }
+
+    public Director postDirectors(Director director){
+        return null;
+    }
+
+    public Director putDirectors(Director director){
+        return null;
     }
 }
