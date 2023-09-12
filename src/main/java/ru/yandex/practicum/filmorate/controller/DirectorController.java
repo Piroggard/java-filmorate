@@ -23,16 +23,19 @@ public class DirectorController {
 
     @GetMapping("/directors")
     public List<Director> getDirectors() {
+        log.info("");
         return filmService.getDirectors();
     }
 
-    @GetMapping("/directors{id}")
+    @GetMapping("/directors/{id}")
     public Director getDirectorsById(@PathVariable Integer id) {
+        log.info("Получение данных по {}" , id);
         return filmService.getDirectorsById(id);
     }
 
     @PostMapping("/directors")
     public Director postDirectors(@RequestBody Director director){
+        log.info(" "+ director);
         return filmService.postDirectors(director);
     }
 

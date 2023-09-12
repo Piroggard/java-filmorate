@@ -15,6 +15,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genres;
 import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.storage.FilmDbStorage;
+import ru.yandex.practicum.filmorate.validation.ValidationDirectors;
 import ru.yandex.practicum.filmorate.validation.ValidationFilm;
 import ru.yandex.practicum.filmorate.validation.ValidationGanres;
 import ru.yandex.practicum.filmorate.validation.ValidationMpa;
@@ -28,6 +29,7 @@ public class FilmServiceImpl implements FilmService {
     private final FilmDbStorage filmDbStorage;
     private final ValidationFilm validationFilm = new ValidationFilm();
     private final ValidationGanres validationGanres = new ValidationGanres();
+    private final ValidationDirectors validationDirectors = new ValidationDirectors();
     private final ValidationMpa validationMpa = new ValidationMpa();
 
     @Override
@@ -107,18 +109,20 @@ public class FilmServiceImpl implements FilmService {
     }
     @Override
     public List<Director> getDirectors() {
-        return null;
+        return filmDbStorage.getDirectors();
     }
     @Override
     public Director getDirectorsById(Integer id) {
-        return null;
+        return filmDbStorage.getDirectorsById(id);
     }
     @Override
     public Director postDirectors(Director director){
-        return null;
+        validationDirectors.validation(director);
+        return filmDbStorage.postDirectors(director);
     }
     @Override
     public Director putDirectors(Director director){
-        return null;
+        validationDirectors.validation(director);
+        return filmDbStorage.putDirectors(director);
     }
 }

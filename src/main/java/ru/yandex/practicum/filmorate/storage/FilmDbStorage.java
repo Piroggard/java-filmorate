@@ -1,8 +1,10 @@
 package ru.yandex.practicum.filmorate.storage;
 
 import lombok.AllArgsConstructor;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -43,11 +45,36 @@ public class FilmDbStorage {
                 film.setDuration(rs.getInt("duration"));
                 film.setMpa(getMpa(rs.getInt("rating")));
                 film.setGenres(getGanresId(rs.getInt("id")));
+                film.setDirectors(getDirectors(rs.getInt("id")));
                 return film;
             }
         });
     }
 
+    public Set<Director> getDirectors (Integer id){
+        List <Director> directorList =  jdbcTemplate.query("SELECT d.DIRECTORS_ID , d.DIRECTORS_NAME  \n" +
+                "FROM DIRECTORS d \n" +
+                "JOIN FILM_DIRECTORS fd ON fd.DIRECTORS_ID = d.DIRECTORS_ID \n" +
+                "JOIN FILMS f ON f.FILMS_ID = fd.FILM_ID \n" +
+                "WHERE f.FILMS_ID = ?;" , new RowMapper<Director>() {
+            @Override
+            public Director mapRow(ResultSet rs, int rowNum) throws SQLException {
+                Director director = new Director();
+                director.setId(rs.getInt("DIRECTORS_ID"));
+                director.setName(rs.getString("DIRECTORS_NAME"));
+                return director;
+            }
+        }, id);
+        Set<Director> directors = new HashSet<>();
+        for (Director director : directorList) {
+            directors.add(director);
+        }
+        return directors;
+    }
+               /* Director director = new Director();
+                director.setId(rs.getInt("DIRECTORS_ID"));
+                director.setName(rs.getString("DIRECTORS_NAME"));
+                return director;*/
     public Set<Genres> getGanresId(Integer id) {
        List<Genres> genresList = jdbcTemplate.query("SELECT g.GENRE_ID, g.NAME_GENRE\n" +
                "FROM GENRE g \n" +
@@ -71,18 +98,23 @@ public class FilmDbStorage {
     }
 
     public Film getFilm(Integer idFilm) {
-        return jdbcTemplate.queryForObject("select films_id as id, f.name, f.description as description, releasedate as releaseDate, duration , r.reating_id as rating , ul.id_user  as usersLikeMovie, fg.genre_id as genre, " +
-                "g.name_genre as nameGenre, r.name as nameMPA, r.description as descriptionMPA " +
+        return jdbcTemplate.queryForObject("select films_id as id, f.name, f.description as description, releasedate as releaseDate, \n" +
+                "duration , r.reating_id as rating , ul.id_user  as usersLikeMovie, fg.genre_id as genre, \n" +
+                "g.name_genre as nameGenre, r.name as nameMPA, r.description as descriptionMPA , d.DIRECTORS_ID , d.DIRECTORS_NAME \n" +
                 "from films f\n" +
-                "              LEFT JOIN reating r on r.reating_id = f.rating\n" +
-                "                LEFT JOIN users_like ul on f.films_id = ul.id_films\n" +
-                "                LEFT JOIN FILM_GENRE fg  on fg.film_id = f.films_id \n" +
-                "                left join genre g on g.genre_id = fg.genre_id where films_id =?;", new RowMapper<Film>() {
+                "LEFT JOIN reating r on r.reating_id = f.rating\n" +
+                "LEFT JOIN users_like ul on f.films_id = ul.id_films\n" +
+                "LEFT JOIN FILM_GENRE fg  on fg.film_id = f.films_id \n" +
+                "left join genre g on g.genre_id = fg.genre_id \n" +
+                "LEFT JOIN FILM_DIRECTORS fd ON fd.FILM_ID = f.FILMS_ID \n" +
+                "LEFT JOIN DIRECTORS d ON d.DIRECTORS_ID = fd.DIRECTORS_ID " +
+                "where films_id =?;", new RowMapper<Film>() {
             @Override
             public Film mapRow(ResultSet rs, int rowNum) throws SQLException {
                 Mpa mpa = new Mpa();
                 Set<Integer> usersLikeMovie = new HashSet<>();
                 Set<Genres> genres = new HashSet<>();
+                Set<Director> directors = new HashSet<>();
                 Film film = new Film();
                 film.setId(rs.getInt("id"));
                 film.setName(rs.getString("name"));
@@ -94,7 +126,16 @@ public class FilmDbStorage {
                 mpa.setDescription(rs.getString("descriptionMPA"));
                 film.setMpa(mpa);
                 Integer i = rs.getInt("genre");
+                Integer checkDirector = rs.getInt("DIRECTORS_ID");
                 do {
+                    Director director = new Director();
+                    if (checkDirector > 0){
+                        director.setId(rs.getInt("DIRECTORS_ID"));
+                        director.setName(rs.getString("DIRECTORS_NAME"));
+                        System.out.println(director);
+                        directors.add(director);
+                        film.setDirectors(directors);
+                    }
                     usersLikeMovie.add(rs.getInt("usersLikeMovie"));
                     if (i == 0) {
                         break;
@@ -103,10 +144,13 @@ public class FilmDbStorage {
                     genres1.setId(rs.getInt("genre"));
                     genres1.setName(rs.getString("nameGenre"));
                     genres.add(genres1);
+
+
                 } while (rs.next());
                 List<Genres> genresList = new ArrayList<>(genres);
                 Collections.sort(genresList);
                 Set<Genres> genresSet = new HashSet<>(genresList);
+
                 film.setGenres(genresSet);
                 film.setUsersLikeMovie(usersLikeMovie);
                 int like = 0;
@@ -157,6 +201,28 @@ public class FilmDbStorage {
             }
         });
 
+        if (film.getDirectors() != null) {
+            List<Director> directorList = new ArrayList<>();
+
+            for (Director director : film.getDirectors()) {
+                directorList.add(director);
+            }
+
+            jdbcTemplate.batchUpdate("INSERT INTO FILM_DIRECTORS (FILM_ID, DIRECTORS_ID) VALUES(?,?);", new BatchPreparedStatementSetter() {
+                @Override
+                public void setValues(PreparedStatement ps, int i) throws SQLException {
+                    ps.setInt(1, keyFilm);
+                    ps.setInt(2, directorList.get(i).getId());
+                }
+
+                @Override
+                public int getBatchSize() {
+                    return directorList.size();
+                }
+            });
+
+        }
+
         return getFilm(keyFilm);
     }
 
@@ -164,35 +230,72 @@ public class FilmDbStorage {
         jdbcTemplate.update("update films set name = ?, description =?, releasedate = ?, duration  = ?, rating =?" +
                         " where films_id = ?;", film.getName(), film.getDescription(), film.getReleaseDate(), film.getDuration(),
                 film.getMpa().getId(), film.getId());
-        if (film.getGenres() == null) {
-            jdbcTemplate.update(" DELETE FROM film_genre fg where fg.film_id =?  ;", film.getId());
-            return getFilmNotGanre(film.getId());
-        }
 
-        Set<Genres> genresSet = film.getGenres();
-        if (genresSet.size() == 0) {
-            jdbcTemplate.update(" DELETE FROM film_genre fg where fg.film_id =?  ;", film.getId());
-            return getFilmNotGanre(film.getId());
-        }
         jdbcTemplate.update(" DELETE FROM film_genre fg where fg.film_id =?  ;", film.getId());
+        jdbcTemplate.update(" DELETE FROM FILM_DIRECTORS  WHERE FILM_ID =?  ;", film.getId());
 
+        /*if (film.getGenres() == null) {
+            jdbcTemplate.update(" DELETE FROM film_genre fg where fg.film_id =?  ;", film.getId());
+            return getFilmNotGanre(film.getId());
+        }*/
+
+        /*if (genresSet.size() == 0) {
+            jdbcTemplate.update(" DELETE FROM film_genre fg where fg.film_id =?  ;", film.getId());
+            return getFilmNotGanre(film.getId());
+        }*/
+        //jdbcTemplate.update(" DELETE FROM film_genre fg where fg.film_id =?  ;", film.getId());
         List<Genres> genresList = new ArrayList<>();
-        for (Genres genre : film.getGenres()) {
-            genresList.add(genre);
+        if (film.getGenres() != null){
+            for (Genres genre : film.getGenres()) {
+                genresList.add(genre);
+            }
+
+            jdbcTemplate.batchUpdate("INSERT INTO film_genre (film_id, genre_id) VALUES(?,?);", new BatchPreparedStatementSetter() {
+                @Override
+                public void setValues(PreparedStatement ps, int i) throws SQLException {
+                    ps.setInt(1, film.getId());
+                    ps.setInt(2, genresList.get(i).getId());
+                }
+
+                @Override
+                public int getBatchSize() {
+                    return genresList.size();
+                }
+            });
         }
-
-        jdbcTemplate.batchUpdate("INSERT INTO film_genre (film_id, genre_id) VALUES(?,?);", new BatchPreparedStatementSetter() {
-            @Override
-            public void setValues(PreparedStatement ps, int i) throws SQLException {
-                ps.setInt(1, film.getId());
-                ps.setInt(2, genresList.get(i).getId());
+        List<Director> directorList = new ArrayList<>();
+        if (film.getDirectors() != null){
+            for (Director director : film.getDirectors()) {
+                directorList.add(director);
             }
 
-            @Override
-            public int getBatchSize() {
-                return genresList.size();
-            }
-        });
+            jdbcTemplate.batchUpdate("INSERT INTO FILM_DIRECTORS (FILM_ID, DIRECTORS_ID) VALUES(?,?);", new BatchPreparedStatementSetter() {
+                @Override
+                public void setValues(PreparedStatement ps, int i) throws SQLException {
+                    ps.setInt(1, film.getId());
+                    ps.setInt(2, directorList.get(i).getId());
+                }
+
+                @Override
+                public int getBatchSize() {
+                    return directorList.size();
+                }
+            });
+
+            jdbcTemplate.batchUpdate("UPDATE films SET directors_id = ? WHERE films_id = ?;", new BatchPreparedStatementSetter() {
+                @Override
+                public void setValues(PreparedStatement ps, int i) throws SQLException {
+                    ps.setInt(2, directorList.get(i).getId());
+                    ps.setInt(1, film.getId());
+
+                }
+
+                @Override
+                public int getBatchSize() {
+                    return directorList.size();
+                }
+            });
+        }
         return getFilm(film.getId());
     }
 
@@ -352,18 +455,51 @@ public class FilmDbStorage {
 
 
     public List<Director> getDirectors() {
-        return null;
+        return jdbcTemplate.query("SELECT DIRECTORS_ID , DIRECTORS_NAME FROM DIRECTORS;", new RowMapper<Director>() {
+            @Override
+            public Director mapRow(ResultSet rs, int rowNum) throws SQLException {
+                Director director = new Director();
+                director.setId(rs.getInt("DIRECTORS_ID"));
+                director.setName(rs.getString("DIRECTORS_NAME"));
+                return director;
+            }
+        });
     }
 
     public Director getDirectorsById(Integer id) {
-        return null;
+        return jdbcTemplate.queryForObject("SELECT DIRECTORS_ID , DIRECTORS_NAME FROM DIRECTORS WHERE DIRECTORS_ID =?;",
+                new RowMapper<Director>() {
+                    @Override
+                    public Director mapRow(ResultSet rs, int rowNum) throws SQLException {
+                        Director director = new Director();
+                        director.setId(rs.getInt("DIRECTORS_ID"));
+                        director.setName(rs.getString("DIRECTORS_NAME"));
+                        return director;
+                    }
+                }, id);
     }
 
     public Director postDirectors(Director director){
-        return null;
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(con -> {
+            PreparedStatement ps = con.prepareStatement("INSERT INTO DIRECTORS (DIRECTORS_NAME) VALUES (?)", new String[]{"DIRECTORS_ID"});
+            ps.setString(1, director.getName());
+
+            return ps;
+        }, keyHolder);
+        Integer keyDirectors = keyHolder.getKey().intValue();
+        return getDirectorsById(keyDirectors);
     }
 
+
+
+
+
+
+
     public Director putDirectors(Director director){
-        return null;
+        jdbcTemplate.update("UPDATE DIRECTORS SET DIRECTORS_NAME  = ? WHERE DIRECTORS_ID = ?", director.getName(),
+                director.getId());
+        return getDirectorsById(director.getId());
     }
 }

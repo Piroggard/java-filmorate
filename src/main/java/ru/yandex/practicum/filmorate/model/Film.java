@@ -47,6 +47,16 @@ public class Film implements Comparable<Film> {
         this.directors = directors;
     }
 
+    public Film(int id, @NonNull String name, @NonNull String description, @NonNull LocalDate releaseDate, int duration, Mpa mpa, Set<Director> directors) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.releaseDate = releaseDate;
+        this.duration = duration;
+        this.mpa = mpa;
+        this.directors = directors;
+    }
+
     public Film(@NonNull String name, @NonNull String description, @NonNull LocalDate releaseDate, int duration) {
         this.name = name;
         this.description = description;

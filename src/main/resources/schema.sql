@@ -54,7 +54,7 @@ CREATE TABLE IF NOT EXISTS users_like (
 );
 
 CREATE TABLE IF NOT EXISTS directors (
-  directors_id INT PRIMARY KEY,
+  directors_id INT AUTO_INCREMENT PRIMARY KEY,
   directors_name VARCHAR(255)
 );
 
