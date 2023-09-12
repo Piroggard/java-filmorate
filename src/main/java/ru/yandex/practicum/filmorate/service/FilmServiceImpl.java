@@ -125,4 +125,9 @@ public class FilmServiceImpl implements FilmService {
         validationDirectors.validation(director);
         return filmDbStorage.putDirectors(director);
     }
+
+    @Override
+    public List<Film> getFilmDirectorYearOrLike(Integer directorId, List<String> sortBy) {
+        return filmDbStorage.getFilmDirectorYearOrLike(directorId, sortBy);
+    }
 }

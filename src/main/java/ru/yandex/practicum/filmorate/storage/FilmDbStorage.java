@@ -9,6 +9,8 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genres;
@@ -213,6 +215,19 @@ public class FilmDbStorage {
                 public void setValues(PreparedStatement ps, int i) throws SQLException {
                     ps.setInt(1, keyFilm);
                     ps.setInt(2, directorList.get(i).getId());
+                }
+
+                @Override
+                public int getBatchSize() {
+                    return directorList.size();
+                }
+            });
+
+            jdbcTemplate.batchUpdate("UPDATE films SET directors_id = ? WHERE films_id = ?;", new BatchPreparedStatementSetter() {
+                @Override
+                public void setValues(PreparedStatement ps, int i) throws SQLException {
+                    ps.setInt(2, directorList.get(i).getId());
+                    ps.setInt(1, keyFilm);
                 }
 
                 @Override
@@ -501,5 +516,35 @@ public class FilmDbStorage {
         jdbcTemplate.update("UPDATE DIRECTORS SET DIRECTORS_NAME  = ? WHERE DIRECTORS_ID = ?", director.getName(),
                 director.getId());
         return getDirectorsById(director.getId());
+    }
+
+    public List<Film> getFilmDirectorYearOrLike(Integer directorId, List<String> sortBy) {
+        if (sortBy.get(0).equals("year")){
+            return jdbcTemplate.query("SELECT FILMS_ID AS id, NAME as name , DESCRIPTION as description , RELEASEDATE as releaseDate , DURATION as duration, RATING as rating, GENRE_ID AS genre \n" +
+                    "FROM FILMS f \n" +
+                    "LEFT JOIN FILM_DIRECTORS fd ON fd.FILM_ID = f.FILMS_ID\n" +
+                    "LEFT JOIN DIRECTORS d ON d.DIRECTORS_ID = fd.DIRECTORS_ID\n" +
+                    "WHERE f.DIRECTORS_ID = ?\n" +
+                    "ORDER BY releaseDate DESC;", new RowMapper<Film>() {
+                @Override
+                public Film mapRow(ResultSet rs, int rowNum) throws SQLException {
+                    Film film = new Film();
+                    film.setId(rs.getInt("id"));
+                    film.setName(rs.getString("name"));
+                    film.setDescription(rs.getString("description"));
+                    film.setReleaseDate(rs.getDate("releaseDate").toLocalDate());
+                    film.setDuration(rs.getInt("duration"));
+                    film.setMpa(getMpa(rs.getInt("rating")));
+                    film.setGenres(getGanresId(rs.getInt("id")));
+                    film.setDirectors(getDirectors(rs.getInt("id")));
+                    return film;
+                }
+            }, directorId);
+
+        } else if (sortBy.get(0).equals("likes")){
+
+        }
+        return null;
+
     }
 }

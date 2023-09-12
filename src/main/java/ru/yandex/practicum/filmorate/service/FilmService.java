@@ -35,9 +35,11 @@ public interface FilmService {
 
     List<Director> getDirectors();
 
-    public Director getDirectorsById(Integer id);
+    Director getDirectorsById(Integer id);
 
-    public Director postDirectors(Director director);
+    Director postDirectors(Director director);
 
-    public Director putDirectors(Director director);
+    Director putDirectors(Director director);
+
+    List<Film> getFilmDirectorYearOrLike (Integer directorId, List<String> sortBy );
 }
