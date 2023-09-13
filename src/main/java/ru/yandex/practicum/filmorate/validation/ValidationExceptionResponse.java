@@ -30,11 +30,11 @@ public class ValidationExceptionResponse {
         return Map.of("Error", e.getMessage());
     }
 
-    /*@ExceptionHandler
+    @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public Map<String, String> internalServerError(final RuntimeException e) {
         return Map.of("Error", "Internal Server Error");
-    }*/
+    }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)

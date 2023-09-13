@@ -133,6 +133,8 @@ public class FilmServiceImpl implements FilmService {
 
     @Override
     public void deleteDirectors(int id) {
-        return filmDbStorage.deleteDirectors(id);
+        filmDbStorage.deleteDirectors(id);
     }
+
+
 }
