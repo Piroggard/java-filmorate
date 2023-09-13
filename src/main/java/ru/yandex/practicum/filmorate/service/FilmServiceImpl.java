@@ -4,11 +4,6 @@ import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import ru.yandex.practicum.filmorate.controller.UserController;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -21,6 +16,7 @@ import ru.yandex.practicum.filmorate.validation.ValidationGanres;
 import ru.yandex.practicum.filmorate.validation.ValidationMpa;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -134,6 +130,12 @@ public class FilmServiceImpl implements FilmService {
     @Override
     public void deleteDirectors(int id) {
         filmDbStorage.deleteDirectors(id);
+    }
+
+    @Override
+    public List<Film> getFilmPieceNameOrDirectorPieceName(String query, List<String> by) {
+
+        return filmDbStorage.getFilmPieceNameOrDirectorPieceName(query.toLowerCase(), by);
     }
 
 
