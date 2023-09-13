@@ -68,6 +68,8 @@ public class FilmDbStorage {
             }
         }, id);
         Set<Director> directors = new HashSet<>();
+
+
         for (Director director : directorList) {
             directors.add(director);
         }
@@ -137,6 +139,9 @@ public class FilmDbStorage {
                         System.out.println(director);
                         directors.add(director);
                         film.setDirectors(directors);
+                    } else {
+                        Set<Director> set = new HashSet<>();
+                        film.setDirectors(set);
                     }
                     usersLikeMovie.add(rs.getInt("usersLikeMovie"));
                     if (i == 0) {
@@ -248,6 +253,10 @@ public class FilmDbStorage {
 
         jdbcTemplate.update(" DELETE FROM film_genre fg where fg.film_id =?  ;", film.getId());
         jdbcTemplate.update(" DELETE FROM FILM_DIRECTORS  WHERE FILM_ID =?  ;", film.getId());
+        if (film.getDirectors() != null){
+
+        }
+
 
         /*if (film.getGenres() == null) {
             jdbcTemplate.update(" DELETE FROM film_genre fg where fg.film_id =?  ;", film.getId());
@@ -577,5 +586,9 @@ public class FilmDbStorage {
         }
         return null;
 
+    }
+
+    public void deleteDirectors(int id) {
+        return filmDbStorage.deleteDirectors(id);
     }
 }

@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.controller;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -42,6 +43,11 @@ public class DirectorController {
     @PutMapping("/directors")
     public Director putDirectors(@RequestBody Director director){
         return filmService.putDirectors(director);
+    }
+
+    @DeleteMapping("/directors/{id}")
+    public void deleteDirectors(@PathVariable int id) {
+        filmService.deleteDirectors(id);
     }
 
 }
