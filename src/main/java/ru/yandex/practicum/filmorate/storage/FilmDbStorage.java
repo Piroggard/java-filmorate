@@ -615,7 +615,7 @@ public class FilmDbStorage {
                         "left join genre g on g.genre_id = fg.genre_id \n" +
                         "LEFT JOIN FILM_DIRECTORS fd ON fd.FILM_ID = f.FILMS_ID \n" +
                         "LEFT JOIN DIRECTORS d ON d.DIRECTORS_ID = fd.DIRECTORS_ID \n" +
-                        "WHERE LOWER(f.DESCRIPTION)  LIKE '%?%' or LOWER(d.DIRECTORS_NAME) LIKE '%?%';", new RowMapper<Film>() {
+                        "WHERE LOWER(d.DIRECTORS_NAME) LIKE ? or LOWER(f.DESCRIPTION) LIKE ? ORDER BY ul.id_user DESC ;", new RowMapper<Film>() {
                     @Override
                     public Film mapRow(ResultSet rs, int rowNum) throws SQLException {
                         Film film = new Film();
@@ -629,7 +629,7 @@ public class FilmDbStorage {
                         film.setDirectors(getDirectors(rs.getInt("id")));
                         return film;
                     }
-                }, query);
+                }, "%" + query + "%", "%" + query + "%");
             }
 
         }
@@ -645,7 +645,7 @@ public class FilmDbStorage {
                     "left join genre g on g.genre_id = fg.genre_id \n" +
                     "LEFT JOIN FILM_DIRECTORS fd ON fd.FILM_ID = f.FILMS_ID \n" +
                     "LEFT JOIN DIRECTORS d ON d.DIRECTORS_ID = fd.DIRECTORS_ID \n" +
-                    "WHERE LOWER(f.DESCRIPTION)  LIKE '%?%';", new RowMapper<Film>() {
+                    "WHERE LOWER(f.DESCRIPTION)  LIKE ?;", new RowMapper<Film>() {
                 @Override
                 public Film mapRow(ResultSet rs, int rowNum) throws SQLException {
                     Film film = new Film();
@@ -659,7 +659,7 @@ public class FilmDbStorage {
                     film.setDirectors(getDirectors(rs.getInt("id")));
                     return film;
                 }
-            }, query);
+            }, "%" + query + "%");
         }
 
 
@@ -674,7 +674,7 @@ public class FilmDbStorage {
                     "left join genre g on g.genre_id = fg.genre_id \n" +
                     "LEFT JOIN FILM_DIRECTORS fd ON fd.FILM_ID = f.FILMS_ID \n" +
                     "LEFT JOIN DIRECTORS d ON d.DIRECTORS_ID = fd.DIRECTORS_ID \n" +
-                    "WHERE LOWER(d.DIRECTORS_NAME) LIKE '%?%';", new RowMapper<Film>() {
+                    "WHERE LOWER(d.DIRECTORS_NAME) LIKE ?;", new RowMapper<Film>() {
                 @Override
                 public Film mapRow(ResultSet rs, int rowNum) throws SQLException {
                     Film film = new Film();
@@ -688,7 +688,7 @@ public class FilmDbStorage {
                     film.setDirectors(getDirectors(rs.getInt("id")));
                     return film;
                 }
-            }, query);
+            }, "%" + query + "%");
         }
         return null;
     }
