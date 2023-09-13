@@ -520,12 +520,18 @@ public class FilmDbStorage {
 
     public List<Film> getFilmDirectorYearOrLike(Integer directorId, List<String> sortBy) {
         if (sortBy.get(0).equals("year")){
-            return jdbcTemplate.query("SELECT FILMS_ID AS id, NAME as name , DESCRIPTION as description , RELEASEDATE as releaseDate , DURATION as duration, RATING as rating, GENRE_ID AS genre \n" +
-                    "FROM FILMS f \n" +
-                    "LEFT JOIN FILM_DIRECTORS fd ON fd.FILM_ID = f.FILMS_ID\n" +
-                    "LEFT JOIN DIRECTORS d ON d.DIRECTORS_ID = fd.DIRECTORS_ID\n" +
-                    "WHERE f.DIRECTORS_ID = ?\n" +
-                    "ORDER BY releaseDate DESC;", new RowMapper<Film>() {
+            return jdbcTemplate.query("select films_id as id, f.name, f.description as description, releasedate as releaseDate, \n" +
+                    "duration , r.reating_id as rating , ul.id_user  as usersLikeMovie, fg.genre_id as genre, \n" +
+                    "g.name_genre as nameGenre, r.name as nameMPA, r.description as descriptionMPA , d.DIRECTORS_ID , d.DIRECTORS_NAME \n" +
+                    "from films f\n" +
+                    "LEFT JOIN reating r on r.reating_id = f.rating\n" +
+                    "LEFT JOIN users_like ul on f.films_id = ul.id_films\n" +
+                    "LEFT JOIN FILM_GENRE fg  on fg.film_id = f.films_id \n" +
+                    "left join genre g on g.genre_id = fg.genre_id \n" +
+                    "LEFT JOIN FILM_DIRECTORS fd ON fd.FILM_ID = f.FILMS_ID \n" +
+                    "LEFT JOIN DIRECTORS d ON d.DIRECTORS_ID = fd.DIRECTORS_ID \n" +
+                    "WHERE fd.DIRECTORS_ID =? " +
+                    "ORDER BY releaseDate ASC;", new RowMapper<Film>() {
                 @Override
                 public Film mapRow(ResultSet rs, int rowNum) throws SQLException {
                     Film film = new Film();
@@ -542,7 +548,32 @@ public class FilmDbStorage {
             }, directorId);
 
         } else if (sortBy.get(0).equals("likes")){
-
+            return jdbcTemplate.query("select films_id as id, f.name, f.description as description, releasedate as releaseDate, \n" +
+                    "duration , r.reating_id as rating , ul.id_user  as usersLikeMovie, fg.genre_id as genre, \n" +
+                    "g.name_genre as nameGenre, r.name as nameMPA, r.description as descriptionMPA , d.DIRECTORS_ID , d.DIRECTORS_NAME \n" +
+                    "from films f\n" +
+                    "LEFT JOIN reating r on r.reating_id = f.rating\n" +
+                    "LEFT JOIN users_like ul on f.films_id = ul.id_films\n" +
+                    "LEFT JOIN FILM_GENRE fg  on fg.film_id = f.films_id \n" +
+                    "left join genre g on g.genre_id = fg.genre_id \n" +
+                    "LEFT JOIN FILM_DIRECTORS fd ON fd.FILM_ID = f.FILMS_ID \n" +
+                    "LEFT JOIN DIRECTORS d ON d.DIRECTORS_ID = fd.DIRECTORS_ID \n" +
+                    "WHERE fd.DIRECTORS_ID =? " +
+                    "ORDER BY usersLikeMovie ASC;", new RowMapper<Film>() {
+                @Override
+                public Film mapRow(ResultSet rs, int rowNum) throws SQLException {
+                    Film film = new Film();
+                    film.setId(rs.getInt("id"));
+                    film.setName(rs.getString("name"));
+                    film.setDescription(rs.getString("description"));
+                    film.setReleaseDate(rs.getDate("releaseDate").toLocalDate());
+                    film.setDuration(rs.getInt("duration"));
+                    film.setMpa(getMpa(rs.getInt("rating")));
+                    film.setGenres(getGanresId(rs.getInt("id")));
+                    film.setDirectors(getDirectors(rs.getInt("id")));
+                    return film;
+                }
+            }, directorId);
         }
         return null;
 
