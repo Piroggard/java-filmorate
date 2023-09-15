@@ -49,13 +49,13 @@ public class FilmController {
 
     @GetMapping("/films/popular")
     @ResponseBody
-    public List<Film> getListBestMovies(@RequestParam(required = false) Integer count) {
+    public List<Film>getListBestMovies(@RequestParam(required = false) Integer count) {
         return filmService.getListBestMovies(count);
     }
 
     @GetMapping("/films/director/{directorId}")
     @ResponseBody
-    public List<Film> getFilmDirectorYearOrLike (@PathVariable int directorId, @RequestParam (name = "sortBy") List <String> sortBy){
+    public List<Film>getFilmDirectorYearOrLike (@PathVariable int directorId, @RequestParam (name = "sortBy") List<String> sortBy) {
         return filmService.getFilmDirectorYearOrLike(directorId, sortBy);
     }
 
@@ -63,8 +63,7 @@ public class FilmController {
     @ResponseBody
     public List<Film> getFilmPieceNameOrDirectorPieceName(
         @RequestParam (name = "query") String query,
-                @RequestParam (name = "by") List<String> by){
-        log.info(query , by);
+                @RequestParam (name = "by") List<String>by) {
         return filmService.getFilmPieceNameOrDirectorPieceName(query, by);
     }
 }
