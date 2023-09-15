@@ -4,11 +4,6 @@ import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import ru.yandex.practicum.filmorate.controller.UserController;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -107,21 +102,25 @@ public class FilmServiceImpl implements FilmService {
     public List<Genres> getGanres() {
         return filmDbStorage.getGanres();
     }
+
     @Override
     public List<Director> getDirectors() {
         return filmDbStorage.getDirectors();
     }
+
     @Override
     public Director getDirectorsById(Integer id) {
         return filmDbStorage.getDirectorsById(id);
     }
+
     @Override
-    public Director postDirectors(Director director){
+    public Director postDirectors(Director director) {
         validationDirectors.validation(director);
         return filmDbStorage.postDirectors(director);
     }
+
     @Override
-    public Director putDirectors(Director director){
+    public Director putDirectors(Director director) {
         validationDirectors.validation(director);
         return filmDbStorage.putDirectors(director);
     }
@@ -135,6 +134,4 @@ public class FilmServiceImpl implements FilmService {
     public void deleteDirectors(int id) {
         filmDbStorage.deleteDirectors(id);
     }
-
-
 }
