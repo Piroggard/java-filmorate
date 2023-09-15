@@ -7,27 +7,60 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.exception.DataNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genres;
 import ru.yandex.practicum.filmorate.model.Mpa;
-
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 
 @Component
 @AllArgsConstructor
 public class FilmDbStorage {
     public final JdbcTemplate jdbcTemplate;
+
+    public List<Integer> getFilmGenre(int filmId) {
+        String sql = "select * from FILM_GENRE where FILM_ID = ?";
+        return jdbcTemplate.query(sql, this::mapRowToGenreOne, filmId);
+    }
+
+    private int mapRowToGenreOne(ResultSet resultSet, int numRow) throws SQLException {
+        return resultSet.getInt("GENRE_ID");
+    }
+
+    public Genres getGenre(int id) {
+        String sql = "select * from GENRE where GENRE_ID = ?";
+        List<Genres> query = jdbcTemplate.query(sql, this::mapRowToGenre, id);
+        switch (query.size()) {
+            case 0:
+                return null;
+            case 1:
+                return query.get(0);
+            default:
+                throw new DataNotFoundException(String.format("Ошибка при запросе данных из БД GENRES, id=%s.", id));
+        }
+    }
+
+    private Genres mapRowToGenre(ResultSet resultSet, int rowNum) throws SQLException {
+        return Genres.builder()
+                .id(resultSet.getInt("GENRE_ID"))
+                .name(resultSet.getString("NAME_GENRE"))
+                .build();
+    }
+
+    public Set<Integer> getUsersLike(int filmId) {
+        String sql = "select * from USERS_LIKE where ID_FILMS = ?";
+        return new HashSet<>(jdbcTemplate.query(sql, this::mapRowToLike, filmId));
+    }
+
+    private int mapRowToLike(ResultSet resultSet, int numRow) throws SQLException {
+        return resultSet.getInt("ID_USER");
+    }
 
 
     public List<Film> getFilms() {
@@ -48,12 +81,12 @@ public class FilmDbStorage {
     }
 
     public Set<Genres> getGanresId(Integer id) {
-       List<Genres> genresList = jdbcTemplate.query("SELECT g.GENRE_ID, g.NAME_GENRE\n" +
-               "FROM GENRE g \n" +
-               "JOIN FILM_GENRE fg ON fg.GENRE_ID = g.GENRE_ID \n" +
-               "JOIN FILMS f ON f.FILMS_ID = fg.FILM_ID \n" +
-               "WHERE f.FILMS_ID =?" +
-               "ORDER BY g.GENRE_ID ASC;", new RowMapper<Genres>() {
+        List<Genres> genresList = jdbcTemplate.query("SELECT g.GENRE_ID, g.NAME_GENRE\n" +
+                "FROM GENRE g \n" +
+                "JOIN FILM_GENRE fg ON fg.GENRE_ID = g.GENRE_ID \n" +
+                "JOIN FILMS f ON f.FILMS_ID = fg.FILM_ID \n" +
+                "WHERE f.FILMS_ID =?" +
+                "ORDER BY g.GENRE_ID ASC;", new RowMapper<Genres>() {
             @Override
             public Genres mapRow(ResultSet rs, int rowNum) throws SQLException {
                 Genres genres = new Genres();
@@ -62,7 +95,7 @@ public class FilmDbStorage {
                 return genres;
             }
         }, id);
-       Set<Genres> genres = new HashSet<>();
+        Set<Genres> genres = new HashSet<>();
         for (Genres genres1 : genresList) {
             genres.add(genres1);
         }

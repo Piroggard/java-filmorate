@@ -5,22 +5,54 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.ZoneId;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Component
 @AllArgsConstructor
 public class UserDbStorage {
     private final JdbcTemplate jdbcTemplate;
+
+    final FilmDbStorage filmDbStorage;
+
+    public HashMap<Film, Double> getLikeListByUser(long userId) {
+        String sql = "" +
+                "select FILMS.*, NAME, ID_USER " +
+                "from FILMS " +
+                "join REATING on FILMS.REATING_ID = REATING.REATING_ID " +
+                "join " +
+                "( " +
+                "select * from USERS_LIKE where ID_USER = ? " +
+                ") L " +
+                "on FILMS.FILMS_ID = L.ID_FILMS ";
+        SqlRowSet rs = (jdbcTemplate.queryForRowSet(sql, userId));
+        HashMap<Film, Double> result = new HashMap<>();
+        while (rs.next()) {
+            Film film = Film.builder()
+                    .id(rs.getInt("FILMS_ID"))
+                    .name(rs.getString("NAME"))
+                    .description(rs.getString("DESCRIPTION"))
+                    .releaseDate(rs.getDate("RELEASEDATE").toLocalDate())
+                    .duration(rs.getInt("DURATION"))
+                    .mpa(Mpa.builder()
+                            .id(rs.getInt("REATING_ID"))
+                            .name(rs.getString("NAME"))
+                            .build())
+                    .build();
+            double rate = rs.getDouble("ID_USER"); // Оценка фильма. На текущем этапе - 1 или отсутствует.
+            result.put(film, rate);
+        }
+        return result;
+    }
 
     public List<User> getUsers() {
         return jdbcTemplate.query("SELECT u.id, u.email, u.login, u.name, u.birthday\n" +
@@ -33,7 +65,7 @@ public class UserDbStorage {
                 user.setLogin(rs.getString("login"));
                 user.setName(rs.getString("name"));
                 user.setBirthday(rs.getDate("birthday").toLocalDate());
-                Set<Integer> listFriend  = new HashSet<>();
+                Set<Integer> listFriend = new HashSet<>();
                 for (User user1 : getFriendsUser(rs.getInt("id"))) {
                     listFriend.add(user1.getId());
                 }
@@ -46,17 +78,17 @@ public class UserDbStorage {
     public User getUser(Integer id) {
         return jdbcTemplate.queryForObject("SELECT u.id, u.email, u.login, u.name, u.birthday FROM users u  where id =?;",
                 new RowMapper<User>() {
-            @Override
-            public User mapRow(ResultSet rs, int rowNum) throws SQLException {
-                User user = new User();
-                user.setId(rs.getInt("id"));
-                user.setEmail(rs.getString("email"));
-                user.setLogin(rs.getString("login"));
-                user.setName(rs.getString("name"));
-                user.setBirthday(rs.getDate("birthday").toLocalDate());
-                return user;
-            }
-        }, id);
+                    @Override
+                    public User mapRow(ResultSet rs, int rowNum) throws SQLException {
+                        User user = new User();
+                        user.setId(rs.getInt("id"));
+                        user.setEmail(rs.getString("email"));
+                        user.setLogin(rs.getString("login"));
+                        user.setName(rs.getString("name"));
+                        user.setBirthday(rs.getDate("birthday").toLocalDate());
+                        return user;
+                    }
+                }, id);
     }
 
     public List<User> getFriendsUser(Integer idUser) {
@@ -74,7 +106,7 @@ public class UserDbStorage {
                 user.setBirthday(rs.getDate("birthday").toLocalDate());
                 return user;
             }
-        },  idUser);
+        }, idUser);
     }
 
     public List<User> getListMutualFriend(Integer userId, Integer otherId) {
@@ -103,7 +135,7 @@ public class UserDbStorage {
     }
 
     public List<Integer> getListFriend(int friendId) {
-       return jdbcTemplate.query("select id_friend  from list_friends lf where id_user = ?;", new RowMapper<Integer>() {
+        return jdbcTemplate.query("select id_friend  from list_friends lf where id_user = ?;", new RowMapper<Integer>() {
             @Override
             public Integer mapRow(ResultSet rs, int rowNum) throws SQLException {
                 Integer id = (rs.getInt("id_friend"));
@@ -118,7 +150,7 @@ public class UserDbStorage {
         int countUser = 0;
         for (int i = 0; i < frendUser.size(); i++) {
             if (friendId == frendUser.get(i)) {
-               countUser++;
+                countUser++;
             }
         }
         for (int i = 0; i < frendfrend.size(); i++) {
@@ -159,9 +191,9 @@ public class UserDbStorage {
             PreparedStatement ps = con.prepareStatement("INSERT INTO users (email, login, name, birthday)\n" +
                     "VALUES\n" +
                     "    (?, ?, ?, ?); ", new String[]{"id"});
-            ps.setString(1,user.getEmail());
-            ps.setString(2,user.getLogin());
-            ps.setString(3,user.getName());
+            ps.setString(1, user.getEmail());
+            ps.setString(2, user.getLogin());
+            ps.setString(3, user.getName());
             ps.setDate(4, sqlDate);
             return ps;
         }, keyHolder);
@@ -173,7 +205,37 @@ public class UserDbStorage {
         User userPut = getUser(user.getId());
         jdbcTemplate.update("update users \n" +
                 "set  email = ?, login = ?, name = ?, birthday = ?\n" +
-                "where id =?;",  user.getEmail(), user.getLogin(), user.getName(), user.getBirthday(), user.getId());
+                "where id =?;", user.getEmail(), user.getLogin(), user.getName(), user.getBirthday(), user.getId());
         return user;
     }
+
+   /* public boolean isUserExists(Long id) {
+        String sql = "SELECT * FROM USERS WHERE user_id = ?";
+        SqlRowSet userRows = jdbcTemplate.queryForRowSet(sql, id);
+        return userRows.first(); /// new
+    }
+
+    public void userExistenceCheck(int id) { // приметивная проверка на наличие пользывателя в бд
+        try {
+            User user = jdbcTemplate.queryForObject(format("SELECT * FROM users WHERE user_id=%d", id), new UserMapper());
+        } catch (EmptyResultDataAccessException e) {
+            throw new DataNotFoundException("по вашему id " + id + " не был найден пользыатель ");
+        }
+    }
+
+    public static class UserMapper implements RowMapper<User> { //мапер для юзеров
+        @Override
+        public User mapRow(ResultSet rs, int rowNum) throws SQLException {
+            User user = new User();
+            user.setId(rs.getInt("user_id"));
+            user.setEmail(rs.getString("email"));
+            user.setLogin(rs.getString("login"));
+            user.setName(rs.getString("name"));
+            user.setBirthday(rs.getDate("birthday").toLocalDate());
+            return user;
+        }
+    }
+    public static int mapRowToLong(ResultSet resultSet, int rowNum) throws SQLException {
+        return resultSet.getInt("user_id");
+    }*/
 }

@@ -9,6 +9,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
+@Builder
 public class Film implements Comparable<Film> {
     @EqualsAndHashCode.Exclude
     private int id;
@@ -22,7 +23,18 @@ public class Film implements Comparable<Film> {
     private Mpa mpa;
     private int duration;
     private Set<Integer> usersLikeMovie = new HashSet<>();
+
     private int rate;
+
+
+
+    public Film(String name, String description, LocalDate releaseDate, int duration, int rate) {
+        this.name = name;
+        this.description = description;
+        this.releaseDate = releaseDate;
+        this.duration = duration;
+        this.rate = rate;
+    }
 
     public Film(int id, @NonNull String name, @NonNull String description, @NonNull LocalDate releaseDate, Set<Genres> genre, int duration, Mpa mpa) {
         this.id = id;
@@ -33,6 +45,8 @@ public class Film implements Comparable<Film> {
         this.duration = duration;
         this.mpa = mpa;
     }
+
+
 
     public Film(@NonNull String name, @NonNull String description, @NonNull LocalDate releaseDate, int duration) {
         this.name = name;

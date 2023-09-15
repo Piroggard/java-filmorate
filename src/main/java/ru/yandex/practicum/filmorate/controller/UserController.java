@@ -3,13 +3,8 @@ package ru.yandex.practicum.filmorate.controller;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
 
@@ -22,10 +17,11 @@ public class UserController {
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
     private final UserService userService;
 
+
     @GetMapping("/users")
     public List<User> getUsers() {
         log.info("Getting Users");
-       return userService.getUsers();
+        return userService.getUsers();
     }
 
     @GetMapping("/users/{id}")
@@ -45,9 +41,9 @@ public class UserController {
         return userService.putUser(user);
     }
 
-    @PutMapping ("/users/{id}/friends/{friendId}")
+    @PutMapping("/users/{id}/friends/{friendId}")
     public void addFriend(@PathVariable int id, @PathVariable int friendId) {
-        userService.addFriends(id,friendId);
+        userService.addFriends(id, friendId);
     }
 
     @DeleteMapping("/users/{id}/friends/{friendId}")
@@ -63,6 +59,12 @@ public class UserController {
     @GetMapping("/users/{id}/friends/common/{otherId}")
     public List<User> getUserFriend(@PathVariable int id, @PathVariable int otherId) {
         return userService.getListMutualFriend(id, otherId);
+    }
+
+
+    @GetMapping("/users/{id}/recommendations")
+    public List<Film> getRecommendation(@PathVariable int id) {
+        return userService.getRecommendation(id);
     }
 
 }
