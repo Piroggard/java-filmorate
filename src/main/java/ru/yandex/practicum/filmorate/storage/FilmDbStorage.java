@@ -478,7 +478,7 @@ public class FilmDbStorage {
                 }, id);
     }
 
-    public Director postDirectors(Director director){
+    public Director postDirectors(Director director) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(con -> {
             PreparedStatement ps = con.prepareStatement("INSERT INTO DIRECTORS (DIRECTORS_NAME) VALUES (?)", new String[]{"DIRECTORS_ID"});
@@ -490,13 +490,7 @@ public class FilmDbStorage {
         return getDirectorsById(keyDirectors);
     }
 
-
-
-
-
-
-
-    public Director putDirectors(Director director){
+    public Director putDirectors(Director director) {
         jdbcTemplate.update("UPDATE DIRECTORS SET DIRECTORS_NAME  = ? WHERE DIRECTORS_ID = ?", director.getName(),
                 director.getId());
         return getDirectorsById(director.getId());
@@ -531,7 +525,7 @@ public class FilmDbStorage {
                 }
             }, directorId);
 
-        } else if (sortBy.get(0).equals("likes")){
+        } else if (sortBy.get(0).equals("likes")) {
 
                 List<Film> filmList =  jdbcTemplate.query("select films_id as id, f.name, f.description as description, releasedate as releaseDate, \n" +
                         "duration , r.reating_id as rating , ul.id_user  as usersLikeMovie, fg.genre_id as genre, \n" +
@@ -607,7 +601,7 @@ public class FilmDbStorage {
 
         }
 
-        if (by.get(0).equals("title")){
+        if (by.get(0).equals("title")) {
             return jdbcTemplate.query("select films_id as id, f.name, f.description as description, releasedate as releaseDate, \n" +
                     "duration , r.reating_id as rating , ul.id_user  as usersLikeMovie, fg.genre_id as genre, \n" +
                     "g.name_genre as nameGenre, r.name as nameMPA, r.description as descriptionMPA , d.DIRECTORS_ID , d.DIRECTORS_NAME \n" +
@@ -636,7 +630,7 @@ public class FilmDbStorage {
         }
 
 
-        if (by.get(0).equals("director")){
+        if (by.get(0).equals("director")) {
             return jdbcTemplate.query("select films_id as id, f.name, f.description as description, releasedate as releaseDate, \n" +
                     "duration , r.reating_id as rating , ul.id_user  as usersLikeMovie, fg.genre_id as genre, \n" +
                     "g.name_genre as nameGenre, r.name as nameMPA, r.description as descriptionMPA , d.DIRECTORS_ID , d.DIRECTORS_NAME \n" +
