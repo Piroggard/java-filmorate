@@ -49,7 +49,7 @@ public class FilmDbStorage {
     }
 
     public Set<Director> getDirectors(Integer id) {
-        List <Director>directorList = jdbcTemplate.query("SELECT d.DIRECTORS_ID , d.DIRECTORS_NAME  \n" +
+        List<Director> directorList = jdbcTemplate.query("SELECT d.DIRECTORS_ID , d.DIRECTORS_NAME  \n" +
                 "FROM DIRECTORS d \n" +
                 "JOIN FILM_DIRECTORS fd ON fd.DIRECTORS_ID = d.DIRECTORS_ID \n" +
                 "JOIN FILMS f ON f.FILMS_ID = fd.FILM_ID \n" +
@@ -241,21 +241,6 @@ public class FilmDbStorage {
 
         jdbcTemplate.update(" DELETE FROM film_genre fg where fg.film_id =?  ;", film.getId());
         jdbcTemplate.update(" DELETE FROM FILM_DIRECTORS  WHERE FILM_ID =?  ;", film.getId());
-        if (film.getDirectors() != null){
-
-        }
-
-
-        /*if (film.getGenres() == null) {
-            jdbcTemplate.update(" DELETE FROM film_genre fg where fg.film_id =?  ;", film.getId());
-            return getFilmNotGanre(film.getId());
-        }*/
-
-        /*if (genresSet.size() == 0) {
-            jdbcTemplate.update(" DELETE FROM film_genre fg where fg.film_id =?  ;", film.getId());
-            return getFilmNotGanre(film.getId());
-        }*/
-        //jdbcTemplate.update(" DELETE FROM film_genre fg where fg.film_id =?  ;", film.getId());
         List<Genres> genresList = new ArrayList<>();
         if (film.getGenres() != null) {
             for (Genres genre : film.getGenres()) {
@@ -508,7 +493,7 @@ public class FilmDbStorage {
         return getDirectorsById(director.getId());
     }
 
-    public List<Film> getFilmDirectorYearOrLike(Integer directorId, List<String>sortBy) {
+    public List<Film> getFilmDirectorYearOrLike(Integer directorId, List<String> sortBy) {
         if (sortBy.get(0).equals("year")) {
             return jdbcTemplate.query("select films_id as id, f.name, f.description as description, releasedate as releaseDate, \n" +
                     "duration , r.reating_id as rating , ul.id_user  as usersLikeMovie, fg.genre_id as genre, \n" +
