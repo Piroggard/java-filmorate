@@ -103,21 +103,25 @@ public class FilmServiceImpl implements FilmService {
     public List<Genres> getGanres() {
         return filmDbStorage.getGanres();
     }
+
     @Override
     public List<Director> getDirectors() {
         return filmDbStorage.getDirectors();
     }
+
     @Override
     public Director getDirectorsById(Integer id) {
         return filmDbStorage.getDirectorsById(id);
     }
+
     @Override
-    public Director postDirectors(Director director){
+    public Director postDirectors(Director director) {
         validationDirectors.validation(director);
         return filmDbStorage.postDirectors(director);
     }
+
     @Override
-    public Director putDirectors(Director director){
+    public Director putDirectors(Director director) {
         validationDirectors.validation(director);
         return filmDbStorage.putDirectors(director);
     }
@@ -134,7 +138,6 @@ public class FilmServiceImpl implements FilmService {
 
     @Override
     public List<Film> getFilmPieceNameOrDirectorPieceName(String query, List<String> by) {
-
         return filmDbStorage.getFilmPieceNameOrDirectorPieceName(query.toLowerCase(), by);
     }
 

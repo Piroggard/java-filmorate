@@ -1,23 +1,17 @@
 package ru.yandex.practicum.filmorate.storage;
 
 import lombok.AllArgsConstructor;
-import org.springframework.dao.DataAccessException;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
 import ru.yandex.practicum.filmorate.exception.DataNotFoundException;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genres;
 import ru.yandex.practicum.filmorate.model.Mpa;
-
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -35,7 +29,6 @@ import java.util.Set;
 @AllArgsConstructor
 public class FilmDbStorage {
     public final JdbcTemplate jdbcTemplate;
-
 
     public List<Film> getFilms() {
         return jdbcTemplate.query("SELECT FILMS_ID AS id, NAME as name , DESCRIPTION as description , RELEASEDATE as releaseDate , DURATION as duration, RATING as rating, GENRE_ID AS genre FROM FILMS f ;", new RowMapper<Film>() {
@@ -55,7 +48,7 @@ public class FilmDbStorage {
         });
     }
 
-    public Set<Director> getDirectors (Integer id){
+    public Set<Director> getDirectors (Integer id) {
         List <Director> directorList =  jdbcTemplate.query("SELECT d.DIRECTORS_ID , d.DIRECTORS_NAME  \n" +
                 "FROM DIRECTORS d \n" +
                 "JOIN FILM_DIRECTORS fd ON fd.DIRECTORS_ID = d.DIRECTORS_ID \n" +
@@ -70,17 +63,12 @@ public class FilmDbStorage {
             }
         }, id);
         Set<Director> directors = new HashSet<>();
-
-
         for (Director director : directorList) {
             directors.add(director);
         }
         return directors;
     }
-               /* Director director = new Director();
-                director.setId(rs.getInt("DIRECTORS_ID"));
-                director.setName(rs.getString("DIRECTORS_NAME"));
-                return director;*/
+
     public Set<Genres> getGanresId(Integer id) {
        List<Genres> genresList = jdbcTemplate.query("SELECT g.GENRE_ID, g.NAME_GENRE\n" +
                "FROM GENRE g \n" +
@@ -255,21 +243,6 @@ public class FilmDbStorage {
 
         jdbcTemplate.update(" DELETE FROM film_genre fg where fg.film_id =?  ;", film.getId());
         jdbcTemplate.update(" DELETE FROM FILM_DIRECTORS  WHERE FILM_ID =?  ;", film.getId());
-        if (film.getDirectors() != null){
-
-        }
-
-
-        /*if (film.getGenres() == null) {
-            jdbcTemplate.update(" DELETE FROM film_genre fg where fg.film_id =?  ;", film.getId());
-            return getFilmNotGanre(film.getId());
-        }*/
-
-        /*if (genresSet.size() == 0) {
-            jdbcTemplate.update(" DELETE FROM film_genre fg where fg.film_id =?  ;", film.getId());
-            return getFilmNotGanre(film.getId());
-        }*/
-        //jdbcTemplate.update(" DELETE FROM film_genre fg where fg.film_id =?  ;", film.getId());
         List<Genres> genresList = new ArrayList<>();
         if (film.getGenres() != null){
             for (Genres genre : film.getGenres()) {
