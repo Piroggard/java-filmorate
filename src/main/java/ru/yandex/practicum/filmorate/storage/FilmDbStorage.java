@@ -48,12 +48,12 @@ public class FilmDbStorage {
         });
     }
 
-    public Set<Director> getDirectors (Integer id){
-        List <Director> directorList =  jdbcTemplate.query("SELECT d.DIRECTORS_ID , d.DIRECTORS_NAME  \n" +
+    public Set<Director> getDirectors(Integer id) {
+        List <Director>directorList = jdbcTemplate.query("SELECT d.DIRECTORS_ID , d.DIRECTORS_NAME  \n" +
                 "FROM DIRECTORS d \n" +
                 "JOIN FILM_DIRECTORS fd ON fd.DIRECTORS_ID = d.DIRECTORS_ID \n" +
                 "JOIN FILMS f ON f.FILMS_ID = fd.FILM_ID \n" +
-                "WHERE f.FILMS_ID = ?;" , new RowMapper<Director>() {
+                "WHERE f.FILMS_ID = ?;", new RowMapper<Director>() {
             @Override
             public Director mapRow(ResultSet rs, int rowNum) throws SQLException {
                 Director director = new Director();
@@ -123,7 +123,7 @@ public class FilmDbStorage {
                 Integer checkDirector = rs.getInt("DIRECTORS_ID");
                 do {
                     Director director = new Director();
-                    if (checkDirector > 0){
+                    if (checkDirector > 0) {
                         director.setId(rs.getInt("DIRECTORS_ID"));
                         director.setName(rs.getString("DIRECTORS_NAME"));
                         System.out.println(director);
@@ -257,7 +257,7 @@ public class FilmDbStorage {
         }*/
         //jdbcTemplate.update(" DELETE FROM film_genre fg where fg.film_id =?  ;", film.getId());
         List<Genres> genresList = new ArrayList<>();
-        if (film.getGenres() != null){
+        if (film.getGenres() != null) {
             for (Genres genre : film.getGenres()) {
                 genresList.add(genre);
             }
@@ -276,7 +276,7 @@ public class FilmDbStorage {
             });
         }
         List<Director> directorList = new ArrayList<>();
-        if (film.getDirectors() != null){
+        if (film.getDirectors() != null) {
             for (Director director : film.getDirectors()) {
                 directorList.add(director);
             }
@@ -490,7 +490,7 @@ public class FilmDbStorage {
                 }, id);
     }
 
-    public Director postDirectors(Director director){
+    public Director postDirectors(Director director) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(con -> {
             PreparedStatement ps = con.prepareStatement("INSERT INTO DIRECTORS (DIRECTORS_NAME) VALUES (?)", new String[]{"DIRECTORS_ID"});
@@ -502,14 +502,14 @@ public class FilmDbStorage {
         return getDirectorsById(keyDirectors);
     }
 
-    public Director putDirectors(Director director){
+    public Director putDirectors(Director director) {
         jdbcTemplate.update("UPDATE DIRECTORS SET DIRECTORS_NAME  = ? WHERE DIRECTORS_ID = ?", director.getName(),
                 director.getId());
         return getDirectorsById(director.getId());
     }
 
-    public List<Film> getFilmDirectorYearOrLike(Integer directorId, List<String> sortBy) {
-        if (sortBy.get(0).equals("year")){
+    public List<Film> getFilmDirectorYearOrLike(Integer directorId, List<String>sortBy) {
+        if (sortBy.get(0).equals("year")) {
             return jdbcTemplate.query("select films_id as id, f.name, f.description as description, releasedate as releaseDate, \n" +
                     "duration , r.reating_id as rating , ul.id_user  as usersLikeMovie, fg.genre_id as genre, \n" +
                     "g.name_genre as nameGenre, r.name as nameMPA, r.description as descriptionMPA , d.DIRECTORS_ID , d.DIRECTORS_NAME \n" +
@@ -537,8 +537,7 @@ public class FilmDbStorage {
                 }
             }, directorId);
 
-        } else if (sortBy.get(0).equals("likes")){
-
+        } else if (sortBy.get(0).equals("likes")) {
                 List<Film> filmList =  jdbcTemplate.query("select films_id as id, f.name, f.description as description, releasedate as releaseDate, \n" +
                         "duration , r.reating_id as rating , ul.id_user  as usersLikeMovie, fg.genre_id as genre, \n" +
                         "g.name_genre as nameGenre, r.name as nameMPA, r.description as descriptionMPA , d.DIRECTORS_ID , d.DIRECTORS_NAME \n" +
@@ -565,7 +564,7 @@ public class FilmDbStorage {
                         return film;
                     }
                 }, directorId);
-           if (filmList.size() == 0){
+           if (filmList.size() == 0) {
                throw new DataNotFoundException("d");
            } else {
                return filmList;
