@@ -1,23 +1,17 @@
 package ru.yandex.practicum.filmorate.storage;
 
 import lombok.AllArgsConstructor;
-import org.springframework.dao.DataAccessException;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
 import ru.yandex.practicum.filmorate.exception.DataNotFoundException;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genres;
 import ru.yandex.practicum.filmorate.model.Mpa;
-
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -35,7 +29,6 @@ import java.util.Set;
 @AllArgsConstructor
 public class FilmDbStorage {
     public final JdbcTemplate jdbcTemplate;
-
 
     public List<Film> getFilms() {
         return jdbcTemplate.query("SELECT FILMS_ID AS id, NAME as name , DESCRIPTION as description , RELEASEDATE as releaseDate , DURATION as duration, RATING as rating, GENRE_ID AS genre FROM FILMS f ;", new RowMapper<Film>() {
@@ -70,17 +63,12 @@ public class FilmDbStorage {
             }
         }, id);
         Set<Director> directors = new HashSet<>();
-
-
         for (Director director : directorList) {
             directors.add(director);
         }
         return directors;
     }
-               /* Director director = new Director();
-                director.setId(rs.getInt("DIRECTORS_ID"));
-                director.setName(rs.getString("DIRECTORS_NAME"));
-                return director;*/
+
     public Set<Genres> getGanresId(Integer id) {
        List<Genres> genresList = jdbcTemplate.query("SELECT g.GENRE_ID, g.NAME_GENRE\n" +
                "FROM GENRE g \n" +
@@ -153,8 +141,6 @@ public class FilmDbStorage {
                     genres1.setId(rs.getInt("genre"));
                     genres1.setName(rs.getString("nameGenre"));
                     genres.add(genres1);
-
-
                 } while (rs.next());
                 List<Genres> genresList = new ArrayList<>(genres);
                 Collections.sort(genresList);
@@ -479,7 +465,6 @@ public class FilmDbStorage {
         return listIdFilm;
     }
 
-
     public List<Director> getDirectors() {
         return jdbcTemplate.query("SELECT DIRECTORS_ID , DIRECTORS_NAME FROM DIRECTORS;", new RowMapper<Director>() {
             @Override
@@ -516,12 +501,6 @@ public class FilmDbStorage {
         Integer keyDirectors = keyHolder.getKey().intValue();
         return getDirectorsById(keyDirectors);
     }
-
-
-
-
-
-
 
     public Director putDirectors(Director director){
         jdbcTemplate.update("UPDATE DIRECTORS SET DIRECTORS_NAME  = ? WHERE DIRECTORS_ID = ?", director.getName(),

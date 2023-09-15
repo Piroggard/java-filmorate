@@ -42,7 +42,7 @@ public interface FilmService {
 
     Director putDirectors(Director director);
 
-    List<Film> getFilmDirectorYearOrLike (Integer directorId, List<String> sortBy );
-    void deleteDirectors(int id);
+    List<Film> getFilmDirectorYearOrLike (Integer directorId, List<String> sortBy);
 
+    void deleteDirectors(int id);
 }

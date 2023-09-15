@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.service.FilmService;
@@ -35,13 +34,13 @@ public class DirectorController {
     }
 
     @PostMapping("/directors")
-    public Director postDirectors(@RequestBody Director director){
+    public Director postDirectors(@RequestBody Director director) {
         log.info(" "+ director);
         return filmService.postDirectors(director);
     }
 
     @PutMapping("/directors")
-    public Director putDirectors(@RequestBody Director director){
+    public Director putDirectors(@RequestBody Director director) {
         return filmService.putDirectors(director);
     }
 
@@ -49,5 +48,4 @@ public class DirectorController {
     public void deleteDirectors(@PathVariable int id) {
         filmService.deleteDirectors(id);
     }
-
 }
