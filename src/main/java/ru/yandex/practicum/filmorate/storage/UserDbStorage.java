@@ -176,4 +176,10 @@ public class UserDbStorage {
                 "where id =?;",  user.getEmail(), user.getLogin(), user.getName(), user.getBirthday(), user.getId());
         return user;
     }
+
+    public void deleteUser(int userId) {
+        jdbcTemplate.update("delete from list_friends where id_friend = ?", userId);
+        jdbcTemplate.update("delete from list_friends where id_user = ?", userId);
+        jdbcTemplate.update("delete from users where id = ? ", userId);
+    }
 }

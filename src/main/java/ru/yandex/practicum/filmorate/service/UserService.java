@@ -21,4 +21,6 @@ public interface UserService {
     List<User>  getListMutualFriend(int userId, int otherId);
 
     User getUser(int id);
+
+    void deleteUser(int userId);
 }

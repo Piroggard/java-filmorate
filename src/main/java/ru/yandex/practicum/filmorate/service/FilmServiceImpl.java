@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.controller.UserController;
+import ru.yandex.practicum.filmorate.exception.DataNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genres;
 import ru.yandex.practicum.filmorate.model.Mpa;
@@ -98,5 +99,24 @@ public class FilmServiceImpl implements FilmService {
     @Override
     public List<Genres> getGanres() {
         return filmDbStorage.getGanres();
+    }
+    @Override
+    public void deleteFilm(Integer filmId) {
+        validationFilm.validationIdFilm(filmId);
+        filmDbStorage.deleteFilm(filmId);
+    }
+
+    @Override
+    public List<Film> getPopularFilmsByGenreAndYear(Integer genreId, Integer year) {
+        if(genreId <= 0 || year <= 0) {
+            throw new DataNotFoundException("Неверные данные");
+        }
+        if(year == null) {
+            return filmDbStorage.getPopularFilmsByGenre(genreId);
+        } else if (genreId == null) {
+            return filmDbStorage.getPopularFilmsByYear(year);
+        } else {
+            return filmDbStorage.getPopularFilmsByGenreAndYear(genreId,year);
+        }
     }
 }

@@ -52,4 +52,14 @@ public class FilmController {
     public List<Film> getListBestMovies(@RequestParam(required = false) Integer count) {
         return filmService.getListBestMovies(count);
     }
+    @DeleteMapping("/films/{filmId}")
+    public void deleteFilm(@PathVariable int filmId) {
+        filmService.deleteFilm(filmId);
+    }
+    @GetMapping("/films/popular?count={limit}&genreId={genreId}&year={year}")
+    @ResponseBody
+    public List<Film> getPopularFilmsByGenreAndYear(@RequestParam(required = false) Integer genreId,
+                                                    @RequestParam(required = false) Integer year) {
+        return filmService.getPopularFilmsByGenreAndYear(genreId, year);
+    }
 }

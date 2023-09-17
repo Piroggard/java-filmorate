@@ -31,4 +31,8 @@ public interface FilmService {
     Genres getGanres(Integer id);
 
     List<Genres> getGanres();
+
+    void deleteFilm(Integer filmId);
+
+    List<Film> getPopularFilmsByGenreAndYear(Integer genreId, Integer year);
 }
