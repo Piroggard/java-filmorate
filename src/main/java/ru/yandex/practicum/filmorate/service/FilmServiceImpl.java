@@ -12,8 +12,11 @@ import ru.yandex.practicum.filmorate.storage.FilmDbStorage;
 import ru.yandex.practicum.filmorate.validation.ValidationFilm;
 import ru.yandex.practicum.filmorate.validation.ValidationGanres;
 import ru.yandex.practicum.filmorate.validation.ValidationMpa;
+import ru.yandex.practicum.filmorate.validation.ValidationUser;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @AllArgsConstructor
@@ -23,6 +26,7 @@ public class FilmServiceImpl implements FilmService {
     private final ValidationFilm validationFilm = new ValidationFilm();
     private final ValidationGanres validationGanres = new ValidationGanres();
     private final ValidationMpa validationMpa = new ValidationMpa();
+    private final ValidationUser validationUser = new ValidationUser();
 
     @Override
     public List<Film> getFilms() {
@@ -98,5 +102,16 @@ public class FilmServiceImpl implements FilmService {
     @Override
     public List<Genres> getGanres() {
         return filmDbStorage.getGanres();
+    }
+
+    @Override
+    public List<Film> getCommonFilms(int userId, int friendId) {
+        List<Film> films = new ArrayList<>();
+        for (Film film : filmDbStorage.getFilms()) {
+           if (filmDbStorage.getFilm(film.getId()).getUsersLikeMovie().containsAll(Set.of(userId, friendId))) {
+               films.add(film);
+           }
+        }
+        return films;
     }
 }

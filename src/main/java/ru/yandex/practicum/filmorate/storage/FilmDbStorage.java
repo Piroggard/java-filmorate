@@ -95,13 +95,12 @@ public class FilmDbStorage {
                 Integer i = rs.getInt("genre");
                 do {
                     usersLikeMovie.add(rs.getInt("usersLikeMovie"));
-                    if (i == 0) {
-                        break;
+                    if (i != 0) {
+                        Genres genres1 = new Genres();
+                        genres1.setId(rs.getInt("genre"));
+                        genres1.setName(rs.getString("nameGenre"));
+                        genres.add(genres1);
                     }
-                    Genres genres1 = new Genres();
-                    genres1.setId(rs.getInt("genre"));
-                    genres1.setName(rs.getString("nameGenre"));
-                    genres.add(genres1);
                 } while (rs.next());
                 List<Genres> genresList = new ArrayList<>(genres);
                 Collections.sort(genresList);
@@ -348,4 +347,5 @@ public class FilmDbStorage {
         }
         return listIdFilm;
     }
+
 }

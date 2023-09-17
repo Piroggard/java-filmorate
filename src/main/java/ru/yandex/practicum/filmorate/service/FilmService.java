@@ -31,4 +31,6 @@ public interface FilmService {
     Genres getGanres(Integer id);
 
     List<Genres> getGanres();
+
+    List<Film> getCommonFilms(int userId, int friendId);
 }
