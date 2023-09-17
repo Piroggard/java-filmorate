@@ -27,7 +27,7 @@ public class FilmServiceImpl implements FilmService {
     @Override
     public List<Film> getFilms() {
         List<Film> filmList = filmDbStorage.getFilms();
-       return filmList;
+        return filmList;
     }
 
     @Override
@@ -98,5 +98,22 @@ public class FilmServiceImpl implements FilmService {
     @Override
     public List<Genres> getGanres() {
         return filmDbStorage.getGanres();
+    }
+
+    @Override
+    public void deleteFilm(Integer filmId) {
+        validationFilm.validationIdFilm(filmId);
+        filmDbStorage.deleteFilm(filmId);
+    }
+
+    @Override
+    public List<Film> getPopularFilmsByGenreAndYear(Integer count, Integer genreId, Integer year) {
+        if (year == null) {
+            return filmDbStorage.getPopularFilmsByGenre(genreId);
+        } else if (genreId == null) {
+            return filmDbStorage.getPopularFilmsByYear(year);
+        } else {
+            return filmDbStorage.getPopularFilmsByGenreAndYear(genreId, year);
+        }
     }
 }

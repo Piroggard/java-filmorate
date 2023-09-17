@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.controller.UserController;
+import ru.yandex.practicum.filmorate.exception.DataNotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserDbStorage;
 import ru.yandex.practicum.filmorate.validation.ValidationUser;
@@ -59,13 +60,21 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<User> getUserFriend(int userId) {
         validationUser.checkId(userId);
-        return userDbStorage.getFriendsUser(userId);
-
+        if (userDbStorage.getUser(userId).equals(null)) {
+            throw new DataNotFoundException("Такой пользователь отсутствует.");
+        } else return userDbStorage.getFriendsUser(userId);
     }
 
     @Override
     public List<User> getListMutualFriend(int userId, int otherId) {
         validationUser.validationAddFriend(userId, otherId);
         return userDbStorage.getListMutualFriend(userId, otherId);
+    }
+
+    @Override
+    public void deleteUser(int userId) {
+        validationUser.checkId(userId);
+        validationUser.searchValidation(getUser(userId));
+        userDbStorage.deleteUser(userId);
     }
 }

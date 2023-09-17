@@ -48,12 +48,12 @@ public class FilmDbStorage {
     }
 
     public Set<Genres> getGanresId(Integer id) {
-       List<Genres> genresList = jdbcTemplate.query("SELECT g.GENRE_ID, g.NAME_GENRE\n" +
-               "FROM GENRE g \n" +
-               "JOIN FILM_GENRE fg ON fg.GENRE_ID = g.GENRE_ID \n" +
-               "JOIN FILMS f ON f.FILMS_ID = fg.FILM_ID \n" +
-               "WHERE f.FILMS_ID =?" +
-               "ORDER BY g.GENRE_ID ASC;", new RowMapper<Genres>() {
+        List<Genres> genresList = jdbcTemplate.query("SELECT g.GENRE_ID, g.NAME_GENRE\n" +
+                "FROM GENRE g \n" +
+                "JOIN FILM_GENRE fg ON fg.GENRE_ID = g.GENRE_ID \n" +
+                "JOIN FILMS f ON f.FILMS_ID = fg.FILM_ID \n" +
+                "WHERE f.FILMS_ID =?" +
+                "ORDER BY g.GENRE_ID ASC;", new RowMapper<Genres>() {
             @Override
             public Genres mapRow(ResultSet rs, int rowNum) throws SQLException {
                 Genres genres = new Genres();
@@ -62,7 +62,7 @@ public class FilmDbStorage {
                 return genres;
             }
         }, id);
-       Set<Genres> genres = new HashSet<>();
+        Set<Genres> genres = new HashSet<>();
         for (Genres genres1 : genresList) {
             genres.add(genres1);
         }
@@ -346,6 +346,86 @@ public class FilmDbStorage {
         if (listIdFilm.size() == 0) {
             return getFilms();
         }
+        return listIdFilm;
+    }
+
+    public void deleteFilm(Integer filmId) {
+        jdbcTemplate.update("delete from film_genre where film_id = ? ", filmId);
+        jdbcTemplate.update("delete from users_like where id_films = ? ", filmId);
+        jdbcTemplate.update("delete from films where films_id = ? ", filmId);
+    }
+
+    public List<Film> getPopularFilmsByGenreAndYear(int genreId, int year) {
+        List<Film> listIdFilm = jdbcTemplate.query("SELECT f.FILMS_ID AS id, f.NAME, f.DESCRIPTION, f.RELEASEDATE, f.DURATION, f.RATING, f.GENRE_ID AS genre, COUNT(ul.ID_FILMS) AS total_likes\n" +
+                "FROM FILMS f\n" +
+                "LEFT JOIN USERS_LIKE ul ON ul.ID_FILMS = f.FILMS_ID\n" +
+                "LEFT JOIN FILM_GENRE fg ON f.FILMS_ID = fg.FILM_ID \n" +
+                "WHERE fg.GENRE_ID = ? AND EXTRACT(YEAR FROM f.RELEASEDATE) = ?\n" +
+                "GROUP BY f.FILMS_ID, f.NAME, f.DESCRIPTION, f.RELEASEDATE, f.DURATION, f.RATING, f.GENRE_ID\n" +
+                "ORDER BY total_likes DESC\n", new RowMapper<Film>() {
+            @Override
+            public Film mapRow(ResultSet rs, int rowNum) throws SQLException {
+                Film film = new Film();
+                film.setId(rs.getInt("id"));
+                film.setName(rs.getString("name"));
+                film.setDescription(rs.getString("description"));
+                film.setReleaseDate(rs.getDate("releaseDate").toLocalDate());
+                film.setDuration(rs.getInt("duration"));
+                film.setMpa(getMpa(rs.getInt("rating")));
+                film.setGenres(getGanresId(rs.getInt("id")));
+                film.setRate(rs.getInt("total_likes"));
+                return film;
+            }
+        }, genreId, year);
+        return listIdFilm;
+    }
+
+    public List<Film> getPopularFilmsByGenre(int genreId) {
+        List<Film> listIdFilm = jdbcTemplate.query("SELECT f.FILMS_ID AS id, f.NAME, f.DESCRIPTION, f.RELEASEDATE, f.DURATION, f.RATING, f.GENRE_ID AS genre, COUNT(ul.ID_FILMS) AS total_likes\n" +
+                "FROM FILMS f\n" +
+                "LEFT JOIN USERS_LIKE ul ON ul.ID_FILMS = f.FILMS_ID\n" +
+                "LEFT JOIN FILM_GENRE fg ON f.FILMS_ID = fg.FILM_ID \n" +
+                "WHERE fg.GENRE_ID = ?" +
+                "GROUP BY f.FILMS_ID, f.NAME, f.DESCRIPTION, f.RELEASEDATE, f.DURATION, f.RATING, f.GENRE_ID\n" +
+                "ORDER BY total_likes DESC\n", new RowMapper<Film>() {
+            @Override
+            public Film mapRow(ResultSet rs, int rowNum) throws SQLException {
+                Film film = new Film();
+                film.setId(rs.getInt("id"));
+                film.setName(rs.getString("name"));
+                film.setDescription(rs.getString("description"));
+                film.setReleaseDate(rs.getDate("releaseDate").toLocalDate());
+                film.setDuration(rs.getInt("duration"));
+                film.setMpa(getMpa(rs.getInt("rating")));
+                film.setGenres(getGanresId(rs.getInt("id")));
+                film.setRate(rs.getInt("total_likes"));
+                return film;
+            }
+        }, genreId);
+        return listIdFilm;
+    }
+
+    public List<Film> getPopularFilmsByYear(int year) {
+        List<Film> listIdFilm = jdbcTemplate.query("SELECT f.FILMS_ID AS id, f.NAME, f.DESCRIPTION, f.RELEASEDATE, f.DURATION, f.RATING, f.GENRE_ID AS genre, COUNT(ul.ID_FILMS) AS total_likes\n" +
+                "FROM FILMS f\n" +
+                "LEFT JOIN USERS_LIKE ul ON ul.ID_FILMS = f.FILMS_ID\n" +
+                "WHERE EXTRACT(YEAR FROM f.RELEASEDATE) = ? " +
+                "GROUP BY f.FILMS_ID, f.NAME, f.DESCRIPTION, f.RELEASEDATE, f.DURATION, f.RATING, f.GENRE_ID\n" +
+                "ORDER BY total_likes DESC\n", new RowMapper<Film>() {
+            @Override
+            public Film mapRow(ResultSet rs, int rowNum) throws SQLException {
+                Film film = new Film();
+                film.setId(rs.getInt("id"));
+                film.setName(rs.getString("name"));
+                film.setDescription(rs.getString("description"));
+                film.setReleaseDate(rs.getDate("releaseDate").toLocalDate());
+                film.setDuration(rs.getInt("duration"));
+                film.setMpa(getMpa(rs.getInt("rating")));
+                film.setGenres(getGanresId(rs.getInt("id")));
+                film.setRate(rs.getInt("total_likes"));
+                return film;
+            }
+        }, year);
         return listIdFilm;
     }
 }

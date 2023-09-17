@@ -47,9 +47,22 @@ public class FilmController {
         filmService.deleteLikeFilm(id, userId);
     }
 
+    @DeleteMapping("/films/{filmId}")
+    public void deleteFilm(@PathVariable int filmId) {
+        filmService.deleteFilm(filmId);
+    }
+
     @GetMapping("/films/popular")
     @ResponseBody
-    public List<Film> getListBestMovies(@RequestParam(required = false) Integer count) {
-        return filmService.getListBestMovies(count);
+    public List<Film> getPopularFilmsByGenreAndYear(@RequestParam(required = false) Integer count,
+                                                    @RequestParam(required = false) Integer genreId,
+                                                    @RequestParam(required = false) Integer year) {
+        if (count != null) {
+            return filmService.getListBestMovies(count);
+        }
+        if (count == null && genreId == null && year == null) {
+            return filmService.getListBestTenMovies();
+        }
+        return filmService.getPopularFilmsByGenreAndYear(count, genreId, year);
     }
 }
