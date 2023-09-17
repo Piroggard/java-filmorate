@@ -28,7 +28,7 @@ public class FilmServiceImpl implements FilmService {
     @Override
     public List<Film> getFilms() {
         List<Film> filmList = filmDbStorage.getFilms();
-       return filmList;
+        return filmList;
     }
 
     @Override
@@ -100,6 +100,7 @@ public class FilmServiceImpl implements FilmService {
     public List<Genres> getGanres() {
         return filmDbStorage.getGanres();
     }
+
     @Override
     public void deleteFilm(Integer filmId) {
         validationFilm.validationIdFilm(filmId);
@@ -107,16 +108,13 @@ public class FilmServiceImpl implements FilmService {
     }
 
     @Override
-    public List<Film> getPopularFilmsByGenreAndYear(Integer genreId, Integer year) {
-        if(genreId <= 0 || year <= 0) {
-            throw new DataNotFoundException("Неверные данные");
-        }
-        if(year == null) {
+    public List<Film> getPopularFilmsByGenreAndYear(Integer count, Integer genreId, Integer year) {
+        if (year == null) {
             return filmDbStorage.getPopularFilmsByGenre(genreId);
         } else if (genreId == null) {
             return filmDbStorage.getPopularFilmsByYear(year);
         } else {
-            return filmDbStorage.getPopularFilmsByGenreAndYear(genreId,year);
+            return filmDbStorage.getPopularFilmsByGenreAndYear(genreId, year);
         }
     }
 }

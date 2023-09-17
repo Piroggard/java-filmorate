@@ -60,7 +60,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<User> getUserFriend(int userId) {
         validationUser.checkId(userId);
-        if(userDbStorage.getUser(userId).equals(null)) {
+        if (userDbStorage.getUser(userId).equals(null)) {
             throw new DataNotFoundException("Такой пользователь отсутствует.");
         } else return userDbStorage.getFriendsUser(userId);
     }
@@ -70,6 +70,7 @@ public class UserServiceImpl implements UserService {
         validationUser.validationAddFriend(userId, otherId);
         return userDbStorage.getListMutualFriend(userId, otherId);
     }
+
     @Override
     public void deleteUser(int userId) {
         validationUser.checkId(userId);
