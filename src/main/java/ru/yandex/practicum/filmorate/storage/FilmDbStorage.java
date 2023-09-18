@@ -348,6 +348,7 @@ public class FilmDbStorage {
         }
         return listIdFilm;
     }
+
     public List<Film> getCommonFilms(int idUser, int idFriend) {
         List<Integer> userFilm =
                 jdbcTemplate.queryForList("SELECT id_films " +
