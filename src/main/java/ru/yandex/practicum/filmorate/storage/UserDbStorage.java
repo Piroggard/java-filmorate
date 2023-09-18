@@ -5,17 +5,17 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.ZoneId;
-import java.util.*;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Component
 @AllArgsConstructor
@@ -24,35 +24,6 @@ public class UserDbStorage {
 
     final FilmDbStorage filmDbStorage;
 
-    public HashMap<Film, Double> getLikeListByUser(long userId) {
-        String sql = "" +
-                "select FILMS.*, NAME, ID_USER " +
-                "from FILMS " +
-                "join REATING on FILMS.REATING_ID = REATING.REATING_ID " +
-                "join " +
-                "( " +
-                "select * from USERS_LIKE where ID_USER = ? " +
-                ") L " +
-                "on FILMS.FILMS_ID = L.ID_FILMS ";
-        SqlRowSet rs = (jdbcTemplate.queryForRowSet(sql, userId));
-        HashMap<Film, Double> result = new HashMap<>();
-        while (rs.next()) {
-            Film film = Film.builder()
-                    .id(rs.getInt("FILMS_ID"))
-                    .name(rs.getString("NAME"))
-                    .description(rs.getString("DESCRIPTION"))
-                    .releaseDate(rs.getDate("RELEASEDATE").toLocalDate())
-                    .duration(rs.getInt("DURATION"))
-                    .mpa(Mpa.builder()
-                            .id(rs.getInt("REATING_ID"))
-                            .name(rs.getString("NAME"))
-                            .build())
-                    .build();
-            double rate = rs.getDouble("ID_USER"); // Оценка фильма. На текущем этапе - 1 или отсутствует.
-            result.put(film, rate);
-        }
-        return result;
-    }
 
     public List<User> getUsers() {
         return jdbcTemplate.query("SELECT u.id, u.email, u.login, u.name, u.birthday\n" +
@@ -209,33 +180,4 @@ public class UserDbStorage {
         return user;
     }
 
-   /* public boolean isUserExists(Long id) {
-        String sql = "SELECT * FROM USERS WHERE user_id = ?";
-        SqlRowSet userRows = jdbcTemplate.queryForRowSet(sql, id);
-        return userRows.first(); /// new
-    }
-
-    public void userExistenceCheck(int id) { // приметивная проверка на наличие пользывателя в бд
-        try {
-            User user = jdbcTemplate.queryForObject(format("SELECT * FROM users WHERE user_id=%d", id), new UserMapper());
-        } catch (EmptyResultDataAccessException e) {
-            throw new DataNotFoundException("по вашему id " + id + " не был найден пользыатель ");
-        }
-    }
-
-    public static class UserMapper implements RowMapper<User> { //мапер для юзеров
-        @Override
-        public User mapRow(ResultSet rs, int rowNum) throws SQLException {
-            User user = new User();
-            user.setId(rs.getInt("user_id"));
-            user.setEmail(rs.getString("email"));
-            user.setLogin(rs.getString("login"));
-            user.setName(rs.getString("name"));
-            user.setBirthday(rs.getDate("birthday").toLocalDate());
-            return user;
-        }
-    }
-    public static int mapRowToLong(ResultSet resultSet, int rowNum) throws SQLException {
-        return resultSet.getInt("user_id");
-    }*/
 }

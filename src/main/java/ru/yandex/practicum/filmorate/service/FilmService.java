@@ -31,5 +31,7 @@ public interface FilmService {
     Genres getGanres(Integer id);
 
     List<Genres> getGanres();
-
+    public List<Film> getRecommendations(Integer id);
+   // public void deleteLike(Integer filmId, Integer userId);
+    //public void putLike(Integer filmId, Integer userId);
 }

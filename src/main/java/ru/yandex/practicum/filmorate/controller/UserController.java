@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.service.UserService;
 
 import java.util.List;
@@ -16,6 +17,7 @@ import java.util.List;
 public class UserController {
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
     private final UserService userService;
+    private final FilmService filmService;
 
 
     @GetMapping("/users")
@@ -61,10 +63,12 @@ public class UserController {
         return userService.getListMutualFriend(id, otherId);
     }
 
-
     @GetMapping("/users/{id}/recommendations")
-    public List<Film> getRecommendation(@PathVariable int id) {
-        return userService.getRecommendation(id);
+    public List<Film> getRecommendation(@PathVariable Integer id) {
+        log.debug("Получен Get запрос users/{id}/recommendations на получение " +
+                "списка рекомендуемых фильмов для пользователя с Id: {}", id);
+        return filmService.getRecommendations(id);
     }
+
 
 }

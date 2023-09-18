@@ -6,7 +6,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
-import ru.yandex.practicum.filmorate.storage.FilmDbStorage;
 
 import java.util.List;
 
@@ -15,7 +14,7 @@ import java.util.List;
 public class FilmController {
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
     private final FilmService filmService;
-    private final FilmDbStorage filmDbStorage;
+
 
     @GetMapping("/films")
     public List<Film> getFilms() {

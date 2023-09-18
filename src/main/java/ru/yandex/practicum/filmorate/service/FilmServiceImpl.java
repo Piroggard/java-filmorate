@@ -14,7 +14,6 @@ import ru.yandex.practicum.filmorate.validation.ValidationGanres;
 import ru.yandex.practicum.filmorate.validation.ValidationMpa;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -30,7 +29,6 @@ public class FilmServiceImpl implements FilmService {
         List<Film> filmList = filmDbStorage.getFilms();
         return filmList;
     }
-
 
     @Override
     public Film postFilm(Film film) {
@@ -102,13 +100,9 @@ public class FilmServiceImpl implements FilmService {
         return filmDbStorage.getGanres();
     }
 
-    void loadDataIntoFilm(List<Film> films) {
-        films.forEach(film -> {
-            film.setGenres(filmDbStorage.getFilmGenre(film.getId()).stream()
-                    .map(filmDbStorage::getGenre)
-                    .collect(Collectors.toSet()));
-            film.setUsersLikeMovie(filmDbStorage.getUsersLike(film.getId()));
-
-        });
+    @Override
+    public List<Film> getRecommendations(Integer id) {
+        log.debug("Получены рекомендации фильмов по id: {}", id);
+        return filmDbStorage.getRecommendations(id);
     }
 }
