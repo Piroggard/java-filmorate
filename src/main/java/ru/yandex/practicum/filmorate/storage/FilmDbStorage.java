@@ -22,6 +22,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 
 @Component
@@ -346,5 +347,17 @@ public class FilmDbStorage {
             return getFilms();
         }
         return listIdFilm;
+    }
+    public List<Film> getCommonFilms(int idUser, int idFriend) {
+        List<Integer> userFilm =
+                jdbcTemplate.queryForList("SELECT id_films " +
+                        "               FROM users_like " +
+                        "               WHERE id_user = ?", Integer.class, idUser);
+        List<Integer> friendFilm =
+                jdbcTemplate.queryForList("SELECT id_films " +
+                        "               FROM users_like " +
+                        "               WHERE id_user = ?", Integer.class, idFriend);
+        userFilm.retainAll(friendFilm);
+        return userFilm.stream().map(this::getFilm).collect(Collectors.toList());
     }
 }

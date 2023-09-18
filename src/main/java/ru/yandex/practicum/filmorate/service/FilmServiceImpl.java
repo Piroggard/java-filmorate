@@ -14,9 +14,8 @@ import ru.yandex.practicum.filmorate.validation.ValidationGanres;
 import ru.yandex.practicum.filmorate.validation.ValidationMpa;
 import ru.yandex.practicum.filmorate.validation.ValidationUser;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
+
 
 @Service
 @AllArgsConstructor
@@ -106,13 +105,6 @@ public class FilmServiceImpl implements FilmService {
 
     @Override
     public List<Film> getCommonFilms(int userId, int friendId) {
-        List<Film> films = new ArrayList<>();
-
-        for (Film film : filmDbStorage.getFilms()) {
-           if (filmDbStorage.getFilm(film.getId()).getUsersLikeMovie().containsAll(Set.of(userId, friendId))) {
-               films.add(film);
-           }
-        }
-        return films;
+        return filmDbStorage.getCommonFilms(userId,friendId);
     }
 }
