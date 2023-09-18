@@ -107,6 +107,7 @@ public class FilmServiceImpl implements FilmService {
     @Override
     public List<Film> getCommonFilms(int userId, int friendId) {
         List<Film> films = new ArrayList<>();
+
         for (Film film : filmDbStorage.getFilms()) {
            if (filmDbStorage.getFilm(film.getId()).getUsersLikeMovie().containsAll(Set.of(userId, friendId))) {
                films.add(film);
