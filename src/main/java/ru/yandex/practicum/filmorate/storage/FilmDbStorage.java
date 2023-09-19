@@ -548,6 +548,7 @@ public class FilmDbStorage {
             }
         }
     }
+
     public List<Director> getDirectors() {
         return jdbcTemplate.query("SELECT DIRECTORS_ID , DIRECTORS_NAME FROM DIRECTORS;", new RowMapper<Director>() {
             @Override
