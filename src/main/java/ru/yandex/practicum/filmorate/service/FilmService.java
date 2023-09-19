@@ -43,5 +43,9 @@ public interface FilmService {
 
     List<Film> getFilmDirectorYearOrLike(Integer directorId, List<String> sortBy);
 
+
     void deleteDirectors(int id);
+
+    List<Film> getFilmPieceNameOrDirectorPieceName(String query, List<String> by);
+
 }

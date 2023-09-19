@@ -134,4 +134,12 @@ public class FilmServiceImpl implements FilmService {
     public void deleteDirectors(int id) {
         filmDbStorage.deleteDirectors(id);
     }
+
+
+    @Override
+    public List<Film> getFilmPieceNameOrDirectorPieceName(String query, List<String> by) {
+        return filmDbStorage.getFilmPieceNameOrDirectorPieceName(query.toLowerCase(), by);
+    }
+
+
 }
