@@ -471,6 +471,7 @@ public class FilmDbStorage {
                         "               WHERE id_user = ?", Integer.class, idFriend);
         userFilm.retainAll(friendFilm);
         return userFilm.stream().map(this::getFilm).collect(Collectors.toList());
+    }
 
     public List<Film> getRecommendations(Integer id) {
         String maxUserIntersection = " (SELECT l.id_user u_id, " +

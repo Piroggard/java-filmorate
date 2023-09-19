@@ -108,12 +108,12 @@ public class FilmServiceImpl implements FilmService {
 
     @Override
     public List<Film> getCommonFilms(int userId, int friendId) {
-        return filmDbStorage.getCommonFilms(userId,friendId);
+        return filmDbStorage.getCommonFilms(userId, friendId);
+    }
     public List<Film> getRecommendations(Integer id) {
         log.debug("Получены рекомендации фильмов по id: {}", id);
         return filmDbStorage.getRecommendations(id);
     }
-}
     public List<Director> getDirectors() {
         return filmDbStorage.getDirectors();
     }
