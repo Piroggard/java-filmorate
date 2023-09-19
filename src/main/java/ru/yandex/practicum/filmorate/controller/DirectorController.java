@@ -28,6 +28,7 @@ public class DirectorController {
 
     @GetMapping("/directors/{id}")
     public Director getDirectorsById(@PathVariable Integer id) {
+        log.info("Получение данных по {}", id);
         return filmService.getDirectorsById(id);
     }
 
@@ -45,5 +46,4 @@ public class DirectorController {
     public void deleteDirectors(@PathVariable int id) {
         filmService.deleteDirectors(id);
     }
-
 }

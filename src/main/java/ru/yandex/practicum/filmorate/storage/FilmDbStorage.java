@@ -141,8 +141,6 @@ public class FilmDbStorage {
                     genres1.setId(rs.getInt("genre"));
                     genres1.setName(rs.getString("nameGenre"));
                     genres.add(genres1);
-
-
                 } while (rs.next());
                 List<Genres> genresList = new ArrayList<>(genres);
                 Collections.sort(genresList);
@@ -451,7 +449,6 @@ public class FilmDbStorage {
         }
         return listIdFilm;
     }
-
 
     public List<Director> getDirectors() {
         return jdbcTemplate.query("SELECT DIRECTORS_ID , DIRECTORS_NAME FROM DIRECTORS;", new RowMapper<Director>() {
