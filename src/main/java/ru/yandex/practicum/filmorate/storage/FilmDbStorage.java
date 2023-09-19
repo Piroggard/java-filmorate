@@ -528,6 +528,7 @@ public class FilmDbStorage {
                 throw new ValidationException(String.format("Рейтинг с id %s не существует", id));
             }
         }
+    }
     public List<Director> getDirectors() {
         return jdbcTemplate.query("SELECT DIRECTORS_ID , DIRECTORS_NAME FROM DIRECTORS;", new RowMapper<Director>() {
             @Override
