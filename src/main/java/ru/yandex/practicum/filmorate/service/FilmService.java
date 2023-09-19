@@ -33,6 +33,7 @@ public interface FilmService {
 
     List<Genres> getGanres();
 
+    List<Film> getCommonFilms(int userId, int friendId);
 
     public List<Film> getRecommendations(Integer id);
 

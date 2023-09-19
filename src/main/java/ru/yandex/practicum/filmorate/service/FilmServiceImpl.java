@@ -14,8 +14,10 @@ import ru.yandex.practicum.filmorate.validation.ValidationDirectors;
 import ru.yandex.practicum.filmorate.validation.ValidationFilm;
 import ru.yandex.practicum.filmorate.validation.ValidationGanres;
 import ru.yandex.practicum.filmorate.validation.ValidationMpa;
+import ru.yandex.practicum.filmorate.validation.ValidationUser;
 
 import java.util.List;
+
 
 @Service
 @AllArgsConstructor
@@ -26,6 +28,7 @@ public class FilmServiceImpl implements FilmService {
     private final ValidationGanres validationGanres = new ValidationGanres();
     private final ValidationDirectors validationDirectors = new ValidationDirectors();
     private final ValidationMpa validationMpa = new ValidationMpa();
+    private final ValidationUser validationUser = new ValidationUser();
 
     @Override
     public List<Film> getFilms() {
@@ -104,11 +107,15 @@ public class FilmServiceImpl implements FilmService {
     }
 
     @Override
+    public List<Film> getCommonFilms(int userId, int friendId) {
+        return filmDbStorage.getCommonFilms(userId, friendId);
+    }
+
     public List<Film> getRecommendations(Integer id) {
         log.debug("Получены рекомендации фильмов по id: {}", id);
         return filmDbStorage.getRecommendations(id);
     }
-}
+
     public List<Director> getDirectors() {
         return filmDbStorage.getDirectors();
     }

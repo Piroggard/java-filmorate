@@ -24,6 +24,14 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import java.util.*;
 
 
@@ -137,13 +145,12 @@ public class FilmDbStorage {
                         film.setDirectors(set);
                     }
                     usersLikeMovie.add(rs.getInt("usersLikeMovie"));
-                    if (i == 0) {
-                        break;
+                    if (i != 0) {
+                        Genres genres1 = new Genres();
+                        genres1.setId(rs.getInt("genre"));
+                        genres1.setName(rs.getString("nameGenre"));
+                        genres.add(genres1);
                     }
-                    Genres genres1 = new Genres();
-                    genres1.setId(rs.getInt("genre"));
-                    genres1.setName(rs.getString("nameGenre"));
-                    genres.add(genres1);
                 } while (rs.next());
                 List<Genres> genresList = new ArrayList<>(genres);
                 Collections.sort(genresList);
@@ -453,6 +460,18 @@ public class FilmDbStorage {
         return listIdFilm;
     }
 
+    public List<Film> getCommonFilms(int idUser, int idFriend) {
+        List<Integer> userFilm =
+                jdbcTemplate.queryForList("SELECT id_films " +
+                        "               FROM users_like " +
+                        "               WHERE id_user = ?", Integer.class, idUser);
+        List<Integer> friendFilm =
+                jdbcTemplate.queryForList("SELECT id_films " +
+                        "               FROM users_like " +
+                        "               WHERE id_user = ?", Integer.class, idFriend);
+        userFilm.retainAll(friendFilm);
+        return userFilm.stream().map(this::getFilm).collect(Collectors.toList());
+    }
 
     public List<Film> getRecommendations(Integer id) {
         String maxUserIntersection = " (SELECT l.id_user u_id, " +
@@ -529,6 +548,7 @@ public class FilmDbStorage {
             }
         }
     }
+
     public List<Director> getDirectors() {
         return jdbcTemplate.query("SELECT DIRECTORS_ID , DIRECTORS_NAME FROM DIRECTORS;", new RowMapper<Director>() {
             @Override
