@@ -35,6 +35,8 @@ CREATE TABLE IF NOT EXISTS films (
   duration INT,
   rating INT,
   genre_id INT,
+  directors_id INT,
+
   CONSTRAINT films_fk_genre FOREIGN KEY (genre_id) REFERENCES genre(genre_id),
   CONSTRAINT films_fk_rating FOREIGN KEY (rating) REFERENCES reating(reating_id)
 );
@@ -51,4 +53,17 @@ CREATE TABLE IF NOT EXISTS users_like (
   id_films INT,
   CONSTRAINT users_like_fk_user FOREIGN KEY (id_user) REFERENCES users(id),
   CONSTRAINT users_like_fk_films FOREIGN KEY (id_films) REFERENCES films(films_id)
+);
+
+CREATE TABLE IF NOT EXISTS directors (
+  directors_id INT AUTO_INCREMENT PRIMARY KEY,
+  directors_name VARCHAR(255)
+);
+
+CREATE TABLE IF NOT EXISTS film_directors (
+  film_directors_id INT AUTO_INCREMENT PRIMARY KEY,
+  film_id INT,
+  directors_id INT,
+  CONSTRAINT film_directors_fk_film FOREIGN KEY (film_id) REFERENCES films(films_id),
+  CONSTRAINT film_directors_fk_directors FOREIGN KEY (directors_id) REFERENCES directors(directors_id)
 );
