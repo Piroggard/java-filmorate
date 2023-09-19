@@ -30,7 +30,7 @@ public class FilmServiceImpl implements FilmService {
     @Override
     public List<Film> getFilms() {
         List<Film> filmList = filmDbStorage.getFilms();
-       return filmList;
+        return filmList;
     }
 
     @Override
@@ -104,6 +104,11 @@ public class FilmServiceImpl implements FilmService {
     }
 
     @Override
+    public List<Film> getRecommendations(Integer id) {
+        log.debug("Получены рекомендации фильмов по id: {}", id);
+        return filmDbStorage.getRecommendations(id);
+    }
+}
     public List<Director> getDirectors() {
         return filmDbStorage.getDirectors();
     }
@@ -143,3 +148,4 @@ public class FilmServiceImpl implements FilmService {
 
 
 }
+

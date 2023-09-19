@@ -33,6 +33,9 @@ public interface FilmService {
 
     List<Genres> getGanres();
 
+
+    public List<Film> getRecommendations(Integer id);
+
     List<Director> getDirectors();
 
     Director getDirectorsById(Integer id);
@@ -47,5 +50,6 @@ public interface FilmService {
     void deleteDirectors(int id);
 
     List<Film> getFilmPieceNameOrDirectorPieceName(String query, List<String> by);
+
 
 }

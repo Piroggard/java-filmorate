@@ -1,14 +1,20 @@
 package ru.yandex.practicum.filmorate.storage;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
+
+import ru.yandex.practicum.filmorate.exception.ValidationException;
+
 import ru.yandex.practicum.filmorate.exception.DataNotFoundException;
 import ru.yandex.practicum.filmorate.model.Director;
+
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genres;
 import ru.yandex.practicum.filmorate.model.Mpa;
@@ -16,16 +22,13 @@ import ru.yandex.practicum.filmorate.model.Mpa;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 
 @Component
+@Slf4j
 @AllArgsConstructor
 public class FilmDbStorage {
     public final JdbcTemplate jdbcTemplate;
@@ -70,12 +73,12 @@ public class FilmDbStorage {
     }
 
     public Set<Genres> getGanresId(Integer id) {
-       List<Genres> genresList = jdbcTemplate.query("SELECT g.GENRE_ID, g.NAME_GENRE\n" +
-               "FROM GENRE g \n" +
-               "JOIN FILM_GENRE fg ON fg.GENRE_ID = g.GENRE_ID \n" +
-               "JOIN FILMS f ON f.FILMS_ID = fg.FILM_ID \n" +
-               "WHERE f.FILMS_ID =?" +
-               "ORDER BY g.GENRE_ID ASC;", new RowMapper<Genres>() {
+        List<Genres> genresList = jdbcTemplate.query("SELECT g.GENRE_ID, g.NAME_GENRE\n" +
+                "FROM GENRE g \n" +
+                "JOIN FILM_GENRE fg ON fg.GENRE_ID = g.GENRE_ID \n" +
+                "JOIN FILMS f ON f.FILMS_ID = fg.FILM_ID \n" +
+                "WHERE f.FILMS_ID =?" +
+                "ORDER BY g.GENRE_ID ASC;", new RowMapper<Genres>() {
             @Override
             public Genres mapRow(ResultSet rs, int rowNum) throws SQLException {
                 Genres genres = new Genres();
@@ -84,7 +87,7 @@ public class FilmDbStorage {
                 return genres;
             }
         }, id);
-       Set<Genres> genres = new HashSet<>();
+        Set<Genres> genres = new HashSet<>();
         for (Genres genres1 : genresList) {
             genres.add(genres1);
         }
@@ -450,6 +453,81 @@ public class FilmDbStorage {
         return listIdFilm;
     }
 
+
+    public List<Film> getRecommendations(Integer id) {
+        String maxUserIntersection = " (SELECT l.id_user u_id, " +
+                "COUNT(l.id_user) cnt " +
+                "FROM users_like l WHERE l.id_user <> ? " +
+                "AND l.id_films IN (" +
+                "SELECT ll.id_films FROM " +
+                " users_like ll WHERE ll.id_user = ?)" +
+                "GROUP BY l.id_user " +
+                "ORDER BY cnt DESC " +
+                "LIMIT 1) its ";
+
+        String recommendedFilmsSql = "SELECT * FROM films fm " + // все фильмы
+                "LEFT JOIN users_like lk ON fm.films_id = lk.id_films " +
+                "WHERE lk.id_user IN (" + // которые пролайкал пользователь с максимальным пересечением по лайкам
+                "SELECT u_id FROM " + maxUserIntersection + ") " +
+                "AND lk.id_films NOT IN (" + // и которым наш пользователь не ставил лайк
+                "SELECT llk.id_films FROM users_like llk " +
+                "WHERE llk.id_user = ?)";
+        return jdbcTemplate.query(recommendedFilmsSql, (rs, rowNum) -> makeFilm(rs), id, id, id);
+    }
+
+    private Film makeFilm(ResultSet resultSet) throws SQLException {
+        int id = resultSet.getInt("films_id");
+        String name = resultSet.getString("name");
+        String description = resultSet.getString("description");
+        LocalDate releaseDate = resultSet.getDate("releasedate").toLocalDate();
+        int duration = resultSet.getInt("duration");
+        int mpa = resultSet.getInt("rating");
+        Film film = new Film(name, description, releaseDate, duration);
+        film.setId(id);
+        setMpa(film, mpa);
+        setGenre(film);
+        return film;
+    }
+
+    private void setMpa(Film film, int mpa) {
+        film.setMpa(getById(mpa));
+    }
+
+    private void setGenre(Film film) {
+        film.getGenres().clear();
+        film.getGenres().addAll(getGenresByFilm(film.getId()));
+    }
+
+    public Mpa getById(int id) {
+        validationId(id);
+        String sql = "select * from reating where reating_id = ?";
+        List<Mpa> genreList = jdbcTemplate.query(sql, ((rs, rowNum) -> makeMpa(rs)), id);
+        if (genreList.isEmpty()) {
+            log.info("Рейтинг с id {} не найден", id);
+            return null;
+        } else {
+            log.info("Найден рейтинг {}", genreList.get(0).getName());
+            return genreList.get(0);
+        }
+    }
+
+    private Mpa makeMpa(ResultSet rs) throws SQLException {
+        return new Mpa(rs.getInt("reating_id"), rs.getString("name"), rs.getString("description"));
+    }
+
+    public List<Genres> getGenresByFilm(int filmId) {
+        String sql = "SELECT * FROM GENRE WHERE GENRE_ID IN (SELECT GENRE_ID FROM FILM_GENRE WHERE FILM_ID = ?);";
+        return jdbcTemplate.query(sql, (rs, rowNum) -> new Genres(rs.getInt("genre_id"), rs.getString("name_genre")), filmId);
+    }
+
+    public void validationId(Integer id) {
+        String sql = "SELECT COUNT(*) FROM reating WHERE reating_id = ?";
+        SqlRowSet resultSet = jdbcTemplate.queryForRowSet(sql, id);
+        if (resultSet.next()) {
+            if (resultSet.getInt("count(*)") == 0) {
+                throw new ValidationException(String.format("Рейтинг с id %s не существует", id));
+            }
+        }
     public List<Director> getDirectors() {
         return jdbcTemplate.query("SELECT DIRECTORS_ID , DIRECTORS_NAME FROM DIRECTORS;", new RowMapper<Director>() {
             @Override
@@ -657,3 +735,7 @@ public class FilmDbStorage {
         return null;
     }
 }
+
+
+
+

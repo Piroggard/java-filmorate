@@ -22,6 +22,9 @@ import java.util.Set;
 public class UserDbStorage {
     private final JdbcTemplate jdbcTemplate;
 
+    final FilmDbStorage filmDbStorage;
+
+
     public List<User> getUsers() {
         return jdbcTemplate.query("SELECT u.id, u.email, u.login, u.name, u.birthday\n" +
                 "FROM users u ", new RowMapper<User>() {
@@ -33,7 +36,7 @@ public class UserDbStorage {
                 user.setLogin(rs.getString("login"));
                 user.setName(rs.getString("name"));
                 user.setBirthday(rs.getDate("birthday").toLocalDate());
-                Set<Integer> listFriend  = new HashSet<>();
+                Set<Integer> listFriend = new HashSet<>();
                 for (User user1 : getFriendsUser(rs.getInt("id"))) {
                     listFriend.add(user1.getId());
                 }
@@ -46,17 +49,17 @@ public class UserDbStorage {
     public User getUser(Integer id) {
         return jdbcTemplate.queryForObject("SELECT u.id, u.email, u.login, u.name, u.birthday FROM users u  where id =?;",
                 new RowMapper<User>() {
-            @Override
-            public User mapRow(ResultSet rs, int rowNum) throws SQLException {
-                User user = new User();
-                user.setId(rs.getInt("id"));
-                user.setEmail(rs.getString("email"));
-                user.setLogin(rs.getString("login"));
-                user.setName(rs.getString("name"));
-                user.setBirthday(rs.getDate("birthday").toLocalDate());
-                return user;
-            }
-        }, id);
+                    @Override
+                    public User mapRow(ResultSet rs, int rowNum) throws SQLException {
+                        User user = new User();
+                        user.setId(rs.getInt("id"));
+                        user.setEmail(rs.getString("email"));
+                        user.setLogin(rs.getString("login"));
+                        user.setName(rs.getString("name"));
+                        user.setBirthday(rs.getDate("birthday").toLocalDate());
+                        return user;
+                    }
+                }, id);
     }
 
     public List<User> getFriendsUser(Integer idUser) {
@@ -74,7 +77,7 @@ public class UserDbStorage {
                 user.setBirthday(rs.getDate("birthday").toLocalDate());
                 return user;
             }
-        },  idUser);
+        }, idUser);
     }
 
     public List<User> getListMutualFriend(Integer userId, Integer otherId) {
@@ -103,7 +106,7 @@ public class UserDbStorage {
     }
 
     public List<Integer> getListFriend(int friendId) {
-       return jdbcTemplate.query("select id_friend  from list_friends lf where id_user = ?;", new RowMapper<Integer>() {
+        return jdbcTemplate.query("select id_friend  from list_friends lf where id_user = ?;", new RowMapper<Integer>() {
             @Override
             public Integer mapRow(ResultSet rs, int rowNum) throws SQLException {
                 Integer id = (rs.getInt("id_friend"));
@@ -118,7 +121,7 @@ public class UserDbStorage {
         int countUser = 0;
         for (int i = 0; i < frendUser.size(); i++) {
             if (friendId == frendUser.get(i)) {
-               countUser++;
+                countUser++;
             }
         }
         for (int i = 0; i < frendfrend.size(); i++) {
@@ -159,9 +162,9 @@ public class UserDbStorage {
             PreparedStatement ps = con.prepareStatement("INSERT INTO users (email, login, name, birthday)\n" +
                     "VALUES\n" +
                     "    (?, ?, ?, ?); ", new String[]{"id"});
-            ps.setString(1,user.getEmail());
-            ps.setString(2,user.getLogin());
-            ps.setString(3,user.getName());
+            ps.setString(1, user.getEmail());
+            ps.setString(2, user.getLogin());
+            ps.setString(3, user.getName());
             ps.setDate(4, sqlDate);
             return ps;
         }, keyHolder);
@@ -173,7 +176,8 @@ public class UserDbStorage {
         User userPut = getUser(user.getId());
         jdbcTemplate.update("update users \n" +
                 "set  email = ?, login = ?, name = ?, birthday = ?\n" +
-                "where id =?;",  user.getEmail(), user.getLogin(), user.getName(), user.getBirthday(), user.getId());
+                "where id =?;", user.getEmail(), user.getLogin(), user.getName(), user.getBirthday(), user.getId());
         return user;
     }
+
 }

@@ -15,6 +15,7 @@ public class FilmController {
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
     private final FilmService filmService;
 
+
     @GetMapping("/films")
     public List<Film> getFilms() {
         return filmService.getFilms();
@@ -53,6 +54,9 @@ public class FilmController {
         return filmService.getListBestMovies(count);
     }
 
+
+
+
     @GetMapping("/films/director/{directorId}")
     @ResponseBody
 
@@ -67,4 +71,5 @@ public class FilmController {
                 @RequestParam (name = "by") List<String> by) {
         return filmService.getFilmPieceNameOrDirectorPieceName(query, by);
     }
+
 }

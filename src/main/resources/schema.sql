@@ -6,6 +6,8 @@ CREATE TABLE IF NOT EXISTS users (
   birthday DATE NOT NULL
 );
 
+
+
 CREATE TABLE IF NOT EXISTS list_friends (
   id_user INT,
   id_friend INT,
