@@ -11,24 +11,16 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genres;
 import ru.yandex.practicum.filmorate.model.Mpa;
 
-
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
+import java.util.*;
 
 @Component
 @AllArgsConstructor
 public class FilmDbStorage {
     public final JdbcTemplate jdbcTemplate;
-
 
     public List<Film> getFilms() {
         return jdbcTemplate.query("SELECT FILMS_ID AS id, NAME as name , DESCRIPTION as description , RELEASEDATE as releaseDate , DURATION as duration, RATING as rating, GENRE_ID AS genre FROM FILMS f ;", new RowMapper<Film>() {
@@ -48,12 +40,12 @@ public class FilmDbStorage {
     }
 
     public Set<Genres> getGanresId(Integer id) {
-       List<Genres> genresList = jdbcTemplate.query("SELECT g.GENRE_ID, g.NAME_GENRE\n" +
-               "FROM GENRE g \n" +
-               "JOIN FILM_GENRE fg ON fg.GENRE_ID = g.GENRE_ID \n" +
-               "JOIN FILMS f ON f.FILMS_ID = fg.FILM_ID \n" +
-               "WHERE f.FILMS_ID =?" +
-               "ORDER BY g.GENRE_ID ASC;", new RowMapper<Genres>() {
+        List<Genres> genresList = jdbcTemplate.query("SELECT g.GENRE_ID, g.NAME_GENRE\n" +
+                "FROM GENRE g \n" +
+                "JOIN FILM_GENRE fg ON fg.GENRE_ID = g.GENRE_ID \n" +
+                "JOIN FILMS f ON f.FILMS_ID = fg.FILM_ID \n" +
+                "WHERE f.FILMS_ID =?" +
+                "ORDER BY g.GENRE_ID ASC;", new RowMapper<Genres>() {
             @Override
             public Genres mapRow(ResultSet rs, int rowNum) throws SQLException {
                 Genres genres = new Genres();
@@ -62,7 +54,7 @@ public class FilmDbStorage {
                 return genres;
             }
         }, id);
-       Set<Genres> genres = new HashSet<>();
+        Set<Genres> genres = new HashSet<>();
         for (Genres genres1 : genresList) {
             genres.add(genres1);
         }
@@ -347,5 +339,10 @@ public class FilmDbStorage {
             return getFilms();
         }
         return listIdFilm;
+    }
+
+    public boolean filmExists(Integer filmId) {
+        Integer count = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM FILMS WHERE FILMS_ID = ?", Integer.class, filmId);
+        return count != null && count > 0;
     }
 }
