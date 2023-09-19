@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.service;
 
+import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genres;
 import ru.yandex.practicum.filmorate.model.Mpa;
@@ -31,4 +32,16 @@ public interface FilmService {
     Genres getGanres(Integer id);
 
     List<Genres> getGanres();
+
+    List<Director> getDirectors();
+
+    Director getDirectorsById(Integer id);
+
+    Director postDirectors(Director director);
+
+    Director putDirectors(Director director);
+
+    List<Film> getFilmDirectorYearOrLike(Integer directorId, List<String> sortBy);
+
+    void deleteDirectors(int id);
 }
