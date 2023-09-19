@@ -15,6 +15,7 @@ public class FilmController {
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
     private final FilmService filmService;
 
+
     @GetMapping("/films")
     public List<Film> getFilms() {
         return filmService.getFilms();
@@ -58,4 +59,22 @@ public class FilmController {
                                      @RequestParam int friendId) {
         return filmService.getCommonFilms(userId, friendId);
     }
+
+
+
+    @GetMapping("/films/director/{directorId}")
+    @ResponseBody
+
+    public List<Film> getFilmDirectorYearOrLike(@PathVariable int directorId, @RequestParam (name = "sortBy") List<String> sortBy) {
+        return filmService.getFilmDirectorYearOrLike(directorId, sortBy);
+    }
+
+    @GetMapping("/films/search")
+    @ResponseBody
+    public List<Film> getFilmPieceNameOrDirectorPieceName(
+        @RequestParam (name = "query") String query,
+                @RequestParam (name = "by") List<String> by) {
+        return filmService.getFilmPieceNameOrDirectorPieceName(query, by);
+    }
+
 }
