@@ -56,10 +56,10 @@ CREATE TABLE IF NOT EXISTS users_like (
 
 CREATE TABLE IF NOT EXISTS  reviews (
     review_id INTEGER AUTO_INCREMENT PRIMARY KEY,
-    content  VARCHAR,
-    is_positive  boolean,
-    user_id INT,
-    film_id INT,
+    content  VARCHAR NOT NULL,
+    is_positive  boolean NOT NULL,
+    user_id INT NOT NULL,
+    film_id INT NOT NULL,
     useful_count INTEGER,
     CONSTRAINT review_fk_user FOREIGN KEY (user_id) REFERENCES users(id),
     CONSTRAINT review_fk_films FOREIGN KEY (film_id) REFERENCES films(films_id)

@@ -136,7 +136,7 @@ public class ReviewDbStorage implements ReviewStorage {
         }
     }
 
-    @Transactional
+
     @Override
     public void likeReview(Integer reviewId, Integer userId) {
         try {
@@ -150,7 +150,7 @@ public class ReviewDbStorage implements ReviewStorage {
 
     }
 
-    @Transactional
+
     @Override
     public void dislikeReview(Integer reviewId, Integer userId) {
         try {
@@ -164,7 +164,7 @@ public class ReviewDbStorage implements ReviewStorage {
 
     }
 
-    @Transactional
+
     @Override
     public void removeLike(Integer reviewId, Integer userId) {
         try {
@@ -179,7 +179,6 @@ public class ReviewDbStorage implements ReviewStorage {
         }
     }
 
-    @Transactional
     @Override
     public void removeDislike(Integer reviewId, Integer userId) {
         try {

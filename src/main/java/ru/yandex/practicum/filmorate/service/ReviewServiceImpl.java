@@ -9,6 +9,7 @@ import ru.yandex.practicum.filmorate.model.Review;
 import ru.yandex.practicum.filmorate.storage.FilmDbStorage;
 import ru.yandex.practicum.filmorate.storage.UserDbStorage;
 import ru.yandex.practicum.filmorate.storage.review.ReviewStorage;
+import ru.yandex.practicum.filmorate.validation.ValidationReviews;
 
 import java.util.List;
 
@@ -19,10 +20,13 @@ public class ReviewServiceImpl implements ReviewService {
     private final ReviewStorage reviewStorage;
     private final FilmDbStorage filmStorage;
     private final UserDbStorage userStorage;
+    private final ValidationReviews validationReviews;
 
     @Override
     public Review createReview(Review newReview) {
+        validationReviews.validarionReviews(newReview);
         validateFilmIdAndUserId(newReview.getFilmId(), newReview.getUserId());
+
         return reviewStorage.createReview(newReview);
     }
 
@@ -78,7 +82,7 @@ public class ReviewServiceImpl implements ReviewService {
     public void validateFilmId(Integer filmId) {
         if (!filmStorage.filmExists(filmId)) {
             log.warn("Фильм с id {} не найден", filmId);
-            throw new DataNotFoundException("Фильм с id " + filmId + " не найден.");
+            throw new RuntimeException("Фильм с id " + filmId + " не найден.");
         }
     }
 
@@ -86,7 +90,7 @@ public class ReviewServiceImpl implements ReviewService {
     public void validateUserId(Integer userId) {
         if (!userStorage.userExists(userId)) {
             log.warn("Пользователь с id {} не найден", userId);
-            throw new DataNotFoundException("Пользователь с id " + userId + " не найден.");
+            throw new RuntimeException("Пользователь с id " + userId + " не найден.");
         }
     }
 

@@ -16,7 +16,6 @@ public class ReviewController {
 
     @PostMapping("/reviews")
     public Review createReview(@RequestBody Review review) {
-        System.out.println("Работает");
         log.info("Добавление нового отзыва: {}", review);
         Review createdReview = reviewService.createReview(review);
         return createdReview;

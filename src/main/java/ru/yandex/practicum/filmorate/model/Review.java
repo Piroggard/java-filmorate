@@ -1,13 +1,12 @@
 package ru.yandex.practicum.filmorate.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.jetbrains.annotations.NotNull;
+
+import lombok.*;
 
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
+@Setter
 @Builder(toBuilder = true)
 @Data
 public class Review {
@@ -19,13 +18,9 @@ public class Review {
     }
 
     private Integer reviewId;
-    @NotNull
     private String content;
-    @NotNull
     private Boolean isPositive;
-    @NotNull
     private Integer userId;
-    @NotNull
     private Integer filmId;
-    private int useful;
+    private Integer useful;
 }
