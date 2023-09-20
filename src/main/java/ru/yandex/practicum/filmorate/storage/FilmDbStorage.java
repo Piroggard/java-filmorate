@@ -465,6 +465,7 @@ public class FilmDbStorage {
     public boolean filmExists(Integer filmId) {
         Integer count = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM FILMS WHERE FILMS_ID = ?", Integer.class, filmId);
         return count != null && count > 0;
+    }
     public List<Film> getCommonFilms(int idUser, int idFriend) {
         List<Integer> userFilm =
                 jdbcTemplate.queryForList("SELECT id_films " +
