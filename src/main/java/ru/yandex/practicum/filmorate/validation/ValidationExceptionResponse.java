@@ -20,10 +20,8 @@ import ru.yandex.practicum.filmorate.exception.ValidationException;
 import java.util.Map;
 
 
-@RestControllerAdvice(assignableTypes = {FilmController.class, UserController.class, MpaController.class, GenresController.class
-        , ReviewController.class})
-@RestControllerAdvice(assignableTypes = {FilmController.class, UserController.class, MpaController.class, GenresController.class,
-ValidationDirectors.class, DirectorController.class})
+
+@RestControllerAdvice(assignableTypes = {FilmController.class, UserController.class, MpaController.class, GenresController.class, ValidationDirectors.class, DirectorController.class, ReviewController.class})
 public class ValidationExceptionResponse {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
