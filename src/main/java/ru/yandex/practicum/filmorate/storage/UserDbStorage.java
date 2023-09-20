@@ -22,6 +22,9 @@ import java.util.Set;
 public class UserDbStorage {
     private final JdbcTemplate jdbcTemplate;
 
+    final FilmDbStorage filmDbStorage;
+
+
     public List<User> getUsers() {
         return jdbcTemplate.query("SELECT u.id, u.email, u.login, u.name, u.birthday\n" +
                 "FROM users u ", new RowMapper<User>() {
@@ -176,6 +179,7 @@ public class UserDbStorage {
                 "where id =?;", user.getEmail(), user.getLogin(), user.getName(), user.getBirthday(), user.getId());
         return user;
     }
+
 
     public boolean userExists(Integer userId) {
         Integer count = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM USERS WHERE ID = ?", Integer.class, userId);
