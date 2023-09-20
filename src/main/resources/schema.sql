@@ -1,3 +1,4 @@
+
 CREATE TABLE IF NOT EXISTS users (
   id INT AUTO_INCREMENT PRIMARY KEY,
   email VARCHAR(255) NOT NULL,
@@ -5,8 +6,6 @@ CREATE TABLE IF NOT EXISTS users (
   name VARCHAR(255) NOT NULL,
   birthday DATE NOT NULL
 );
-
-
 
 CREATE TABLE IF NOT EXISTS list_friends (
   id_user INT,
@@ -54,6 +53,28 @@ CREATE TABLE IF NOT EXISTS users_like (
   CONSTRAINT users_like_fk_user FOREIGN KEY (id_user) REFERENCES users(id),
   CONSTRAINT users_like_fk_films FOREIGN KEY (id_films) REFERENCES films(films_id)
 );
+
+CREATE TABLE IF NOT EXISTS  reviews (
+    review_id INTEGER AUTO_INCREMENT PRIMARY KEY,
+    content  VARCHAR NOT NULL,
+    is_positive  boolean NOT NULL,
+    user_id INT NOT NULL,
+    film_id INT NOT NULL,
+    useful_count INTEGER,
+    CONSTRAINT review_fk_user FOREIGN KEY (user_id) REFERENCES users(id),
+    CONSTRAINT review_fk_films FOREIGN KEY (film_id) REFERENCES films(films_id)
+
+);
+
+CREATE TABLE IF NOT EXISTS  review_reactions (
+    user_id     INT,
+    review_id   INTEGER,
+    reaction    VARCHAR,
+    CONSTRAINT review_reactions_fk_user FOREIGN KEY (user_id) REFERENCES users(id),
+    CONSTRAINT review_reactions_fk_reviews FOREIGN KEY (review_id) REFERENCES reviews(review_id)
+
+);
+
 
 CREATE TABLE IF NOT EXISTS directors (
   directors_id INT AUTO_INCREMENT PRIMARY KEY,

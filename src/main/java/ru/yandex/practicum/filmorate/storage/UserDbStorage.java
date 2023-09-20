@@ -180,4 +180,9 @@ public class UserDbStorage {
         return user;
     }
 
+
+    public boolean userExists(Integer userId) {
+        Integer count = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM USERS WHERE ID = ?", Integer.class, userId);
+        return count != null && count > 0;
+    }
 }
