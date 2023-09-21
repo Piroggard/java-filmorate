@@ -225,7 +225,7 @@ public class UserDbStorage {
         }, keyHolder);
     }
 
-        public void deleteUser (int userId) {
+        public void deleteUser(int userId) {
             jdbcTemplate.update("delete from list_friends where id_friend = ?", userId);
             jdbcTemplate.update("delete from list_friends where id_user = ?", userId);
             jdbcTemplate.update("delete from users where id = ? ", userId);
