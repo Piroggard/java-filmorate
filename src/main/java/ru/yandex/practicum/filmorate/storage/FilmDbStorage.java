@@ -665,19 +665,31 @@ public class FilmDbStorage {
     }
 
     public List<Film> getFilmPieceNameOrDirectorPieceName(String query, List<String> by) {
+        System.out.println(1);
         if (by.size() == 2) {
             if (by.get(0).equals("title")) {
-                return jdbcTemplate.query("select films_id as id, f.name, f.description as description, releasedate as releaseDate, \n" +
-                        "duration , r.reating_id as rating , ul.id_user  as usersLikeMovie, fg.genre_id as genre, \n" +
-                        "g.name_genre as nameGenre, r.name as nameMPA, r.description as descriptionMPA , d.DIRECTORS_ID , d.DIRECTORS_NAME \n" +
-                        "from films f\n" +
-                        "LEFT JOIN reating r on r.reating_id = f.rating\n" +
-                        "LEFT JOIN users_like ul on f.films_id = ul.id_films\n" +
-                        "LEFT JOIN FILM_GENRE fg  on fg.film_id = f.films_id \n" +
-                        "left join genre g on g.genre_id = fg.genre_id \n" +
-                        "LEFT JOIN FILM_DIRECTORS fd ON fd.FILM_ID = f.FILMS_ID \n" +
-                        "LEFT JOIN DIRECTORS d ON d.DIRECTORS_ID = fd.DIRECTORS_ID \n" +
-                        "WHERE LOWER(d.DIRECTORS_NAME) LIKE ? or LOWER(f.DESCRIPTION) LIKE ? ORDER BY ul.id_user DESC ;", new RowMapper<Film>() {
+                return jdbcTemplate.query("SELECT \n" +
+                        "    f.films_id AS id,\n" +
+                        "    f.name,\n" +
+                        "    f.description AS description,\n" +
+                        "    f.releasedate AS releaseDate,\n" +
+                        "    f.duration,\n" +
+                        "    r.reating_id AS rating,\n" +
+                        "    fg.genre_id AS genre,\n" +
+                        "    g.name_genre AS nameGenre,\n" +
+                        "    r.name AS nameMPA,\n" +
+                        "    r.description AS descriptionMPA,\n" +
+                        "    d.DIRECTORS_ID,\n" +
+                        "    d.DIRECTORS_NAME \n" +
+                        "FROM films f\n" +
+                        "LEFT JOIN reating r ON r.reating_id = f.rating\n" +
+                        "LEFT JOIN film_genre fg ON fg.film_id = f.films_id\n" +
+                        "LEFT JOIN genre g ON g.genre_id = fg.genre_id\n" +
+                        "LEFT JOIN film_directors fd ON fd.FILM_ID = f.FILMS_ID \n" +
+                        "LEFT JOIN directors d ON d.DIRECTORS_ID = fd.DIRECTORS_ID \n" +
+                        "WHERE (LOWER(d.DIRECTORS_NAME) LIKE ? OR LOWER(f.DESCRIPTION) LIKE ?) \n" +
+                        "GROUP BY id, f.name, f.description, f.releasedate, f.duration, r.reating_id, fg.genre_id, g.name_genre, r.name, r.description, d.DIRECTORS_ID, d.DIRECTORS_NAME\n" +
+                        "ORDER BY id DESC;", new RowMapper<Film>() {
                     @Override
                     public Film mapRow(ResultSet rs, int rowNum) throws SQLException {
                         Film film = new Film();
@@ -726,17 +738,27 @@ public class FilmDbStorage {
 
 
         if (by.get(0).equals("director")) {
-            return jdbcTemplate.query("select films_id as id, f.name, f.description as description, releasedate as releaseDate, \n" +
-                    "duration , r.reating_id as rating , ul.id_user  as usersLikeMovie, fg.genre_id as genre, \n" +
-                    "g.name_genre as nameGenre, r.name as nameMPA, r.description as descriptionMPA , d.DIRECTORS_ID , d.DIRECTORS_NAME \n" +
-                    "from films f\n" +
-                    "LEFT JOIN reating r on r.reating_id = f.rating\n" +
-                    "LEFT JOIN users_like ul on f.films_id = ul.id_films\n" +
-                    "LEFT JOIN FILM_GENRE fg  on fg.film_id = f.films_id \n" +
-                    "left join genre g on g.genre_id = fg.genre_id \n" +
-                    "LEFT JOIN FILM_DIRECTORS fd ON fd.FILM_ID = f.FILMS_ID \n" +
-                    "LEFT JOIN DIRECTORS d ON d.DIRECTORS_ID = fd.DIRECTORS_ID \n" +
-                    "WHERE LOWER(d.DIRECTORS_NAME) LIKE ?;", new RowMapper<Film>() {
+            return jdbcTemplate.query("SELECT \n" +
+                    "    f.films_id AS id,\n" +
+                    "    f.name,\n" +
+                    "    f.description AS description,\n" +
+                    "    f.releasedate AS releaseDate,\n" +
+                    "    f.duration,\n" +
+                    "    r.reating_id AS rating,\n" +
+                    "    fg.genre_id AS genre,\n" +
+                    "    g.name_genre AS nameGenre,\n" +
+                    "    r.name AS nameMPA,\n" +
+                    "    r.description AS descriptionMPA,\n" +
+                    "    d.DIRECTORS_ID,\n" +
+                    "    d.DIRECTORS_NAME \n" +
+                    "FROM films f\n" +
+                    "LEFT JOIN reating r ON r.reating_id = f.rating\n" +
+                    "LEFT JOIN film_genre fg ON fg.film_id = f.films_id\n" +
+                    "LEFT JOIN genre g ON g.genre_id = fg.genre_id\n" +
+                    "LEFT JOIN film_directors fd ON fd.FILM_ID = f.FILMS_ID \n" +
+                    "LEFT JOIN directors d ON d.DIRECTORS_ID = fd.DIRECTORS_ID \n" +
+                    "WHERE LOWER(d.DIRECTORS_NAME) LIKE ?\n" +
+                    "GROUP BY id, f.name, f.description, f.releasedate, f.duration, reating_id, fg.genre_id, g.name_genre, r.name, r.description, d.DIRECTORS_ID, d.DIRECTORS_NAME;", new RowMapper<Film>() {
                 @Override
                 public Film mapRow(ResultSet rs, int rowNum) throws SQLException {
                     Film film = new Film();

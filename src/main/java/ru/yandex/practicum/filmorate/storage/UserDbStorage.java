@@ -226,8 +226,20 @@ public class UserDbStorage {
     }
 
         public void deleteUser(int userId) {
-            jdbcTemplate.update("delete from list_friends where id_friend = ?", userId);
-            jdbcTemplate.update("delete from list_friends where id_user = ?", userId);
-            jdbcTemplate.update("delete from users where id = ? ", userId);
+
+            System.out.println(userId);
+            try {
+                jdbcTemplate.update("DELETE FROM EVENTS WHERE USER_ID = ?", userId);
+                //jdbcTemplate.update("DELETE FROM USERS_LIKE WHERE USER_ID = ?", userId);
+                jdbcTemplate.update("DELETE FROM REVIEW_REACTIONS WHERE USER_ID = ?", userId);
+                jdbcTemplate.update("DELETE FROM REVIEWS WHERE USER_ID = ?", userId);
+                jdbcTemplate.update("DELETE FROM USERS_LIKE WHERE id_user = ?", userId);
+                jdbcTemplate.update("delete from list_friends where id_friend = ?", userId);
+                jdbcTemplate.update("delete from list_friends where id_user = ?", userId);
+                jdbcTemplate.update("delete from users where id = ? ", userId);
+            } catch (Exception e){
+                System.out.println(e.getMessage());
+            }
+
         }
     }

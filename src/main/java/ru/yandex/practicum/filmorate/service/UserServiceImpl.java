@@ -88,7 +88,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteUser(int userId) {
         validationUser.checkId(userId);
-        validationUser.searchValidation(getUser(userId));
+        //validationUser.searchValidation(getUser(userId));
         userDbStorage.deleteUser(userId);
     }
 
