@@ -23,5 +23,10 @@ public interface UserService {
 
     User getUser(int id);
 
+
     List<Event> getFeed(int id);
+
+
+    void deleteUser(int userId);
+
 }

@@ -153,6 +153,23 @@ public class FilmServiceImpl implements FilmService {
         return filmDbStorage.getFilmPieceNameOrDirectorPieceName(query.toLowerCase(), by);
     }
 
+    @Override
+    public void deleteFilm(Integer filmId) {
+        validationFilm.validationIdFilm(filmId);
+        filmDbStorage.deleteFilm(filmId);
+    }
+
+    @Override
+    public List<Film> getPopularFilmsByGenreAndYear(Integer count, Integer genreId, Integer year) {
+        if (year == null) {
+            return filmDbStorage.getPopularFilmsByGenre(genreId);
+        } else if (genreId == null) {
+            return filmDbStorage.getPopularFilmsByYear(year);
+        } else {
+            return filmDbStorage.getPopularFilmsByGenreAndYear(genreId, year);
+        }
+    }
+
 
 }
 
