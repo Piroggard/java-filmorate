@@ -63,6 +63,7 @@ public class UserController {
     public List<User> getUserFriend(@PathVariable int id, @PathVariable int otherId) {
         return userService.getListMutualFriend(id, otherId);
     }
+
     @GetMapping("/users/{id}/feed")
     public List<Event> getFeed(@PathVariable int id) {
         return userService.getFeed(id);
