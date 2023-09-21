@@ -185,4 +185,10 @@ public class UserDbStorage {
         Integer count = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM USERS WHERE ID = ?", Integer.class, userId);
         return count != null && count > 0;
     }
+
+    public void deleteUser(int userId) {
+        jdbcTemplate.update("delete from list_friends where id_friend = ?", userId);
+        jdbcTemplate.update("delete from list_friends where id_user = ?", userId);
+        jdbcTemplate.update("delete from users where id = ? ", userId);
+    }
 }

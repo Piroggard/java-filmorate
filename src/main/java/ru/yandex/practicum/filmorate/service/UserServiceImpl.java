@@ -67,6 +67,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<User> getUserFriend(int userId) {
         validationUser.checkId(userId);
+        validationUser.searchValidation(getUser(userId));
         return userDbStorage.getFriendsUser(userId);
 
     }
@@ -75,6 +76,13 @@ public class UserServiceImpl implements UserService {
     public List<User> getListMutualFriend(int userId, int otherId) {
         validationUser.validationAddFriend(userId, otherId);
         return userDbStorage.getListMutualFriend(userId, otherId);
+    }
+
+    @Override
+    public void deleteUser(int userId) {
+        validationUser.checkId(userId);
+        validationUser.searchValidation(getUser(userId));
+        userDbStorage.deleteUser(userId);
     }
 
 }

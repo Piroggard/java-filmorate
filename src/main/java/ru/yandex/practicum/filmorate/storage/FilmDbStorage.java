@@ -750,6 +750,149 @@ public class FilmDbStorage {
         }
         return null;
     }
+
+    public void deleteFilm(Integer filmId) {
+        jdbcTemplate.update("delete from film_genre where film_id = ? ", filmId);
+        jdbcTemplate.update("delete from users_like where id_films = ? ", filmId);
+        jdbcTemplate.update("delete from films where films_id = ? ", filmId);
+    }
+
+    public List<Film> getPopularFilmsByGenreAndYear(int genreId, int year) {
+        List<Film> listIdFilm = jdbcTemplate.query("SELECT \n" +
+                "f.films_id AS id, \n" +
+                "f.name, \n" +
+                "f.description, \n" +
+                "f.releasedate, \n" +
+                "f.duration, \n" +
+                "f.rating, \n" +
+                "d.directors_id, \n" +
+                "d.directors_name, \n" +
+                "f.genre_id AS genre, \n" +
+                "COUNT(ul.id_films) AS total_likes\n" +
+                "FROM \n" +
+                "films f\n" +
+                "LEFT JOIN \n" +
+                "users_like ul ON ul.id_films = f.films_id\n" +
+                "LEFT JOIN \n" +
+                "film_genre fg ON f.films_id = fg.film_id\n" +
+                "LEFT JOIN \n" +
+                "film_directors fd ON f.films_id = fd.film_id\n" +
+                "LEFT JOIN \n" +
+                "directors d ON d.directors_id = fd.directors_id\n" +
+                "WHERE fg.GENRE_ID = ? AND EXTRACT(YEAR FROM f.RELEASEDATE) = ?\n" +
+                "GROUP BY \n" +
+                "f.films_id, f.name, f.description, f.releasedate, f.duration, f.rating, f.genre_id, d.directors_id, d.directors_name\n" +
+                "ORDER BY \n" +
+                "total_likes DESC;\n", new RowMapper<Film>() {
+            @Override
+            public Film mapRow(ResultSet rs, int rowNum) throws SQLException {
+                Film film = new Film();
+                film.setId(rs.getInt("id"));
+                film.setName(rs.getString("name"));
+                film.setDescription(rs.getString("description"));
+                film.setReleaseDate(rs.getDate("releaseDate").toLocalDate());
+                film.setDuration(rs.getInt("duration"));
+                film.setMpa(getMpa(rs.getInt("rating")));
+                film.setGenres(getGanresId(rs.getInt("id")));
+                film.setRate(rs.getInt("total_likes"));
+                film.setDirectors(getDirectors(rs.getInt("directors_id")));
+                return film;
+            }
+        }, genreId, year);
+        return listIdFilm;
+    }
+
+    public List<Film> getPopularFilmsByGenre(int genreId) {
+        List<Film> listIdFilm = jdbcTemplate.query("SELECT \n" +
+                "f.films_id AS id, \n" +
+                "f.name, \n" +
+                "f.description, \n" +
+                "f.releasedate, \n" +
+                "f.duration, \n" +
+                "f.rating, \n" +
+                "d.directors_id, \n" +
+                "d.directors_name, \n" +
+                "f.genre_id AS genre, \n" +
+                "COUNT(ul.id_films) AS total_likes\n" +
+                "FROM \n" +
+                "films f\n" +
+                "LEFT JOIN \n" +
+                "users_like ul ON ul.id_films = f.films_id\n" +
+                "LEFT JOIN \n" +
+                "film_genre fg ON f.films_id = fg.film_id\n" +
+                "LEFT JOIN \n" +
+                "film_directors fd ON f.films_id = fd.film_id\n" +
+                "LEFT JOIN \n" +
+                "directors d ON d.directors_id = fd.directors_id\n" +
+                "WHERE \n" +
+                "fg.genre_id = ?\n" +
+                "GROUP BY \n" +
+                "f.films_id, f.name, f.description, f.releasedate, f.duration, f.rating, f.genre_id, d.directors_id, d.directors_name\n" +
+                "ORDER BY \n" +
+                "total_likes DESC;\n", new RowMapper<Film>() {
+            @Override
+            public Film mapRow(ResultSet rs, int rowNum) throws SQLException {
+                Film film = new Film();
+                film.setId(rs.getInt("id"));
+                film.setName(rs.getString("name"));
+                film.setDescription(rs.getString("description"));
+                film.setReleaseDate(rs.getDate("releaseDate").toLocalDate());
+                film.setDuration(rs.getInt("duration"));
+                film.setMpa(getMpa(rs.getInt("rating")));
+                film.setGenres(getGanresId(rs.getInt("id")));
+                film.setRate(rs.getInt("total_likes"));
+                film.setDirectors(getDirectors(rs.getInt("directors_id")));
+                return film;
+            }
+        }, genreId);
+        return listIdFilm;
+    }
+
+    public List<Film> getPopularFilmsByYear(int year) {
+        List<Film> listIdFilm = jdbcTemplate.query("SELECT \n" +
+                "f.films_id AS id, \n" +
+                "f.name, \n" +
+                "f.description, \n" +
+                "f.releasedate, \n" +
+                "f.duration, \n" +
+                "f.rating, \n" +
+                "d.directors_id, \n" +
+                "d.directors_name, \n" +
+                "f.genre_id AS genre, \n" +
+                "COUNT(ul.id_films) AS total_likes\n" +
+                "FROM \n" +
+                "films f\n" +
+                "LEFT JOIN \n" +
+                "users_like ul ON ul.id_films = f.films_id\n" +
+                "LEFT JOIN \n" +
+                "film_genre fg ON f.films_id = fg.film_id\n" +
+                "LEFT JOIN \n" +
+                "film_directors fd ON f.films_id = fd.film_id\n" +
+                "LEFT JOIN \n" +
+                "directors d ON d.directors_id = fd.directors_id\n" +
+                "WHERE EXTRACT(YEAR FROM f.RELEASEDATE) = ? " +
+                "GROUP BY \n" +
+                "f.films_id, f.name, f.description, f.releasedate, f.duration, f.rating, f.genre_id, d.directors_id, d.directors_name\n" +
+                "ORDER BY \n" +
+                "total_likes DESC;\n", new RowMapper<Film>() {
+            @Override
+            public Film mapRow(ResultSet rs, int rowNum) throws SQLException {
+                Film film = new Film();
+                film.setId(rs.getInt("id"));
+                film.setName(rs.getString("name"));
+                film.setDescription(rs.getString("description"));
+                film.setReleaseDate(rs.getDate("releaseDate").toLocalDate());
+                film.setDuration(rs.getInt("duration"));
+                film.setMpa(getMpa(rs.getInt("rating")));
+                film.setGenres(getGanresId(rs.getInt("id")));
+                film.setRate(rs.getInt("total_likes"));
+                film.setDirectors(getDirectors(rs.getInt("directors_id")));
+                return film;
+            }
+        }, year);
+        return listIdFilm;
+    }
+
 }
 
 
