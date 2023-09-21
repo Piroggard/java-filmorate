@@ -53,4 +53,7 @@ public interface FilmService {
     List<Film> getFilmPieceNameOrDirectorPieceName(String query, List<String> by);
 
 
+    void deleteFilm(Integer filmId);
+
+    List<Film> getPopularFilmsByGenreAndYear(Integer count, Integer genreId, Integer year);
 }
