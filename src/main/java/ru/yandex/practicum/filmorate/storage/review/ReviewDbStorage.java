@@ -17,6 +17,8 @@ import ru.yandex.practicum.filmorate.exception.review.RemoveReviewException;
 import ru.yandex.practicum.filmorate.model.Review;
 
 import java.sql.PreparedStatement;
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -40,7 +42,6 @@ public class ReviewDbStorage implements ReviewStorage {
 
     @Override
     public Review createReview(Review newReview) {
-        System.out.println("Доходит");
         try {
             newReview.setUseful(0);
             KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -58,6 +59,7 @@ public class ReviewDbStorage implements ReviewStorage {
             newReview.setReviewId(keyHolder.getKey().intValue());
             if (rowsAffected > 0) {
                 log.info("Отзыв создан: {}", newReview);
+                insertEvent("REVIEW","ADD", newReview.getUserId(), newReview.getReviewId());
                 return newReview;
             } else {
                 log.warn("Не удалось создать отзыв: {}", newReview);
@@ -67,6 +69,7 @@ public class ReviewDbStorage implements ReviewStorage {
             log.error("Ошибка при создании отзыва: {}", newReview, ex);
             throw new CreateReviewException("Ошибка при создании отзыва под id: " + newReview.getReviewId(), ex);
         }
+
     }
 
     @Override
@@ -84,6 +87,7 @@ public class ReviewDbStorage implements ReviewStorage {
                 Review updatedReviewInDb = jdbcTemplate.queryForObject(ReviewSQLQueries.GET_REVIEW_BY_ID,
                         reviewRowMapper, updatedReview.getReviewId());
                 log.info("Отзыв под id:{} обновлен", updatedReviewInDb.getReviewId());
+                insertEvent("REVIEW","UPDATE", updatedReview.getReviewId(), updatedReview.getReviewId());
                 return updatedReviewInDb;
             } catch (EmptyResultDataAccessException ex) {
                 log.error("Произошла ошибка при получении обновленного отзыва по id: {}", updatedReview.getReviewId(), ex);
@@ -95,10 +99,13 @@ public class ReviewDbStorage implements ReviewStorage {
     @Override
     public boolean removeReview(Integer deletedReviewId) {
         try {
-            jdbcTemplate.update("DELETE FROM REVIEW_REACTIONS WHERE REVIEW_ID = ?", deletedReviewId);
-            int rowsAffected = jdbcTemplate.update(ReviewSQLQueries.REMOVE_REVIEW, deletedReviewId);
-            if (rowsAffected > 0) {
+            Integer id = getReviewById(deletedReviewId).get().getUserId();
+            Integer idRev = getReviewById(deletedReviewId).get().getReviewId();
+            int rowsAffected = jdbcTemplate.update("DELETE FROM REVIEW_REACTIONS WHERE REVIEW_ID = ?", deletedReviewId);
+            jdbcTemplate.update("DELETE FROM REVIEWS WHERE REVIEW_ID = ?", deletedReviewId);
+            if (rowsAffected >= 0) {
                 log.info("Отзыв под id: {} удален", deletedReviewId);
+                insertEvent("REVIEW","REMOVE", id, idRev);
                 return true;
             } else {
                 log.warn("Отзыв под id: {} уже удален или не существует", deletedReviewId);
@@ -112,14 +119,10 @@ public class ReviewDbStorage implements ReviewStorage {
 
     @Override
     public Optional<Review> getReviewById(Integer reviewId) {
-        try {
-            Review review = jdbcTemplate.queryForObject(ReviewSQLQueries.GET_REVIEW_BY_ID, reviewRowMapper, reviewId);
-            log.info("Отзыв под id:{} получен", reviewId);
-            return Optional.ofNullable(review);
-        } catch (EmptyResultDataAccessException ex) {
-            log.error("Произошла ошибка при получении отзыва по id: {}", reviewId, ex);
-            return Optional.empty();
-        }
+        Review review = jdbcTemplate.queryForObject(ReviewSQLQueries.GET_REVIEW_BY_ID, reviewRowMapper, reviewId);
+        log.info("Отзыв под id:{} получен", reviewId);
+        if (review == null) throw new RuntimeException();
+        return Optional.ofNullable(review);
     }
 
     @Override
@@ -204,5 +207,20 @@ public class ReviewDbStorage implements ReviewStorage {
 
     private void decrementUsefulCount(Integer reviewId) {
         jdbcTemplate.update(ReviewSQLQueries.UPDATE_REVIEW_DECREMENT_USEFUL_COUNT, reviewId);
+    }
+
+    public void insertEvent(String eventType, String operation, int userId, int entityId) {
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(con -> {
+            PreparedStatement ps = con.prepareStatement("INSERT INTO events (time, user_Id, event_type, operation, entity_id)\n" +
+                    "VALUES\n" +
+                    "    (?, ?, ?, ?, ?); ", new String[]{"event_id"});
+            ps.setTimestamp(1, Timestamp.from(Instant.now()));
+            ps.setInt(2, userId);
+            ps.setString(3,eventType);
+            ps.setString(4,operation);
+            ps.setInt(5, entityId);
+            return ps;
+        }, keyHolder);
     }
 }

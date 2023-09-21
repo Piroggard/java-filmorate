@@ -19,6 +19,8 @@ import ru.yandex.practicum.filmorate.model.Mpa;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.*;
@@ -298,10 +300,12 @@ public class FilmDbStorage {
     public void addLikeFilm(int id, int userId) {
         jdbcTemplate.update("INSERT INTO users_like (id_user, id_films)\n" +
                 "VALUES(?,?);", userId, id);
+        insertEvent("LIKE","ADD",userId,id);
     }
 
     public void deleteLikeFilm(int id, int userId) {
         jdbcTemplate.update("delete from users_like where id_user =? and id_films = ?;", userId, id);
+        insertEvent("LIKE","REMOVE",userId,id);
     }
 
     public Mpa getMpa(Integer id) {
@@ -751,6 +755,7 @@ public class FilmDbStorage {
         return null;
     }
 
+
     public void deleteFilm(Integer filmId) {
         jdbcTemplate.update("delete from film_genre where film_id = ? ", filmId);
         jdbcTemplate.update("delete from users_like where id_films = ? ", filmId);
@@ -893,8 +898,18 @@ public class FilmDbStorage {
         return listIdFilm;
     }
 
+    public void insertEvent(String eventType, String operation, int userId, int entityId) {
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(con -> {
+            PreparedStatement ps = con.prepareStatement("INSERT INTO events (time, user_Id, event_type, operation, entity_id)\n" +
+                    "VALUES\n" +
+                    "    (?, ?, ?, ?, ?); ", new String[]{"event_id"});
+            ps.setTimestamp(1, Timestamp.from(Instant.now()));
+            ps.setInt(2, userId);
+            ps.setString(3,eventType);
+            ps.setString(4,operation);
+            ps.setInt(5, entityId);
+            return ps;
+        }, keyHolder);
+    }
 }
-
-
-
-
