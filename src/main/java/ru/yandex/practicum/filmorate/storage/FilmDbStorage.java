@@ -898,11 +898,6 @@ public class FilmDbStorage {
         return listIdFilm;
     }
 
-}
-
-
-
-
     public void insertEvent(String eventType, String operation, int userId, int entityId) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(con -> {

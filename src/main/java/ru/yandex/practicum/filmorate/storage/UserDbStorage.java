@@ -103,7 +103,7 @@ public class UserDbStorage {
 
     public void deleteFriend(int userId, int friendId) {
         jdbcTemplate.update("delete from list_friends where id_user =? and id_friend = ?;", userId, friendId);
-        insertEvent("FRIEND","REMOVE",userId,friendId);
+        insertEvent("FRIEND", "REMOVE", userId, friendId);
     }
 
     public List<Integer> getListFriend(int friendId) {
@@ -117,7 +117,7 @@ public class UserDbStorage {
     }
 
     public void addFriend(int userId, int friendId) {
-        insertEvent("FRIEND","ADD", userId, friendId);
+        insertEvent("FRIEND", "ADD", userId, friendId);
         List<Integer> frendUser = getListFriend(userId);
         List<Integer> frendfrend = getListFriend(friendId);
         int countUser = 0;
@@ -189,26 +189,27 @@ public class UserDbStorage {
     }
 
     public List<Event> getFeed(int id) {
-       List<Event> rn = jdbcTemplate.query(
+        List<Event> rn = jdbcTemplate.query(
                 "SELECT * " +
                         "FROM events e " +
                         "JOIN list_friends lf ON e.user_Id = lf.id_user " +
                         "WHERE user_Id = ? " +
                         "ORDER by time ASC ", new RowMapper<Event>() {
-            @Override
-            public Event mapRow(ResultSet rs, int rowNum) throws SQLException {
-                Event event = new Event();
-                event.setEventId(rs.getInt("event_id"));
-                event.setTimestamp(rs.getTimestamp("time").getTime());
-                event.setUserId(rs.getInt("user_Id"));
-                event.setEventType(rs.getString("event_type"));
-                event.setOperation(rs.getString("operation"));
-                event.setEntityId(rs.getInt("entity_id"));
-                return event;
-            }
-        }, id);
+                    @Override
+                    public Event mapRow(ResultSet rs, int rowNum) throws SQLException {
+                        Event event = new Event();
+                        event.setEventId(rs.getInt("event_id"));
+                        event.setTimestamp(rs.getTimestamp("time").getTime());
+                        event.setUserId(rs.getInt("user_Id"));
+                        event.setEventType(rs.getString("event_type"));
+                        event.setOperation(rs.getString("operation"));
+                        event.setEntityId(rs.getInt("entity_id"));
+                        return event;
+                    }
+                }, id);
         return rn;
     }
+
     public void insertEvent(String eventType, String operation, int userId, int entityId) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(con -> {
@@ -217,15 +218,17 @@ public class UserDbStorage {
                     "    (?, ?, ?, ?, ?); ", new String[]{"event_id"});
             ps.setTimestamp(1, Timestamp.from(Instant.now()));
             ps.setInt(2, userId);
-            ps.setString(3,eventType);
-            ps.setString(4,operation);
+            ps.setString(3, eventType);
+            ps.setString(4, operation);
             ps.setInt(5, entityId);
             return ps;
         }, keyHolder);
+    }
 
-    public void deleteUser(int userId) {
-        jdbcTemplate.update("delete from list_friends where id_friend = ?", userId);
-        jdbcTemplate.update("delete from list_friends where id_user = ?", userId);
-        jdbcTemplate.update("delete from users where id = ? ", userId);
+        public void deleteUser ( int userId){
+            jdbcTemplate.update("delete from list_friends where id_friend = ?", userId);
+            jdbcTemplate.update("delete from list_friends where id_user = ?", userId);
+            jdbcTemplate.update("delete from users where id = ? ", userId);
 
-}
+        }
+    }
