@@ -72,9 +72,18 @@ CREATE TABLE IF NOT EXISTS  review_reactions (
     reaction    VARCHAR,
     CONSTRAINT review_reactions_fk_user FOREIGN KEY (user_id) REFERENCES users(id),
     CONSTRAINT review_reactions_fk_reviews FOREIGN KEY (review_id) REFERENCES reviews(review_id)
-
 );
 
+
+CREATE TABLE IF NOT EXISTS events (
+  event_id INT AUTO_INCREMENT PRIMARY KEY,
+  time TIMESTAMP NOT NULL,
+  user_Id INT NOT NULL,
+  event_type VARCHAR(255) NOT NULL,
+  operation VARCHAR(255),
+  entity_id INT NOT NULL,
+  CONSTRAINT review_events_fk_user FOREIGN KEY (user_Id) REFERENCES users(id)
+);
 
 CREATE TABLE IF NOT EXISTS directors (
   directors_id INT AUTO_INCREMENT PRIMARY KEY,

@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.service.UserService;
@@ -61,6 +62,10 @@ public class UserController {
     @GetMapping("/users/{id}/friends/common/{otherId}")
     public List<User> getUserFriend(@PathVariable int id, @PathVariable int otherId) {
         return userService.getListMutualFriend(id, otherId);
+    }
+    @GetMapping("/users/{id}/feed")
+    public List<Event> getFeed(@PathVariable int id) {
+        return userService.getFeed(id);
     }
 
     @GetMapping("/users/{id}/recommendations")

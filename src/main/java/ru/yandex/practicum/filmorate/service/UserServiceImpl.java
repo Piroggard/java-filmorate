@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.controller.UserController;
+import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.FilmDbStorage;
 import ru.yandex.practicum.filmorate.storage.UserDbStorage;
@@ -35,6 +36,12 @@ public class UserServiceImpl implements UserService {
     public User getUser(int id) {
         validationUser.searchValidation(userDbStorage.getUser(id));
         return userDbStorage.getUser(id);
+    }
+
+    @Override
+    public List<Event> getFeed(int id) {
+        validationUser.searchValidation(userDbStorage.getUser(id));
+        return userDbStorage.getFeed(id);
     }
 
     @Override
