@@ -237,7 +237,7 @@ public class UserDbStorage {
                 jdbcTemplate.update("delete from list_friends where id_friend = ?", userId);
                 jdbcTemplate.update("delete from list_friends where id_user = ?", userId);
                 jdbcTemplate.update("delete from users where id = ? ", userId);
-            } catch (Exception e){
+            } catch (Exception e) {
                 System.out.println(e.getMessage());
             }
 
