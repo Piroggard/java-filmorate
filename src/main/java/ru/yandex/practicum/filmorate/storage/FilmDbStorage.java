@@ -300,7 +300,7 @@ public class FilmDbStorage {
     public void addLikeFilm(int id, int userId) {
         jdbcTemplate.update("INSERT INTO users_like (id_user, id_films)\n" +
                 "VALUES(?,?);", userId, id);
-        insertEvent("LIKE","ADD",userId,id);
+        insertEvent("LIKE","ADD",userId, id);
     }
 
     public void deleteLikeFilm(int id, int userId) {

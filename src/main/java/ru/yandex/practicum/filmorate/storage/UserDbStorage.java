@@ -117,7 +117,6 @@ public class UserDbStorage {
     }
 
     public void addFriend(int userId, int friendId) {
-        insertEvent("FRIEND", "ADD", userId, friendId);
         List<Integer> frendUser = getListFriend(userId);
         List<Integer> frendfrend = getListFriend(friendId);
         int countUser = 0;
@@ -134,9 +133,12 @@ public class UserDbStorage {
         if (countUser == 2) {
             jdbcTemplate.update("update list_friends set user_frends = 1 where id_user = ? and id_friend = ?;", userId, friendId);
             jdbcTemplate.update("update list_friends set user_frends = 1 where id_user = ? and id_friend = ?;", friendId, userId);
+            insertEvent("FRIEND", "ADD", userId, friendId);
+            insertEvent("FRIEND", "ADD", friendId, userId);
             return;
         }
         jdbcTemplate.update("INSERT INTO list_friends (id_user, id_friend, USER_FRIENDS) VALUES (?, ?, 0);", userId, friendId);
+        insertEvent("FRIEND", "ADD", userId, friendId);
         List<Integer> frendUser1 = getListFriend(userId);
         List<Integer> frendfrend1 = getListFriend(friendId);
         int i11 = 0;
@@ -192,7 +194,6 @@ public class UserDbStorage {
         List<Event> rn = jdbcTemplate.query(
                 "SELECT * " +
                         "FROM events e " +
-                        "JOIN list_friends lf ON e.user_Id = lf.id_user " +
                         "WHERE user_Id = ? " +
                         "ORDER by time ASC ", new RowMapper<Event>() {
                     @Override
@@ -230,7 +231,6 @@ public class UserDbStorage {
             System.out.println(userId);
             try {
                 jdbcTemplate.update("DELETE FROM EVENTS WHERE USER_ID = ?", userId);
-                //jdbcTemplate.update("DELETE FROM USERS_LIKE WHERE USER_ID = ?", userId);
                 jdbcTemplate.update("DELETE FROM REVIEW_REACTIONS WHERE USER_ID = ?", userId);
                 jdbcTemplate.update("DELETE FROM REVIEWS WHERE USER_ID = ?", userId);
                 jdbcTemplate.update("DELETE FROM USERS_LIKE WHERE id_user = ?", userId);
