@@ -822,7 +822,7 @@ public class FilmDbStorage {
                 film.setMpa(getMpa(rs.getInt("rating")));
                 film.setGenres(getGanresId(rs.getInt("id")));
                 film.setRate(rs.getInt("total_likes"));
-                film.setDirectors(getDirectors(rs.getInt("directors_id")));
+                film.setDirectors(getDirectors(rs.getInt("id")));
                 return film;
             }
         }, genreId, year);
@@ -830,33 +830,33 @@ public class FilmDbStorage {
     }
 
     public List<Film> getPopularFilmsByGenre(int genreId) {
-        List<Film> listIdFilm = jdbcTemplate.query("SELECT \n" +
-                "f.films_id AS id, \n" +
-                "f.name, \n" +
-                "f.description, \n" +
-                "f.releasedate, \n" +
-                "f.duration, \n" +
-                "f.rating, \n" +
-                "d.directors_id, \n" +
-                "d.directors_name, \n" +
-                "f.genre_id AS genre, \n" +
+        List<Film> listIdFilm = jdbcTemplate.query("SELECT\n" +
+                "f.films_id AS id,\n" +
+                "f.name,\n" +
+                "f.description,\n" +
+                "f.releasedate,\n" +
+                "f.duration,\n" +
+                "f.rating,\n" +
+                "d.directors_id,\n" +
+                "d.directors_name,\n" +
+                "f.genre_id AS genre,\n" +
                 "COUNT(ul.id_films) AS total_likes\n" +
-                "FROM \n" +
-                "films f\n" +
-                "LEFT JOIN \n" +
-                "users_like ul ON ul.id_films = f.films_id\n" +
-                "LEFT JOIN \n" +
-                "film_genre fg ON f.films_id = fg.film_id\n" +
-                "LEFT JOIN \n" +
-                "film_directors fd ON f.films_id = fd.film_id\n" +
-                "LEFT JOIN \n" +
-                "directors d ON d.directors_id = fd.directors_id\n" +
-                "WHERE \n" +
-                "fg.genre_id = ?\n" +
-                "GROUP BY \n" +
-                "f.films_id, f.name, f.description, f.releasedate, f.duration, f.rating, f.genre_id, d.directors_id, d.directors_name\n" +
-                "ORDER BY \n" +
-                "total_likes DESC;\n", new RowMapper<Film>() {
+                "FROM films f\n" +
+                "LEFT JOIN users_like ul ON ul.id_films = f.films_id\n" +
+                "LEFT JOIN film_directors fd ON f.films_id = fd.film_id\n" +
+                "LEFT JOIN directors d ON d.directors_id = fd.directors_id\n" +
+                "LEFT JOIN film_genre fg ON f.films_id = fg.film_id\n" +
+                "WHERE fg.genre_id = ?\n" +
+                "GROUP BY\n" +
+                "f.films_id,\n" +
+                "f.name,\n" +
+                "f.description,\n" +
+                "f.releasedate,\n" +
+                "f.duration,\n" +
+                "f.rating,\n" +
+                "d.directors_id,\n" +
+                "d.directors_name\n" +
+                "ORDER BY total_likes DESC", new RowMapper<Film>() {
             @Override
             public Film mapRow(ResultSet rs, int rowNum) throws SQLException {
                 Film film = new Film();
@@ -868,7 +868,9 @@ public class FilmDbStorage {
                 film.setMpa(getMpa(rs.getInt("rating")));
                 film.setGenres(getGanresId(rs.getInt("id")));
                 film.setRate(rs.getInt("total_likes"));
-                film.setDirectors(getDirectors(rs.getInt("directors_id")));
+                film.setDirectors(getDirectors(rs.getInt("id")));
+                System.out.println(rs.getInt("directors_id"));
+                System.out.println(getDirectors(rs.getInt("directors_id")));
                 return film;
             }
         }, genreId);
@@ -876,32 +878,33 @@ public class FilmDbStorage {
     }
 
     public List<Film> getPopularFilmsByYear(int year) {
-        List<Film> listIdFilm = jdbcTemplate.query("SELECT \n" +
-                "f.films_id AS id, \n" +
-                "f.name, \n" +
-                "f.description, \n" +
-                "f.releasedate, \n" +
-                "f.duration, \n" +
-                "f.rating, \n" +
-                "d.directors_id, \n" +
-                "d.directors_name, \n" +
-                "f.genre_id AS genre, \n" +
+        List<Film> listIdFilm = jdbcTemplate.query("SELECT\n" +
+                "f.films_id AS id,\n" +
+                "f.name,\n" +
+                "f.description,\n" +
+                "f.releasedate,\n" +
+                "f.duration,\n" +
+                "f.rating,\n" +
+                "d.directors_id,\n" +
+                "d.directors_name,\n" +
+                "f.genre_id AS genre,\n" +
                 "COUNT(ul.id_films) AS total_likes\n" +
-                "FROM \n" +
-                "films f\n" +
-                "LEFT JOIN \n" +
-                "users_like ul ON ul.id_films = f.films_id\n" +
-                "LEFT JOIN \n" +
-                "film_genre fg ON f.films_id = fg.film_id\n" +
-                "LEFT JOIN \n" +
-                "film_directors fd ON f.films_id = fd.film_id\n" +
-                "LEFT JOIN \n" +
-                "directors d ON d.directors_id = fd.directors_id\n" +
-                "WHERE EXTRACT(YEAR FROM f.RELEASEDATE) = ? " +
-                "GROUP BY \n" +
-                "f.films_id, f.name, f.description, f.releasedate, f.duration, f.rating, f.genre_id, d.directors_id, d.directors_name\n" +
-                "ORDER BY \n" +
-                "total_likes DESC;\n", new RowMapper<Film>() {
+                "FROM films f\n" +
+                "LEFT JOIN users_like ul ON ul.id_films = f.films_id\n" +
+                "LEFT JOIN film_directors fd ON f.films_id = fd.film_id\n" +
+                "LEFT JOIN directors d ON d.directors_id = fd.directors_id\n" +
+                "LEFT JOIN film_genre fg ON f.films_id = fg.film_id\n" +
+                "WHERE EXTRACT(YEAR FROM f.RELEASEDATE) = ?\n" +
+                "GROUP BY\n" +
+                "f.films_id,\n" +
+                "f.name,\n" +
+                "f.description,\n" +
+                "f.releasedate,\n" +
+                "f.duration,\n" +
+                "f.rating,\n" +
+                "d.directors_id,\n" +
+                "d.directors_name\n" +
+                "ORDER BY total_likes DESC", new RowMapper<Film>() {
             @Override
             public Film mapRow(ResultSet rs, int rowNum) throws SQLException {
                 Film film = new Film();
@@ -913,7 +916,7 @@ public class FilmDbStorage {
                 film.setMpa(getMpa(rs.getInt("rating")));
                 film.setGenres(getGanresId(rs.getInt("id")));
                 film.setRate(rs.getInt("total_likes"));
-                film.setDirectors(getDirectors(rs.getInt("directors_id")));
+                film.setDirectors(getDirectors(rs.getInt("id")));
                 return film;
             }
         }, year);
