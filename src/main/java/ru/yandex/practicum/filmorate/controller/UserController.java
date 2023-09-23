@@ -3,14 +3,11 @@ package ru.yandex.practicum.filmorate.controller;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.service.UserService;
 
 import java.util.List;
@@ -21,11 +18,13 @@ import java.util.List;
 public class UserController {
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
     private final UserService userService;
+    private final FilmService filmService;
+
 
     @GetMapping("/users")
     public List<User> getUsers() {
         log.info("Getting Users");
-       return userService.getUsers();
+        return userService.getUsers();
     }
 
     @GetMapping("/users/{id}")
@@ -45,9 +44,9 @@ public class UserController {
         return userService.putUser(user);
     }
 
-    @PutMapping ("/users/{id}/friends/{friendId}")
+    @PutMapping("/users/{id}/friends/{friendId}")
     public void addFriend(@PathVariable int id, @PathVariable int friendId) {
-        userService.addFriends(id,friendId);
+        userService.addFriends(id, friendId);
     }
 
     @DeleteMapping("/users/{id}/friends/{friendId}")
@@ -64,5 +63,23 @@ public class UserController {
     public List<User> getUserFriend(@PathVariable int id, @PathVariable int otherId) {
         return userService.getListMutualFriend(id, otherId);
     }
+
+    @GetMapping("/users/{id}/feed")
+    public List<Event> getFeed(@PathVariable int id) {
+        return userService.getFeed(id);
+    }
+
+    @GetMapping("/users/{id}/recommendations")
+    public List<Film> getRecommendation(@PathVariable Integer id) {
+        log.debug("Получен Get запрос users/{id}/recommendations на получение " +
+                "списка рекомендуемых фильмов для пользователя с Id: {}", id);
+        return filmService.getRecommendations(id);
+    }
+
+    @DeleteMapping("/users/{userId}")
+    public void deleteUser(@PathVariable int userId) {
+        userService.deleteUser(userId);
+    }
+
 
 }

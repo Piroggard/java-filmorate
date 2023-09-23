@@ -3,19 +3,28 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.controller.UserController;
+import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.FilmDbStorage;
 import ru.yandex.practicum.filmorate.storage.UserDbStorage;
 import ru.yandex.practicum.filmorate.validation.ValidationUser;
 
 import java.util.List;
+
 
 @Component
 @AllArgsConstructor
 public class UserServiceImpl implements UserService {
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
     private UserDbStorage userDbStorage;
+    final FilmService filmService;
+    final FilmServiceImpl filmServiceImpl;
+    final FilmDbStorage filmDbStorage;
+
+    public final JdbcTemplate jdbcTemplate;
     private final ValidationUser validationUser = new ValidationUser();
 
     @Override
@@ -27,6 +36,12 @@ public class UserServiceImpl implements UserService {
     public User getUser(int id) {
         validationUser.searchValidation(userDbStorage.getUser(id));
         return userDbStorage.getUser(id);
+    }
+
+    @Override
+    public List<Event> getFeed(int id) {
+        validationUser.searchValidation(userDbStorage.getUser(id));
+        return userDbStorage.getFeed(id);
     }
 
     @Override
@@ -59,6 +74,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<User> getUserFriend(int userId) {
         validationUser.checkId(userId);
+        validationUser.searchValidation(getUser(userId));
         return userDbStorage.getFriendsUser(userId);
 
     }
@@ -68,4 +84,12 @@ public class UserServiceImpl implements UserService {
         validationUser.validationAddFriend(userId, otherId);
         return userDbStorage.getListMutualFriend(userId, otherId);
     }
+
+    @Override
+    public void deleteUser(int userId) {
+        validationUser.checkId(userId);
+        //validationUser.searchValidation(getUser(userId));
+        userDbStorage.deleteUser(userId);
+    }
+
 }

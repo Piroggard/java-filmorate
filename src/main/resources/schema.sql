@@ -1,3 +1,4 @@
+
 CREATE TABLE IF NOT EXISTS users (
   id INT AUTO_INCREMENT PRIMARY KEY,
   email VARCHAR(255) NOT NULL,
@@ -33,6 +34,8 @@ CREATE TABLE IF NOT EXISTS films (
   duration INT,
   rating INT,
   genre_id INT,
+  directors_id INT,
+
   CONSTRAINT films_fk_genre FOREIGN KEY (genre_id) REFERENCES genre(genre_id),
   CONSTRAINT films_fk_rating FOREIGN KEY (rating) REFERENCES reating(reating_id)
 );
@@ -49,4 +52,48 @@ CREATE TABLE IF NOT EXISTS users_like (
   id_films INT,
   CONSTRAINT users_like_fk_user FOREIGN KEY (id_user) REFERENCES users(id),
   CONSTRAINT users_like_fk_films FOREIGN KEY (id_films) REFERENCES films(films_id)
+);
+
+CREATE TABLE IF NOT EXISTS  reviews (
+    review_id INTEGER AUTO_INCREMENT PRIMARY KEY,
+    content  VARCHAR (255) NOT NULL,
+    is_positive  boolean NOT NULL,
+    user_id INT NOT NULL,
+    film_id INT NOT NULL,
+    useful_count INTEGER,
+    CONSTRAINT review_fk_user FOREIGN KEY (user_id) REFERENCES users(id),
+    CONSTRAINT review_fk_films FOREIGN KEY (film_id) REFERENCES films(films_id)
+
+);
+
+CREATE TABLE IF NOT EXISTS  review_reactions (
+    user_id     INT,
+    review_id   INTEGER,
+    reaction    VARCHAR(255),
+    CONSTRAINT review_reactions_fk_user FOREIGN KEY (user_id) REFERENCES users(id),
+    CONSTRAINT review_reactions_fk_reviews FOREIGN KEY (review_id) REFERENCES reviews(review_id)
+);
+
+
+CREATE TABLE IF NOT EXISTS events (
+  event_id INT AUTO_INCREMENT PRIMARY KEY,
+  time TIMESTAMP NOT NULL,
+  user_Id INT NOT NULL,
+  event_type VARCHAR(255) NOT NULL,
+  operation VARCHAR(255),
+  entity_id INT NOT NULL,
+  CONSTRAINT review_events_fk_user FOREIGN KEY (user_Id) REFERENCES users(id)
+);
+
+CREATE TABLE IF NOT EXISTS directors (
+  directors_id INT AUTO_INCREMENT PRIMARY KEY,
+  directors_name VARCHAR(255)
+);
+
+CREATE TABLE IF NOT EXISTS film_directors (
+  film_directors_id INT AUTO_INCREMENT PRIMARY KEY,
+  film_id INT,
+  directors_id INT,
+  CONSTRAINT film_directors_fk_film FOREIGN KEY (film_id) REFERENCES films(films_id),
+  CONSTRAINT film_directors_fk_directors FOREIGN KEY (directors_id) REFERENCES directors(directors_id)
 );
