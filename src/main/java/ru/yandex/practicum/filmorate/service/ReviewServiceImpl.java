@@ -82,7 +82,7 @@ public class ReviewServiceImpl implements ReviewService {
     public void validateFilmId(Integer filmId) {
         if (!filmStorage.filmExists(filmId)) {
             log.warn("Фильм с id {} не найден", filmId);
-            throw new RuntimeException("Фильм с id " + filmId + " не найден.");
+            throw new DataNotFoundException("Фильм с id " + filmId + " не найден.");
         }
     }
 
@@ -90,7 +90,7 @@ public class ReviewServiceImpl implements ReviewService {
     public void validateUserId(Integer userId) {
         if (!userStorage.userExists(userId)) {
             log.warn("Пользователь с id {} не найден", userId);
-            throw new RuntimeException("Пользователь с id " + userId + " не найден.");
+            throw new DataNotFoundException("Пользователь с id " + userId + " не найден.");
         }
     }
 

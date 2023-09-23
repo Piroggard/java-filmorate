@@ -12,7 +12,7 @@ public class ValidationReviews {
             throw new DataNotFoundException("Нет данных по указанным параметрам");
         }
         if (review.getContent() == null  || review.getIsPositive() == null) {
-            throw new RuntimeException();
+            throw new NullPointerException("Нет данных");
         }
     }
 }

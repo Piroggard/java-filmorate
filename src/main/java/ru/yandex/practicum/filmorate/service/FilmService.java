@@ -35,7 +35,7 @@ public interface FilmService {
 
     List<Film> getCommonFilms(int userId, int friendId);
 
-    public List<Film> getRecommendations(Integer id);
+    List<Film> getRecommendations(Integer id);
 
     List<Director> getDirectors();
 

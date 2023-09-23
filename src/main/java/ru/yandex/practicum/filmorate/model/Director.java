@@ -11,8 +11,6 @@ public class Director {
     private Integer id;
     private String name;
 
-    public Director(Integer id) {
-        this.id = id;
-    }
+
 }
 

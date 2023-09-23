@@ -28,7 +28,6 @@ public class FilmServiceImpl implements FilmService {
     private final ValidationGanres validationGanres = new ValidationGanres();
     private final ValidationDirectors validationDirectors = new ValidationDirectors();
     private final ValidationMpa validationMpa = new ValidationMpa();
-    private final ValidationUser validationUser = new ValidationUser();
 
     @Override
     public List<Film> getFilms() {
@@ -128,13 +127,13 @@ public class FilmServiceImpl implements FilmService {
     @Override
     public Director postDirectors(Director director) {
         validationDirectors.validation(director);
-        return filmDbStorage.postDirectors(director);
+        return filmDbStorage.createDirectors(director);
     }
 
     @Override
     public Director putDirectors(Director director) {
         validationDirectors.validation(director);
-        return filmDbStorage.putDirectors(director);
+        return filmDbStorage.updateDirectors(director);
     }
 
     @Override

@@ -33,7 +33,9 @@ public class FilmDbStorage {
     public final JdbcTemplate jdbcTemplate;
 
     public List<Film> getFilms() {
-        return jdbcTemplate.query("SELECT FILMS_ID AS id, NAME as name , DESCRIPTION as description , RELEASEDATE as releaseDate , DURATION as duration, RATING as rating, GENRE_ID AS genre FROM FILMS f ;", new RowMapper<Film>() {
+        return jdbcTemplate.query("SELECT FILMS_ID AS id, NAME as name , DESCRIPTION as description , RELEASEDATE " +
+                "as releaseDate , DURATION as duration, RATING as rating, GENRE_ID AS genre FROM FILMS f ;",
+                new RowMapper<Film>() {
             @Override
             public Film mapRow(ResultSet rs, int rowNum) throws SQLException {
                 Film film = new Film();
@@ -65,9 +67,7 @@ public class FilmDbStorage {
             }
         }, id);
         Set<Director> directors = new HashSet<>();
-        for (Director director : directorList) {
-            directors.add(director);
-        }
+            directors.addAll(directorList);
         return directors;
     }
 
@@ -87,16 +87,16 @@ public class FilmDbStorage {
             }
         }, id);
         Set<Genres> genres = new HashSet<>();
-        for (Genres genres1 : genresList) {
-            genres.add(genres1);
-        }
+            genres.addAll(genresList);
         return genres;
     }
 
     public Film getFilm(Integer idFilm) {
-        return jdbcTemplate.queryForObject("select films_id as id, f.name, f.description as description, releasedate as releaseDate, \n" +
+        return jdbcTemplate.queryForObject("select films_id as id, f.name, f.description as description, " +
+                "releasedate as releaseDate, \n" +
                 "duration , r.reating_id as rating , ul.id_user  as usersLikeMovie, fg.genre_id as genre, \n" +
-                "g.name_genre as nameGenre, r.name as nameMPA, r.description as descriptionMPA , d.DIRECTORS_ID , d.DIRECTORS_NAME \n" +
+                "g.name_genre as nameGenre, r.name as nameMPA, r.description as descriptionMPA , d.DIRECTORS_ID , " +
+                "d.DIRECTORS_NAME \n" +
                 "from films f\n" +
                 "LEFT JOIN reating r on r.reating_id = f.rating\n" +
                 "LEFT JOIN users_like ul on f.films_id = ul.id_films\n" +
@@ -166,7 +166,8 @@ public class FilmDbStorage {
         java.sql.Date sqlDate = new java.sql.Date(date.getTime());
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(con -> {
-            PreparedStatement ps = con.prepareStatement("INSERT INTO films (name, description, releasedate, duration, rating) " +
+            PreparedStatement ps = con.prepareStatement("INSERT INTO films (name, description, releasedate, " +
+                    "duration, rating) " +
                     "VALUES (?, ?, ?, ?, ?)", new String[]{"films_id"});
             ps.setString(1, film.getName());
             ps.setString(2, film.getDescription());
@@ -180,11 +181,10 @@ public class FilmDbStorage {
             return getFilm(keyFilm);
         }
         List<Genres> genresList = new ArrayList<>();
-        for (Genres genres : film.getGenres()) {
-            genresList.add(genres);
-        }
+        genresList.addAll(film.getGenres());
 
-        jdbcTemplate.batchUpdate("INSERT INTO FILM_GENRE (film_id, genre_id) VALUES(?,?);", new BatchPreparedStatementSetter() {
+        jdbcTemplate.batchUpdate("INSERT INTO FILM_GENRE (film_id, genre_id) VALUES(?,?);",
+                new BatchPreparedStatementSetter() {
             @Override
             public void setValues(PreparedStatement ps, int i) throws SQLException {
                 ps.setInt(1, keyFilm);
@@ -199,12 +199,10 @@ public class FilmDbStorage {
 
         if (film.getDirectors() != null) {
             List<Director> directorList = new ArrayList<>();
+            directorList.addAll(film.getDirectors());
 
-            for (Director director : film.getDirectors()) {
-                directorList.add(director);
-            }
-
-            jdbcTemplate.batchUpdate("INSERT INTO FILM_DIRECTORS (FILM_ID, DIRECTORS_ID) VALUES(?,?);", new BatchPreparedStatementSetter() {
+            jdbcTemplate.batchUpdate("INSERT INTO FILM_DIRECTORS (FILM_ID, DIRECTORS_ID) VALUES(?,?);",
+                    new BatchPreparedStatementSetter() {
                 @Override
                 public void setValues(PreparedStatement ps, int i) throws SQLException {
                     ps.setInt(1, keyFilm);
@@ -217,7 +215,8 @@ public class FilmDbStorage {
                 }
             });
 
-            jdbcTemplate.batchUpdate("UPDATE films SET directors_id = ? WHERE films_id = ?;", new BatchPreparedStatementSetter() {
+            jdbcTemplate.batchUpdate("UPDATE films SET directors_id = ? WHERE films_id = ?;",
+                    new BatchPreparedStatementSetter() {
                 @Override
                 public void setValues(PreparedStatement ps, int i) throws SQLException {
                     ps.setInt(2, directorList.get(i).getId());
@@ -244,11 +243,10 @@ public class FilmDbStorage {
         jdbcTemplate.update(" DELETE FROM FILM_DIRECTORS  WHERE FILM_ID =?  ;", film.getId());
         List<Genres> genresList = new ArrayList<>();
         if (film.getGenres() != null) {
-            for (Genres genre : film.getGenres()) {
-                genresList.add(genre);
-            }
+            genresList.addAll(film.getGenres());
 
-            jdbcTemplate.batchUpdate("INSERT INTO film_genre (film_id, genre_id) VALUES(?,?);", new BatchPreparedStatementSetter() {
+            jdbcTemplate.batchUpdate("INSERT INTO film_genre (film_id, genre_id) VALUES(?,?);",
+                    new BatchPreparedStatementSetter() {
                 @Override
                 public void setValues(PreparedStatement ps, int i) throws SQLException {
                     ps.setInt(1, film.getId());
@@ -263,11 +261,11 @@ public class FilmDbStorage {
         }
         List<Director> directorList = new ArrayList<>();
         if (film.getDirectors() != null) {
-            for (Director director : film.getDirectors()) {
-                directorList.add(director);
-            }
+            directorList.addAll(film.getDirectors());
 
-            jdbcTemplate.batchUpdate("INSERT INTO FILM_DIRECTORS (FILM_ID, DIRECTORS_ID) VALUES(?,?);", new BatchPreparedStatementSetter() {
+
+            jdbcTemplate.batchUpdate("INSERT INTO FILM_DIRECTORS (FILM_ID, DIRECTORS_ID) VALUES(?,?);",
+                    new BatchPreparedStatementSetter() {
                 @Override
                 public void setValues(PreparedStatement ps, int i) throws SQLException {
                     ps.setInt(1, film.getId());
@@ -280,7 +278,8 @@ public class FilmDbStorage {
                 }
             });
 
-            jdbcTemplate.batchUpdate("UPDATE films SET directors_id = ? WHERE films_id = ?;", new BatchPreparedStatementSetter() {
+            jdbcTemplate.batchUpdate("UPDATE films SET directors_id = ? WHERE films_id = ?;",
+                    new BatchPreparedStatementSetter() {
                 @Override
                 public void setValues(PreparedStatement ps, int i) throws SQLException {
                     ps.setInt(2, directorList.get(i).getId());
@@ -309,7 +308,8 @@ public class FilmDbStorage {
     }
 
     public Mpa getMpa(Integer id) {
-        return jdbcTemplate.queryForObject("select reating_id as id , name, description as descriptionMPA from reating r  where reating_id =?;", new RowMapper<Mpa>() {
+        return jdbcTemplate.queryForObject("select reating_id as id , name, " +
+                "description as descriptionMPA from reating r  where reating_id =?;", new RowMapper<Mpa>() {
             @Override
             public Mpa mapRow(ResultSet rs, int rowNum) throws SQLException {
                 Mpa mpa = new Mpa();
@@ -322,7 +322,8 @@ public class FilmDbStorage {
     }
 
     public List<Mpa> getMpa() {
-        return jdbcTemplate.query("select reating_id as id, NAME , DESCRIPTION  from reating r;", new RowMapper<Mpa>() {
+        return jdbcTemplate.query("select reating_id as id, NAME , DESCRIPTION  from reating r;",
+                new RowMapper<Mpa>() {
             @Override
             public Mpa mapRow(ResultSet rs, int rowNum) throws SQLException {
                 Mpa mpa = new Mpa();
@@ -335,7 +336,8 @@ public class FilmDbStorage {
     }
 
     public Genres getGanres(Integer id) {
-        return jdbcTemplate.queryForObject("select genre_id  as id , name_genre as name  from genre g  where genre_id  =?;", new RowMapper<Genres>() {
+        return jdbcTemplate.queryForObject("select genre_id  as id , " +
+                "name_genre as name  from genre g  where genre_id  =?;", new RowMapper<Genres>() {
             @Override
             public Genres mapRow(ResultSet rs, int rowNum) throws SQLException {
                 Genres genres = new Genres();
@@ -347,7 +349,8 @@ public class FilmDbStorage {
     }
 
     public List<Genres> getGanres() {
-        return jdbcTemplate.query("select genre_id  as id , NAME_GENRE AS name  from genre g ;", new RowMapper<Genres>() {
+        return jdbcTemplate.query("select genre_id  as id , NAME_GENRE AS name  from genre g ;",
+                new RowMapper<Genres>() {
             @Override
             public Genres mapRow(ResultSet rs, int rowNum) throws SQLException {
                 Genres genres = new Genres();
@@ -359,14 +362,17 @@ public class FilmDbStorage {
     }
 
     public Film getFilmNotGanre(Integer idFilm) {
-        return jdbcTemplate.queryForObject("select films_id as id, f.name, f.description as description, releasedate " +
-                "as releaseDate, duration , r.reating_id as rating , ul.id_user  as usersLikeMovie,  r.name as nameMPA, r.description " +
+        return jdbcTemplate.queryForObject("select films_id as id, f.name, f.description as description, " +
+                "releasedate " +
+                "as releaseDate, duration , r.reating_id as rating , ul.id_user  as usersLikeMovie,  " +
+                "r.name as nameMPA, r.description " +
                 "as descriptionMPA \n" +
                 "from films f\n" +
                 "              LEFT JOIN reating r on r.reating_id = f.rating\n" +
                 "                LEFT JOIN users_like ul on f.films_id = ul.id_films\n" +
                 "                LEFT JOIN FILM_GENRE fg  on fg.film_id = f.films_id \n" +
-                "                left join genre g on g.genre_id = fg.genre_id  where films_id =?;", new RowMapper<Film>() {
+                "                left join genre g on g.genre_id = fg.genre_id  where films_id =?;",
+                new RowMapper<Film>() {
             @Override
             public Film mapRow(ResultSet rs, int rowNum) throws SQLException {
                 Mpa mpa = new Mpa();
@@ -400,7 +406,8 @@ public class FilmDbStorage {
     }
 
     public List<Film> getFilmsPopularQuantity(int quantityFilm) {
-        List<Film> listIdFilm = jdbcTemplate.query("SELECT f.FILMS_ID AS id, f.NAME, f.DESCRIPTION, f.RELEASEDATE, f.DURATION, f.RATING, f.GENRE_ID AS genre, COUNT(ul.ID_FILMS) AS total_likes\n" +
+        List<Film> listIdFilm = jdbcTemplate.query("SELECT f.FILMS_ID AS id, f.NAME, f.DESCRIPTION, " +
+                "f.RELEASEDATE, f.DURATION, f.RATING, f.GENRE_ID AS genre, COUNT(ul.ID_FILMS) AS total_likes\n" +
                 "FROM FILMS f\n" +
                 "LEFT JOIN USERS_LIKE ul ON ul.ID_FILMS = f.FILMS_ID\n" +
                 "GROUP BY f.FILMS_ID, f.NAME, f.DESCRIPTION, f.RELEASEDATE, f.DURATION, f.RATING, f.GENRE_ID\n" +
@@ -427,7 +434,8 @@ public class FilmDbStorage {
     }
 
     public List<Film> getFilmsPopular() {
-        List<Film> listIdFilm = jdbcTemplate.query("SELECT f.FILMS_ID AS id, f.NAME, f.DESCRIPTION, f.RELEASEDATE, f.DURATION, f.RATING, f.GENRE_ID AS genre, COUNT(ul.ID_FILMS) AS total_likes\n" +
+        List<Film> listIdFilm = jdbcTemplate.query("SELECT f.FILMS_ID AS id, f.NAME, f.DESCRIPTION, f.RELEASEDATE, " +
+                "f.DURATION, f.RATING, f.GENRE_ID AS genre, COUNT(ul.ID_FILMS) AS total_likes\n" +
                 "FROM FILMS f\n" +
                 "LEFT JOIN USERS_LIKE ul ON ul.ID_FILMS = f.FILMS_ID\n" +
                 "GROUP BY f.FILMS_ID, f.NAME, f.DESCRIPTION, f.RELEASEDATE, f.DURATION, f.RATING, f.GENRE_ID\n" +
@@ -455,7 +463,8 @@ public class FilmDbStorage {
 
 
     public boolean filmExists(Integer filmId) {
-        Integer count = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM FILMS WHERE FILMS_ID = ?", Integer.class, filmId);
+        Integer count = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM FILMS WHERE FILMS_ID = ?",
+                Integer.class, filmId);
         return count != null && count > 0;
     }
 
@@ -530,26 +539,27 @@ public class FilmDbStorage {
     }
 
     private Mpa makeMpa(ResultSet rs) throws SQLException {
-        return new Mpa(rs.getInt("reating_id"), rs.getString("name"), rs.getString("description"));
+        return new Mpa(rs.getInt("reating_id"), rs.getString("name"),
+                rs.getString("description"));
     }
 
     public List<Genres> getGenresByFilm(int filmId) {
         String sql = "SELECT * FROM GENRE WHERE GENRE_ID IN (SELECT GENRE_ID FROM FILM_GENRE WHERE FILM_ID = ?);";
-        return jdbcTemplate.query(sql, (rs, rowNum) -> new Genres(rs.getInt("genre_id"), rs.getString("name_genre")), filmId);
+        return jdbcTemplate.query(sql, (rs, rowNum) -> new Genres(rs.getInt("genre_id"),
+                rs.getString("name_genre")), filmId);
     }
 
     public void validationId(Integer id) {
         String sql = "SELECT COUNT(*) FROM reating WHERE reating_id = ?";
         SqlRowSet resultSet = jdbcTemplate.queryForRowSet(sql, id);
-        if (resultSet.next()) {
-            if (resultSet.getInt("count(*)") == 0) {
+        if (resultSet.next() && resultSet.getInt("count(*)") == 0) {
                 throw new ValidationException(String.format("Рейтинг с id %s не существует", id));
-            }
         }
     }
 
     public List<Director> getDirectors() {
-        return jdbcTemplate.query("SELECT DIRECTORS_ID , DIRECTORS_NAME FROM DIRECTORS;", new RowMapper<Director>() {
+        return jdbcTemplate.query("SELECT DIRECTORS_ID , DIRECTORS_NAME FROM DIRECTORS;",
+                new RowMapper<Director>() {
             @Override
             public Director mapRow(ResultSet rs, int rowNum) throws SQLException {
                 Director director = new Director();
@@ -561,7 +571,8 @@ public class FilmDbStorage {
     }
 
     public Director getDirectorsById(Integer id) {
-        return jdbcTemplate.queryForObject("SELECT DIRECTORS_ID , DIRECTORS_NAME FROM DIRECTORS WHERE DIRECTORS_ID =?;",
+        return jdbcTemplate.queryForObject("SELECT DIRECTORS_ID , " +
+                        "DIRECTORS_NAME FROM DIRECTORS WHERE DIRECTORS_ID =?;",
                 new RowMapper<Director>() {
                     @Override
                     public Director mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -573,10 +584,11 @@ public class FilmDbStorage {
                 }, id);
     }
 
-    public Director postDirectors(Director director) {
+    public Director createDirectors(Director director) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(con -> {
-            PreparedStatement ps = con.prepareStatement("INSERT INTO DIRECTORS (DIRECTORS_NAME) VALUES (?)", new String[]{"DIRECTORS_ID"});
+            PreparedStatement ps = con.prepareStatement("INSERT INTO DIRECTORS (DIRECTORS_NAME) VALUES (?)",
+                    new String[]{"DIRECTORS_ID"});
             ps.setString(1, director.getName());
 
             return ps;
@@ -585,7 +597,7 @@ public class FilmDbStorage {
         return getDirectorsById(keyDirectors);
     }
 
-    public Director putDirectors(Director director) {
+    public Director updateDirectors(Director director) {
         jdbcTemplate.update("UPDATE DIRECTORS SET DIRECTORS_NAME  = ? WHERE DIRECTORS_ID = ?", director.getName(),
                 director.getId());
         return getDirectorsById(director.getId());
@@ -593,9 +605,11 @@ public class FilmDbStorage {
 
     public List<Film> getFilmDirectorYearOrLike(Integer directorId, List<String> sortBy) {
         if (sortBy.get(0).equals("year")) {
-            return jdbcTemplate.query("select films_id as id, f.name, f.description as description, releasedate as releaseDate, \n" +
+            return jdbcTemplate.query("select films_id as id, f.name, f.description as description, " +
+                    "releasedate as releaseDate, \n" +
                     "duration , r.reating_id as rating , ul.id_user  as usersLikeMovie, fg.genre_id as genre, \n" +
-                    "g.name_genre as nameGenre, r.name as nameMPA, r.description as descriptionMPA , d.DIRECTORS_ID , d.DIRECTORS_NAME \n" +
+                    "g.name_genre as nameGenre, r.name as nameMPA, r.description as descriptionMPA , d.DIRECTORS_ID , " +
+                    "d.DIRECTORS_NAME \n" +
                     "from films f\n" +
                     "LEFT JOIN reating r on r.reating_id = f.rating\n" +
                     "LEFT JOIN users_like ul on f.films_id = ul.id_films\n" +
@@ -622,9 +636,11 @@ public class FilmDbStorage {
 
         } else if (sortBy.get(0).equals("likes")) {
 
-            List<Film> filmList = jdbcTemplate.query("select films_id as id, f.name, f.description as description, releasedate as releaseDate, \n" +
+            List<Film> filmList = jdbcTemplate.query("select films_id as id, f.name, f.description as description, " +
+                    "releasedate as releaseDate, \n" +
                     "duration , r.reating_id as rating , ul.id_user  as usersLikeMovie, fg.genre_id as genre, \n" +
-                    "g.name_genre as nameGenre, r.name as nameMPA, r.description as descriptionMPA , d.DIRECTORS_ID , d.DIRECTORS_NAME \n" +
+                    "g.name_genre as nameGenre, r.name as nameMPA, r.description as descriptionMPA , d.DIRECTORS_ID , " +
+                    "d.DIRECTORS_NAME \n" +
                     "from films f\n" +
                     "LEFT JOIN reating r on r.reating_id = f.rating\n" +
                     "LEFT JOIN users_like ul on f.films_id = ul.id_films\n" +
@@ -666,8 +682,7 @@ public class FilmDbStorage {
 
     public List<Film> getFilmPieceNameOrDirectorPieceName(String query, List<String> by) {
         System.out.println(1);
-        if (by.size() == 2) {
-            if (by.get(0).equals("title")) {
+            if (by.get(0).equals("title") && by.size() == 2) {
                 return jdbcTemplate.query("SELECT \n" +
                         "    f.films_id AS id,\n" +
                         "    f.name,\n" +
@@ -688,7 +703,8 @@ public class FilmDbStorage {
                         "LEFT JOIN film_directors fd ON fd.FILM_ID = f.FILMS_ID \n" +
                         "LEFT JOIN directors d ON d.DIRECTORS_ID = fd.DIRECTORS_ID \n" +
                         "WHERE (LOWER(d.DIRECTORS_NAME) LIKE ? OR LOWER(f.DESCRIPTION) LIKE ?) \n" +
-                        "GROUP BY id, f.name, f.description, f.releasedate, f.duration, r.reating_id, fg.genre_id, g.name_genre, r.name, r.description, d.DIRECTORS_ID, d.DIRECTORS_NAME\n" +
+                        "GROUP BY id, f.name, f.description, f.releasedate, f.duration, r.reating_id, fg.genre_id, " +
+                        "g.name_genre, r.name, r.description, d.DIRECTORS_ID, d.DIRECTORS_NAME\n" +
                         "ORDER BY id DESC;", new RowMapper<Film>() {
                     @Override
                     public Film mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -706,12 +722,13 @@ public class FilmDbStorage {
                 }, "%" + query + "%", "%" + query + "%");
             }
 
-        }
 
         if (by.get(0).equals("title")) {
-            return jdbcTemplate.query("select films_id as id, f.name, f.description as description, releasedate as releaseDate, \n" +
+            return jdbcTemplate.query("select films_id as id, f.name, f.description as description, " +
+                    "releasedate as releaseDate, \n" +
                     "duration , r.reating_id as rating , ul.id_user  as usersLikeMovie, fg.genre_id as genre, \n" +
-                    "g.name_genre as nameGenre, r.name as nameMPA, r.description as descriptionMPA , d.DIRECTORS_ID , d.DIRECTORS_NAME \n" +
+                    "g.name_genre as nameGenre, r.name as nameMPA, r.description as descriptionMPA , d.DIRECTORS_ID , " +
+                    "d.DIRECTORS_NAME \n" +
                     "from films f\n" +
                     "LEFT JOIN reating r on r.reating_id = f.rating\n" +
                     "LEFT JOIN users_like ul on f.films_id = ul.id_films\n" +
@@ -758,7 +775,8 @@ public class FilmDbStorage {
                     "LEFT JOIN film_directors fd ON fd.FILM_ID = f.FILMS_ID \n" +
                     "LEFT JOIN directors d ON d.DIRECTORS_ID = fd.DIRECTORS_ID \n" +
                     "WHERE LOWER(d.DIRECTORS_NAME) LIKE ?\n" +
-                    "GROUP BY id, f.name, f.description, f.releasedate, f.duration, reating_id, fg.genre_id, g.name_genre, r.name, r.description, d.DIRECTORS_ID, d.DIRECTORS_NAME;", new RowMapper<Film>() {
+                    "GROUP BY id, f.name, f.description, f.releasedate, f.duration, reating_id, fg.genre_id, " +
+                    "g.name_genre, r.name, r.description, d.DIRECTORS_ID, d.DIRECTORS_NAME;", new RowMapper<Film>() {
                 @Override
                 public Film mapRow(ResultSet rs, int rowNum) throws SQLException {
                     Film film = new Film();
@@ -808,7 +826,8 @@ public class FilmDbStorage {
                 "directors d ON d.directors_id = fd.directors_id\n" +
                 "WHERE fg.GENRE_ID = ? AND EXTRACT(YEAR FROM f.RELEASEDATE) = ?\n" +
                 "GROUP BY \n" +
-                "f.films_id, f.name, f.description, f.releasedate, f.duration, f.rating, f.genre_id, d.directors_id, d.directors_name\n" +
+                "f.films_id, f.name, f.description, f.releasedate, f.duration, f.rating, f.genre_id, d.directors_id, " +
+                "d.directors_name\n" +
                 "ORDER BY \n" +
                 "total_likes DESC;\n", new RowMapper<Film>() {
             @Override
@@ -926,7 +945,8 @@ public class FilmDbStorage {
     public void insertEvent(String eventType, String operation, int userId, int entityId) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(con -> {
-            PreparedStatement ps = con.prepareStatement("INSERT INTO events (time, user_Id, event_type, operation, entity_id)\n" +
+            PreparedStatement ps = con.prepareStatement("INSERT INTO events (time, user_Id, event_type, operation, " +
+                    "entity_id)\n" +
                     "VALUES\n" +
                     "    (?, ?, ?, ?, ?); ", new String[]{"event_id"});
             ps.setTimestamp(1, Timestamp.from(Instant.now()));
